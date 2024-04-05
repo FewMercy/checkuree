@@ -17,15 +17,12 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { setTokens } from '@/libs/auth';
-import { useMediaQuery } from 'react-responsive';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 const index = () => {
     const router = useRouter();
-    const isSmall = useMediaQuery({
-        query: '(min-width: 393px)',
-    });
+
 
     const [mounted, setMounted] = useState<boolean>(false);
     const [login, setLogin] = useState<LoginData>();
