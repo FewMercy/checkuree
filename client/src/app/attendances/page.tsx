@@ -6,7 +6,7 @@ import { Box, Container, Typography, styled } from '@mui/material';
 import React, { useState } from 'react';
 
 import AttendanceApiClient from '@/api/AttendanceApiClient';
-import AttendanceCreateForm from './components';
+import AttendanceCreateForm from './components/AttendanceCreate';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
