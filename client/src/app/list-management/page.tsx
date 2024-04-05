@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/AttendanceApiClient';
 
 // Components
-import { Fab } from '@mui/material';
+import { Drawer, Fab } from '@mui/material';
 import Icon from '@/components/Icon';
 import AttendanceItem from '@/app/list-management/components/AttendanceItem';
 
@@ -103,6 +103,14 @@ const ListManagement = () => {
             >
                 <Icon icon={Icons.add} size={32} color={Colors.White} />
             </Fab>
+
+            <Drawer
+                anchor="bottom"
+                open={isAddOpen}
+                onClose={() => setIsAddOpen(false)}
+            >
+                <div>hihi</div>
+            </Drawer>
         </ListManagementContainer>
     );
 };
