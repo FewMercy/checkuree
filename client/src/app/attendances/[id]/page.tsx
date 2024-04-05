@@ -1,17 +1,20 @@
 'use client';
 
-// Styles
-import { Colors, Icons } from '@/styles/globalStyles';
-// Api
-import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
+// Styles
+import { Colors, Icons } from '@/styles/globalStyles';
+
+// Api
+import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/AttendanceApiClient';
-import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
-import AttendanceItem from '@/app/attendances/components/AttendanceItem';
+
 // Components
 import Icon from '@/components/Icon';
 import Navigation from '../components/Navigation';
+import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
+import AttendanceItem from '@/app/attendances/components/AttendanceItem';
+
 // Next
 import { usePathname } from 'next/navigation';
 
