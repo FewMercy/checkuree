@@ -11,6 +11,7 @@ import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
 import AttendanceItem from '@/app/attendances/components/AttendanceItem';
 // Components
 import Icon from '@/components/Icon';
+import Navigation from '../components/Navigation';
 // Next
 import { usePathname } from 'next/navigation';
 
@@ -108,7 +109,6 @@ const Index = () => {
                     ))}
                 </section>
             </section>
-
             {/* 출석부 명단 */}
             <section className="attendance-list">
                 {dummyList.map((item, index) => (
@@ -119,6 +119,17 @@ const Index = () => {
                     />
                 ))}
             </section>
+            {/* 출석부 명단 */}
+            <section className="attendance-list">
+                {dummyList.map((item, index) => (
+                    <AttendanceItem
+                        item={item}
+                        index={index}
+                        handleListItem={handleListItem}
+                    />
+                ))}
+            </section>
+            <Navigation />
         </AttendanceIdContainer>
     );
 };
