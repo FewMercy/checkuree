@@ -21,14 +21,18 @@ import { useMediaQuery } from 'react-responsive';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-const index = () => {
+const Index = () => {
     const router = useRouter();
     const isSmall = useMediaQuery({
         query: '(min-width: 393px)',
     });
 
     const [mounted, setMounted] = useState<boolean>(false);
-    const [login, setLogin] = useState<LoginData>();
+    const [login, setLogin] = useState<LoginData>({
+        username: '',
+        password: '',
+        isAutoLogin: false,
+    });
 
     const fetchLogin = async (params: LoginData) => {
         try {
@@ -51,7 +55,8 @@ const index = () => {
         }
     };
 
-    const { mutate: loginMudation } = useMutation({
+    const { mutate: loginMutation } = useMutation({
+        mutationKey: ['user'],
         mutationFn: fetchLogin,
         onSuccess: () => {
             alert('로그인 되었습니다.');
@@ -87,7 +92,7 @@ const index = () => {
                         gap={'10px'}
                     >
                         <TextField
-                            value={login?.username}
+                            value={login.username || ''}
                             placeholder="아이디를 입력해주세요."
                             onChange={(e) =>
                                 onChange('username', e.target.value)
@@ -142,7 +147,7 @@ const index = () => {
                                 backgroundColor: '#59996B',
                             }}
                             onClick={() => {
-                                loginMudation(login!);
+                                loginMutation(login);
                             }}
                         >
                             로그인 하기
@@ -205,7 +210,7 @@ const index = () => {
     );
 };
 
-export default index;
+export default Index;
 
 const TextFiledInputProps = {
     style: {
@@ -218,6 +223,7 @@ const TextFiledInputProps = {
         paddingLeft: '12px',
     },
 };
+
 // Container에 대한 스타일
 const ContainerST = styled(Container)`
     display: flex;

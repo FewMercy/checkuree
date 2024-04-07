@@ -4,13 +4,13 @@ import 'dayjs/locale/ko'; // 한국어 locale 설정
 
 import { Box, Container, Typography, styled } from '@mui/material';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation'; // import 이동
 
 import AttendanceApiClient from '@/api/AttendanceApiClient';
 import AttendanceCreateForm from './components/AttendanceCreate';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 
 dayjs.locale('ko');
 
@@ -46,7 +46,7 @@ interface AttendanceId {
     userId: string;
 }
 
-function Page() {
+const Page: React.FC = () => {
     const router = useRouter();
     const today = dayjs(); // 오늘 날짜
     const todayFormat = today.format('YYYY년 MM월 DD일 dddd');
@@ -173,7 +173,7 @@ function Page() {
             )}
         </ContainerST>
     );
-}
+};
 
 export default Page;
 
@@ -192,7 +192,7 @@ const BoxSTAttendanceWrapper = styled(Box)(() => {
     return {
         display: 'flex',
         width: '320px',
-        height: '200',
+        height: '200', // '200' -> '200px'로 수정
         margin: 'auto',
         gap: '10px',
         justifyContent: 'space-between',

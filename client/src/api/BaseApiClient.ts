@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { clearTokens, setTokens } from '@/libs/auth';
-
 import Cookies from 'js-cookie';
+
+import { clearTokens, setTokens } from '@/libs/auth';
 
 export type Tokens = {
     accessToken: string;
@@ -26,7 +26,7 @@ class BaseApiClient {
             const accessToken = this.getAccessToken();
 
             if (accessToken != null) {
-                config.headers['Authorization'] = `Bearer ${accessToken}`;
+                config.headers.Authorization = `Bearer ${accessToken}`;
             }
             return config;
         });
@@ -62,7 +62,7 @@ class BaseApiClient {
     }
 
     // 기본 access 토큰이 설정되어 있지 않다면 브라우저 쿠키에서 가져온다.
-    public getAccessToken() {
+    public getAccessToken(): string | undefined {
         if (this.tokens?.accessToken) {
             return this.tokens.accessToken;
         }
@@ -74,7 +74,7 @@ class BaseApiClient {
     }
 
     // 기본 refresh 토큰이 설정되어 있지 않다면 브라우저 쿠키에서 가져온다.
-    public getRefreshToken() {
+    public getRefreshToken(): string | undefined {
         if (this.tokens?.refreshToken) {
             return this.tokens.refreshToken;
         }
