@@ -39,9 +39,11 @@ const AttendanceCreateForm = (props: IProps) => {
 
     //State
     const [imageSrc, setImageSrc] = useState<string | null>(null);
-    const [fileImage, setFileImage] = useState<any>();
+    const [fileImage, setFileImage] = useState<File | undefined>();
     const [tempSelected, setTempSelected] = useState<string | undefined>();
-    const [attendanceCreate, setAttendanceCreate] = useState<AttendanceData>();
+    const [attendanceCreate, setAttendanceCreate] = useState<
+        AttendanceData | undefined
+    >();
 
     const { mutate } = useMutation({
         mutationKey: [''],
@@ -49,9 +51,9 @@ const AttendanceCreateForm = (props: IProps) => {
 
     // TODO 파일 업로드
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const handleFileChange = (event: any) => {
-        const selectedFile = event.target.files[0];
-        setFileImage(event.target.files[0]);
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.[0];
+        setFileImage(selectedFile);
         const reader = new FileReader();
 
         reader.onload = (e) => {
@@ -125,7 +127,7 @@ const AttendanceCreateForm = (props: IProps) => {
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                onChange={(e) => handleFileChange(e)}
+                onChange={handleFileChange}
             />
 
             {/* 출석부 이름 */}
