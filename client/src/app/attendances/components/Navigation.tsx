@@ -5,7 +5,13 @@ import React, { useState } from 'react';
 
 import Image from 'next/image';
 
-const menus = [
+interface Menu {
+    name: string;
+    icon: string;
+    label: string;
+}
+
+const menus: Menu[] = [
     {
         name: 'attendance',
         icon: '/images/icons/statistics-icon.svg',
@@ -31,14 +37,14 @@ const menus = [
 const Navigation = () => {
     const [activeMenu, setActiveMenu] = useState<string>('');
 
-    const handleMenuClick = (menuName: any) => {
+    const handleMenuClick = (menuName: string) => {
         setActiveMenu(menuName);
     };
     return (
         <BoxSTNavigation>
             {menus.map((menu, index) => (
                 <BoxSTMenu
-                    key={index}
+                    key={menu.name}
                     onClick={() => handleMenuClick(menu.name)}
                 >
                     {activeMenu === menu.name ? (
