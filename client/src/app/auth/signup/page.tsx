@@ -1,7 +1,6 @@
 'use client';
 
-//Api
-import AuthApiClient, { RegisterData } from '@/api/AuthApiClient';
+// Api
 import {
     Box,
     Button,
@@ -11,13 +10,13 @@ import {
     styled,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-
 import Image from 'next/image';
 import { useMediaQuery } from 'react-responsive';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import AuthApiClient, { RegisterData } from '@/api/AuthApiClient';
 
-const index = () => {
+const Index = () => {
     const isSmall = useMediaQuery({
         query: '(min-width: 393px)',
     });
@@ -83,7 +82,7 @@ const index = () => {
     }, []);
 
     return (
-        <>
+        <div>
             {mounted && isSmall === true ? (
                 <ContainerST>
                     <StyledBoxST>
@@ -298,14 +297,13 @@ const index = () => {
                     alt=""
                 />
             )}
-        </>
+        </div>
     );
 };
 
-export default index;
+export default Index;
 
 const TextFieldProps = {
-    disableUnderline: true,
     style: {
         backgroundColor: 'white',
         padding: '0px',
@@ -318,7 +316,6 @@ const TextFieldProps = {
     },
 };
 const TextFieldProps2 = {
-    disableUnderline: true,
     style: {
         backgroundColor: 'white',
         padding: '0px',
@@ -327,19 +324,6 @@ const TextFieldProps2 = {
         borderRadius: '8px',
         border: '0px',
         paddingLeft: '12px',
-        fontSize: '16px',
-    },
-};
-const DateTextFieldProps = {
-    disableUnderline: true,
-    style: {
-        backgroundColor: 'white',
-        padding: '0px',
-        width: '273px',
-        height: '40px',
-        leftBorderRadius: '8px',
-        border: '0px',
-        paddingLeft: '10px',
         fontSize: '16px',
     },
 };

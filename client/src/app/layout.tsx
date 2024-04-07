@@ -1,12 +1,12 @@
 import './globals.css';
+import React from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
-import './globals.css';
-import theme from '@/theme';
 
 // Provider
 import QueryClientProviders from './provider';
 import { ThemeProvider } from '@mui/material';
+import theme from '@/styles/theme';
 
 const notoSans = Noto_Sans({ subsets: ['latin'] });
 
