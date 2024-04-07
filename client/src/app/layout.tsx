@@ -1,6 +1,8 @@
 import './globals.css';
+import React from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
+
 // Provider
 import QueryClientProviders from './provider';
 import { ThemeProvider } from '@mui/material';
