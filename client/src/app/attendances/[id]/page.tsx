@@ -1,20 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
-
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
-
 // Api
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
-import AttendanceApiClient from '@/api/AttendanceApiClient';
+import React, { useState } from 'react';
 
+import AttendanceApiClient from '@/api/AttendanceApiClient';
+import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
+import AttendanceItem from '@/app/attendances/components/AttendanceItem';
 // Components
 import Icon from '@/components/Icon';
 import Navigation from '../components/Navigation';
-import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
-import AttendanceItem from '@/app/attendances/components/AttendanceItem';
-
 // Next
 import { usePathname } from 'next/navigation';
 
@@ -50,7 +47,7 @@ const Index = () => {
         { id: 7, name: '계창선', status: '', isDetailOpen: false },
         { id: 8, name: '계창선', status: '', isDetailOpen: false },
     ]);
-
+    const shouldShowNavigation = dummyList.some((item) => item.status !== '');
     // // fetching API
     // const { data: attendance, isLoading } = useQuery({
     //     queryKey: ['attendance'],
@@ -80,6 +77,7 @@ const Index = () => {
         });
     };
 
+    console.log(dummyList);
     // console.log('attendance', attendance);
 
     // if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
@@ -90,7 +88,7 @@ const Index = () => {
                 <div className="attendance-img"></div>
 
                 <section className="attendance-info">
-                    {/* TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
+                    {/* // TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
                     <div className="name">출석부 이름</div>
                     <div className="date-container">
                         <div className="date">03</div>
@@ -112,6 +110,7 @@ const Index = () => {
                     ))}
                 </section>
             </section>
+
             {/* 출석부 명단 */}
             <section className="attendance-list">
                 {dummyList.map((item, index) => (
@@ -122,17 +121,10 @@ const Index = () => {
                     />
                 ))}
             </section>
-            {/* 출석부 명단 */}
-            <section className="attendance-list">
-                {dummyList.map((item, index) => (
-                    <AttendanceItem
-                        item={item}
-                        index={index}
-                        handleListItem={handleListItem}
-                    />
-                ))}
-            </section>
-            <Navigation />
+            <Navigation
+                status={shouldShowNavigation}
+                setDummyList={setDummyList}
+            />
         </AttendanceIdContainer>
     );
 };
