@@ -139,19 +139,13 @@ const Index = () => {
                                 로그인 유지
                             </Typography>
                         </Box>
-                        <Button
-                            sx={{
-                                width: '318px',
-                                height: '48px',
-                                color: 'white',
-                                backgroundColor: '#59996B',
-                            }}
+                        <BoxSTLogin
                             onClick={() => {
                                 loginMutation(login);
                             }}
                         >
                             로그인 하기
-                        </Button>
+                        </BoxSTLogin>
                         <Box
                             sx={{
                                 display: 'flex',
@@ -263,6 +257,19 @@ const StyledLinkTypography = styled(Typography)`
     line-height: 19.07px;
     font-weight: 500;
 `;
+
+const BoxSTLogin = styled(Box)(() => {
+    return {
+        width: '318px',
+        height: '48px',
+        color: 'white',
+        backgroundColor: '#59996B',
+        borderRadius: '8px',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    };
+});
 
 // 카카오 및 네이버 로그인 버튼 스타일
 const StyledLoginButton = styled(Button)`

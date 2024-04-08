@@ -99,6 +99,7 @@ const Navigation = (props: Iprops) => {
                                 }}
                             >
                                 <Image
+                                    key={index}
                                     src={
                                         activeMenu === menu.name
                                             ? menu.iconActivate
@@ -178,8 +179,9 @@ const BoxSTConfirm = styled(Box)(() => {
         fontSize: '16px',
         fontWeight: 600,
         lineHeight: '21.79px',
-        textAlign: 'center',
-        alignContent: 'center',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
         boxShadow: '0px 2px 10px 4px rgba(0, 0, 0, 0.25)',
     };
 });
@@ -194,8 +196,9 @@ const BoxSTCancel = styled(Box)(() => {
         fontSize: '16px',
         fontWeight: 600,
         lineHeight: '21.79px',
-        textAlign: 'center',
-        alignContent: 'center',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
         boxShadow: '0px 2px 10px 4px rgba(0, 0, 0, 0.25)',
     };
 });
