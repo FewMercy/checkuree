@@ -292,8 +292,9 @@ const BoxSTSave = styled(Box)(() => {
         background: ' #59996B',
         color: 'white',
         borderRadius: '8px',
-        alignContent: 'center',
-        textAlignLast: 'center',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
     };
 });
 
