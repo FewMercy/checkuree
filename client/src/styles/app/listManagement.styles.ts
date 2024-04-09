@@ -108,61 +108,110 @@ export const AttendanceItemContainer = styled.div<{
             }
         }
     }
+`;
 
-    & > .detail-box {
-        height: ${(props) => (props.isDetailOpen ? '104px' : 0)};
-        padding: ${(props) => (props.isDetailOpen ? '4px' : 0)};
-        border-radius: 8px;
-        background-color: ${(props) =>
-            props.status === '지각'
-                ? Colors.Orange
-                : props.status === '결석'
-                  ? Colors.Red
-                  : Colors.LightGreen};
-        transition: height 0.2s ease-in;
+export const FormContentsContainer = styled.section<{ gender: string }>`
+    & > form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding: 32px 27px 36px;
 
-        & > .detail-buttons {
-            height: 24px;
-            display: ${(props) => (props.isDetailOpen ? 'flex' : 'none')};
-            line-height: 24px;
-            margin-bottom: 4px;
-        }
+        & > .form-row {
+            & > .label {
+                font-size: 14px;
+                font-weight: 500;
+                margin-bottom: 8px;
+            }
 
-        & > .MuiTextField-root {
-            width: 100%;
+            & > .value {
+                z-index: 1;
 
-            & > .MuiInputBase-root {
-                width: 100%;
-                height: ${(props) =>
-                    props.isDetailOpen
-                        ? props.status === '지각' || props.status === '결석'
-                            ? '68px'
-                            : '96px'
-                        : 0};
-                padding: 0;
-                border-radius: 4px;
-                border: none;
-                background: ${Colors.White};
-                transition: height 0.2s ease-in;
-
-                & > textarea {
-                    height: ${(props) =>
-                        props.isDetailOpen
-                            ? props.status === '지각' || props.status === '결석'
-                                ? '68px'
-                                : '96px'
-                            : 0} !important;
-                    padding: 0 8px;
+                & > .calendar-input {
+                    width: 100%;
+                    height: 40px;
+                    padding: 8px 13px;
+                    border: 1px solid ${Colors.Gray50};
+                    border-radius: 8px;
                     box-sizing: border-box;
-                    font-size: 12px;
-                    font-weight: 500;
-                    transition: height 0.2s ease-in;
+
+                    & > span {
+                        color: ${Colors.Gray60};
+                    }
                 }
 
-                & > fieldset {
-                    border: none;
+                & > .MuiFormControl-root > .MuiFormGroup-root {
+                    display: flex;
+                    flex-direction: row;
+
+                    & .MuiFormControlLabel-root {
+                        height: 22px;
+                        gap: 8px;
+                        margin-left: 0;
+
+                        &:first-of-type {
+                            margin-right: 66px;
+                        }
+
+                        & .MuiRadio-root {
+                            width: 18px;
+                            height: 18px;
+                            padding: 0;
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    & > .button-container {
+        width: 100%;
+        height: 60px;
+        display: flex;
+
+        & > .button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: ${Colors.White};
+        }
+
+        & > .cancel {
+            flex: 1;
+            background-color: ${Colors.Gray60};
+        }
+
+        & > .confirm {
+            flex: 2.5;
+            background-color: ${Colors.CheckureeGreen};
+        }
+    }
+`;
+
+export const CalendarContainer = styled.div`
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    & .react-calendar {
+        border-radius: 8px;
+
+        & .react-calendar__month-view__days__day--weekend {
+            color: ${Colors.WarningRed};
+        }
+
+        & .react-calendar__tile--now {
+            background: none;
+        }
+
+        & .react-calendar__tile--active,
+        .react-calendar__tile--active:enabled:hover,
+        .react-calendar__tile--active:enabled:focus {
+            font-weight: 600;
+            background: ${Colors.CheckureeGreen};
         }
     }
 `;

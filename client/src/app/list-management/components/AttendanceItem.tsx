@@ -60,13 +60,6 @@ const AttendanceItem = (props: PropsType) => {
                     </div>
                 </div>
             </div>
-
-            {/* 출석/지각/상세 사유 입력 박스 */}
-            {/*<DetailInputBox*/}
-            {/*    item={item}*/}
-            {/*    index={index}*/}
-            {/*    handleListItem={handleListItem}*/}
-            {/*/>*/}
         </AttendanceItemContainer>
     );
 };

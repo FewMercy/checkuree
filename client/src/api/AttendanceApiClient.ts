@@ -48,6 +48,13 @@ class AttendanceApiClient extends BaseApiClient {
             url: `/schedules/attendanceId/${attendanceId}/today`,
         });
 
+    /** 특정 출석부 정보(상세) */
+    public getAttendanceDetail = (attendanceId: string) =>
+        this.axios.request({
+            method: 'GET',
+            url: `/attendanceId/${attendanceId}`,
+        });
+
     public getAttendanceDetailList = (id: string) =>
         this.axios.request({
             method: 'GET',

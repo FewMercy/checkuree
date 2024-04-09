@@ -55,7 +55,7 @@ const Page: React.FC = () => {
     const [isCreate, setIsCreate] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormData | null>(null);
 
-    const { data: attendancyList } = useQuery({
+    const { data: attendancyList, isLoading } = useQuery({
         queryKey: ['attendancy-list'],
         queryFn: async () => {
             const response =
@@ -72,6 +72,10 @@ const Page: React.FC = () => {
             setFormData(newFormData);
         }
     };
+
+    if (isLoading) {
+        return <div>loading...</div>;
+    }
 
     return (
         <ContainerST>

@@ -6,22 +6,26 @@ type ColorKey =
     | 'CheckureeGreen'
     | 'LightGreen'
     | 'Orange'
+    | 'WarningRed'
     | 'Red'
     | 'White'
     | 'Black01'
     | 'Gray80'
     | 'Gray60'
+    | 'Gray50'
     | 'Gray40';
 
 export const Colors: Record<ColorKey, string> = {
     CheckureeGreen: '#59996B',
     LightGreen: '#EDF9E3',
     Orange: '#EDC588',
+    WarningRed: '#DE6161',
     Red: '#E9B3B3',
     White: '#ffffff',
     Black01: '#222222',
     Gray80: '#8E8E8E',
     Gray60: '#C9C9C9',
+    Gray50: '#D5D5D5',
     Gray40: '#D9D9D9',
 };
 
