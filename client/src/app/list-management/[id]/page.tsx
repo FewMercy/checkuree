@@ -29,7 +29,6 @@ export interface AttendanceItemType {
     lateReason?: string;
 }
 
-// TODO: 걍 서버 컴포넌트로 바꿔도 될 듯.
 const ListManagement = () => {
     const attendanceId = usePathname().split('/')[2];
 
@@ -49,10 +48,10 @@ const ListManagement = () => {
 
     // fetching API
     const { data: attendance, isLoading } = useQuery({
-        queryKey: ['attendance'],
+        queryKey: ['attendance-detail'],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceById(
+                await AttendanceApiClient.getInstance().getAttendanceDetail(
                     attendanceId
                 );
             return response.data;

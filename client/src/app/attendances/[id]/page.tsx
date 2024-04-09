@@ -8,10 +8,10 @@ import React, { useState } from 'react';
 
 import AttendanceApiClient from '@/api/AttendanceApiClient';
 import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
-import AttendanceItem from '@/app/attendances/components/AttendanceItem';
+import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
 // Components
 import Icon from '@/components/Icon';
-import Navigation from '../components/Navigation';
+import Navigation from '@/app/attendances/_components/Navigation';
 // Next
 import { usePathname } from 'next/navigation';
 

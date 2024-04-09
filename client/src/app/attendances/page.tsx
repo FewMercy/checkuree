@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
 
 import AttendanceApiClient from '@/api/AttendanceApiClient';
-import AttendanceCreateForm from './components/AttendanceCreate';
+import AttendanceCreateForm from '@/app/attendances/_components/AttendanceCreate';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';

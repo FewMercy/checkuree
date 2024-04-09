@@ -52,7 +52,7 @@ class AttendanceApiClient extends BaseApiClient {
     public getAttendanceDetail = (attendanceId: string) =>
         this.axios.request({
             method: 'GET',
-            url: `/attendanceId/${attendanceId}`,
+            url: `/attendances/${attendanceId}`,
         });
 
     public getAttendanceDetailList = (id: string) =>

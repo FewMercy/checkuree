@@ -10,7 +10,7 @@ import { Colors, Icons, Images } from '@/styles/globalStyles';
 import { AttendanceItemContainer } from '@/styles/app/listManagement.styles';
 
 // Components
-import DetailInputBox from '@/app/attendances/components/DetailInputBox';
+import DetailInputBox from '@/app/attendances/_components/DetailInputBox';
 
 // Types
 import { AttendanceItemType } from '@/app/attendances/[id]/page';
