@@ -21,14 +21,18 @@ import { useMediaQuery } from 'react-responsive';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-const index = () => {
+const Index = () => {
     const router = useRouter();
     const isSmall = useMediaQuery({
         query: '(min-width: 393px)',
     });
 
     const [mounted, setMounted] = useState<boolean>(false);
-    const [login, setLogin] = useState<LoginData>();
+    const [login, setLogin] = useState<LoginData>({
+        username: '',
+        password: '',
+        isAutoLogin: false,
+    });
 
     const fetchLogin = async (params: LoginData) => {
         try {
@@ -51,7 +55,8 @@ const index = () => {
         }
     };
 
-    const { mutate: loginMudation } = useMutation({
+    const { mutate: loginMutation } = useMutation({
+        mutationKey: ['user'],
         mutationFn: fetchLogin,
         onSuccess: () => {
             alert('로그인 되었습니다.');
@@ -87,7 +92,7 @@ const index = () => {
                         gap={'10px'}
                     >
                         <TextField
-                            value={login?.username}
+                            value={login.username || ''}
                             placeholder="아이디를 입력해주세요."
                             onChange={(e) =>
                                 onChange('username', e.target.value)
@@ -134,19 +139,13 @@ const index = () => {
                                 로그인 유지
                             </Typography>
                         </Box>
-                        <Button
-                            sx={{
-                                width: '318px',
-                                height: '48px',
-                                color: 'white',
-                                backgroundColor: '#59996B',
-                            }}
+                        <BoxSTLogin
                             onClick={() => {
-                                loginMudation(login!);
+                                loginMutation(login);
                             }}
                         >
                             로그인 하기
-                        </Button>
+                        </BoxSTLogin>
                         <Box
                             sx={{
                                 display: 'flex',
@@ -205,10 +204,9 @@ const index = () => {
     );
 };
 
-export default index;
+export default Index;
 
 const TextFiledInputProps = {
-    disableUnderline: true,
     style: {
         backgroundColor: 'white',
         padding: '0px',
@@ -219,6 +217,7 @@ const TextFiledInputProps = {
         paddingLeft: '12px',
     },
 };
+
 // Container에 대한 스타일
 const ContainerST = styled(Container)`
     display: flex;
@@ -258,6 +257,19 @@ const StyledLinkTypography = styled(Typography)`
     line-height: 19.07px;
     font-weight: 500;
 `;
+
+const BoxSTLogin = styled(Box)(() => {
+    return {
+        width: '318px',
+        height: '48px',
+        color: 'white',
+        backgroundColor: '#59996B',
+        borderRadius: '8px',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    };
+});
 
 // 카카오 및 네이버 로그인 버튼 스타일
 const StyledLoginButton = styled(Button)`

@@ -1,21 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
-
-// Next
-import { usePathname } from 'next/navigation';
-
-// Api
-import { useQuery } from '@tanstack/react-query';
-import AttendanceApiClient from '@/api/AttendanceApiClient';
-
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
-import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
+// Api
+import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
 
+import AttendanceApiClient from '@/api/AttendanceApiClient';
+import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
+import AttendanceItem from '@/app/attendances/components/AttendanceItem';
 // Components
 import Icon from '@/components/Icon';
-import AttendanceItem from '@/app/attendances/components/AttendanceItem';
+import Navigation from '../components/Navigation';
+// Next
+import { usePathname } from 'next/navigation';
 
 // Types
 export interface AttendanceItemType {
@@ -49,18 +47,18 @@ const Index = () => {
         { id: 7, name: '계창선', status: '', isDetailOpen: false },
         { id: 8, name: '계창선', status: '', isDetailOpen: false },
     ]);
-
-    // fetching API
-    const { data: attendance, isLoading } = useQuery({
-        queryKey: ['attendance'],
-        queryFn: async () => {
-            const response =
-                await AttendanceApiClient.getInstance().getAttendanceById(
-                    attendanceId
-                );
-            return response.data;
-        },
-    });
+    const shouldShowNavigation = dummyList.some((item) => item.status !== '');
+    // // fetching API
+    // const { data: attendance, isLoading } = useQuery({
+    //     queryKey: ['attendance'],
+    //     queryFn: async () => {
+    //         const response =
+    //             await AttendanceApiClient.getInstance().getAttendanceById(
+    //                 attendanceId
+    //             );
+    //         return response.data;
+    //     },
+    // });
 
     /**
      * @description 출석/지각/결석 선택 및 상세사유 입력 등 출석대상 목록의 값을 변경하는 함수
@@ -79,9 +77,10 @@ const Index = () => {
         });
     };
 
+    console.log(dummyList);
     // console.log('attendance', attendance);
 
-    if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
+    // if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
 
     return (
         <AttendanceIdContainer>
@@ -89,7 +88,7 @@ const Index = () => {
                 <div className="attendance-img"></div>
 
                 <section className="attendance-info">
-                    {/* TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
+                    {/* // TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
                     <div className="name">출석부 이름</div>
                     <div className="date-container">
                         <div className="date">03</div>
@@ -122,8 +121,32 @@ const Index = () => {
                     />
                 ))}
             </section>
+            <Navigation
+                status={shouldShowNavigation}
+                setDummyList={setDummyList}
+            />
         </AttendanceIdContainer>
     );
 };
 
 export default Index;
+
+// TODO: 좀 더 작업 해야 함
+
+Index.GetServerSideProps = async (context: any) => {
+    const queryClient = new QueryClient();
+    const id = context.params!.id as string;
+    await queryClient.prefetchQuery({
+        queryKey: ['attendance', id],
+        queryFn: async () => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceById(id);
+            return response.data;
+        },
+    });
+    return {
+        props: {
+            dehydratedState: dehydrate(queryClient),
+        },
+    };
+};
