@@ -1,10 +1,11 @@
-import { IsBoolean, IsEnum, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsString, Matches } from 'class-validator';
 import {} from '../../auth/const/error-message';
 import { ApiProperty } from '@nestjs/swagger';
 import { Optional } from '@nestjs/common';
 import { AttendanceType } from '../const/attendance-type.enum';
 import { Attendance } from '../entities/attendance.entity';
 import { Column } from 'typeorm';
+import { DayType } from '../../schedules/const/day-type.enum';
 
 export class CreateAttendanceDto {
   @IsString()
@@ -38,6 +39,11 @@ export class CreateAttendanceDto {
   @ApiProperty({ description: '지각 상태 사용 유무', type: 'boolean' })
   @IsBoolean()
   allowLateness: boolean;
+
+  @ApiProperty({ description: '출석부 사용 요일', isArray: true, type: 'enum', enum: DayType })
+  @IsArray()
+  @IsEnum(DayType, { each: true })
+  attendanceDays: DayType[];
 
   toEntity() {
     const attendance = new Attendance();

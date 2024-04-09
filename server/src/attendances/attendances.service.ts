@@ -9,6 +9,7 @@ import { UserAttendance } from './entities/user-attendance.entity';
 import { RoleType } from '../roles/entities/role-type.enum';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
+import { AttendanceDay } from './entities/attendance-day.entity';
 
 @Injectable()
 export class AttendancesService {
@@ -17,6 +18,8 @@ export class AttendancesService {
     private attendanceRepository: Repository<Attendance>,
     @InjectRepository(UserAttendance)
     private userAttendanceRepository: Repository<UserAttendance>,
+    @InjectRepository(AttendanceDay)
+    private attendanceDayRepository: Repository<AttendanceDay>,
   ) {}
   async create(createAttendanceDto: CreateAttendanceDto, user: User): Promise<CommonResponseDto<any>> {
     const attendance = createAttendanceDto.toEntity();
@@ -32,6 +35,17 @@ export class AttendancesService {
 
     await this.userAttendanceRepository.save(userAttendance);
 
+    const attenadanceDays = createAttendanceDto.attendanceDays;
+
+    await this.attendanceDayRepository.save(
+      attenadanceDays.map((day) => {
+        return {
+          attendanceId: createdAttendance.id,
+          day: day,
+        };
+      }),
+    );
+
     return new CommonResponseDto('SUCCESS CREATE ATTENDANCE', { id: createdAttendance.id });
   }
 
@@ -39,6 +53,7 @@ export class AttendancesService {
     const [items, count] = await this.userAttendanceRepository
       .createQueryBuilder('userAttendance')
       .leftJoinAndSelect('userAttendance.attendance', 'attendance')
+      .leftJoinAndSelect('attendance.attendanceDays', 'attendanceDays')
       .loadRelationCountAndMap('attendance.attendeeCount', 'attendance.attendees')
       .where('userAttendance.userId = :userId', { userId })
       .getManyAndCount();
@@ -46,7 +61,17 @@ export class AttendancesService {
   }
 
   async findOneById(id: string): Promise<CommonResponseDto<Attendance>> {
-    return new CommonResponseDto('SUCCESS FIND ATTENDANCE', await this.attendanceRepository.findOneBy({ id }));
+    return new CommonResponseDto(
+      'SUCCESS FIND ATTENDANCE',
+      await this.attendanceRepository.findOne({
+        relations: {
+          attendanceDays: true,
+        },
+        where: {
+          id,
+        },
+      }),
+    );
   }
 
   async update(id: string, updateAttendanceDto: UpdateAttendanceDto): Promise<CommonResponseDto<any>> {
