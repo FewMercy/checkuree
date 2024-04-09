@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AttendanceType } from '../const/attendance-type.enum';
 import { UserAttendance } from './user-attendance.entity';
 import { Attendee } from '../../attendees/entities/attendee.entity';
+import { AttendanceDay } from './attendance-day.entity';
 
 @Entity()
 export class Attendance extends BaseTimeEntity {
@@ -30,4 +31,8 @@ export class Attendance extends BaseTimeEntity {
   @OneToMany(() => Attendee, (attendee) => attendee.attendance)
   @ApiProperty({ type: () => Attendee })
   attendees: Attendee[];
+
+  @OneToMany(() => AttendanceDay, (attendanceDay) => attendanceDay.attendance)
+  @ApiProperty({ type: () => UserAttendance })
+  attendanceDays: AttendanceDay[];
 }
