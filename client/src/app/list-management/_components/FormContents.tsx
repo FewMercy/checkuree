@@ -41,7 +41,13 @@ interface Inputs {
     times: Record<string, string[]>;
 }
 
-const FormContents = ({ data }: { data: AttendanceData | undefined }) => {
+const FormContents = ({
+    data,
+    onClose,
+}: {
+    data: AttendanceData | undefined;
+    onClose: () => void;
+}) => {
     const [selectedDay, setSelectedDay] = useState<string>(data?.days[0] || '');
     const [timeOptions, setTimeOptions] = useState<
         { label: string; value: string }[]
@@ -327,8 +333,17 @@ const FormContents = ({ data }: { data: AttendanceData | undefined }) => {
                 </div>
             </form>
 
+            <section className="additional-button-container">
+                <div className="additional-button">전체 스케줄보기</div>
+                <div className="additional-button">출석 히스토리</div>
+            </section>
+
+            <div className="disabled-button">비활성화</div>
+
             <section className="button-container">
-                <div className="button cancel">취소</div>
+                <div className="button cancel" onClick={onClose}>
+                    취소
+                </div>
                 <button
                     type="submit"
                     className="button confirm"

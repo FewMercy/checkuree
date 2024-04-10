@@ -116,7 +116,7 @@ export const FormContentsContainer = styled.section<{ gender: string }>`
         display: flex;
         flex-direction: column;
         gap: 24px;
-        padding: 32px 27px 36px;
+        padding: 32px 27px 0;
 
         & > .form-row {
             & > .label {
@@ -248,6 +248,38 @@ export const FormContentsContainer = styled.section<{ gender: string }>`
         }
     }
 
+    & > .additional-button-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 24px 27px 12px;
+
+        & > .additional-button {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid ${Colors.CheckureeGreen};
+            font-weight: 500;
+            color: ${Colors.CheckureeGreen};
+            background: ${Colors.CheckureeGreen10};
+        }
+    }
+
+    & > .disabled-button {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        font-weight: 600;
+        color: ${Colors.White};
+        background: ${Colors.WarningRed};
+        margin: 0 27px 36px;
+    }
+
     & > .button-container {
         width: 100%;
         height: 60px;
@@ -268,6 +300,8 @@ export const FormContentsContainer = styled.section<{ gender: string }>`
 
         & > .confirm {
             flex: 2.5;
+            border: none;
+            font-size: 16px;
             background-color: ${Colors.CheckureeGreen};
         }
     }
