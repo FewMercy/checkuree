@@ -9,7 +9,7 @@ import { ListManagementContainer } from '@/styles/app/listManagement.styles';
 
 // Api
 import { useQuery } from '@tanstack/react-query';
-import AttendanceApiClient from '@/api/AttendanceApiClient';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
 // Components
 import { Fab } from '@mui/material';

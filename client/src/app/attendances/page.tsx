@@ -6,7 +6,7 @@ import { Box, Container, Typography, styled } from '@mui/material';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
 
-import AttendanceApiClient from '@/api/AttendanceApiClient';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import AttendanceCreateForm from '@/app/attendances/_components/AttendanceCreate';
 import Image from 'next/image';
 import dayjs from 'dayjs';

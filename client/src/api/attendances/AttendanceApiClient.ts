@@ -1,4 +1,5 @@
-import BaseApiClient, { Tokens } from './BaseApiClient';
+import BaseApiClient, { Tokens } from '../BaseApiClient';
+import { AttendanceDetail } from '@/api/attendances/schema';
 
 export interface ICommonResponse<T> {
     code: number;
@@ -50,7 +51,7 @@ class AttendanceApiClient extends BaseApiClient {
 
     /** 특정 출석부 정보(상세) */
     public getAttendanceDetail = (attendanceId: string) =>
-        this.axios.request({
+        this.axios.request<AttendanceDetail>({
             method: 'GET',
             url: `/attendances/${attendanceId}`,
         });

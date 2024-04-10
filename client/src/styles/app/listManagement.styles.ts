@@ -163,6 +163,89 @@ export const FormContentsContainer = styled.section<{ gender: string }>`
                 }
             }
         }
+
+        & > .days-times-container {
+            & > .days-container {
+                display: flex;
+                gap: 6px;
+                margin-bottom: 4px;
+
+                & > .day {
+                    height: 40px;
+                    flex: 1;
+                    border-radius: 8px;
+                    border: 1px solid ${Colors.Gray60};
+                    font-weight: 500;
+                    text-align: center;
+                    line-height: 40px;
+                    color: ${Colors.Gray60};
+                }
+
+                & > .selected {
+                    border: 1px solid ${Colors.CheckureeGreen};
+                    color: ${Colors.CheckureeGreen};
+                    background: ${Colors.CheckureeGreen10};
+                }
+            }
+
+            & > .time-container {
+                height: 164px;
+                display: flex;
+                padding: 12px 12px 0;
+                border-radius: 8px;
+                box-sizing: border-box;
+                border: 1px solid ${Colors.Gray60};
+
+                & > .selected-times {
+                    display: flex;
+                    flex: 1;
+                    gap: 6px;
+                    flex-direction: column;
+                    padding: 0 12px 12px 0;
+                    box-sizing: border-box;
+                    border-right: 1px solid ${Colors.Gray60};
+                    overflow-y: auto;
+
+                    & > .selected-time {
+                        height: 30px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 4px 11px 4px 15px;
+                        box-sizing: border-box;
+                        border-radius: 15px;
+                        border: 1px solid ${Colors.CheckureeGreen};
+                        color: ${Colors.CheckureeGreen};
+                        background: ${Colors.CheckureeGreen10};
+                    }
+                }
+
+                & > .time-options {
+                    flex: 1.8;
+                    padding: 0 16px 0 12px;
+                    box-sizing: border-box;
+                    overflow-y: auto;
+
+                    & > .time-option {
+                        height: 40px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        border-bottom: 1px solid ${Colors.Gray60};
+                        font-weight: 500;
+                        color: ${Colors.Gray60};
+
+                        &:last-child {
+                            border-bottom: none;
+                        }
+                    }
+
+                    & > .selected {
+                        color: ${Colors.CheckureeGreen};
+                    }
+                }
+            }
+        }
     }
 
     & > .button-container {

@@ -9,7 +9,7 @@ import { ListManagementContainer } from '@/styles/app/listManagement.styles';
 
 // Api
 import { useQuery } from '@tanstack/react-query';
-import AttendanceApiClient from '@/api/AttendanceApiClient';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
 // Components
 import { Fab } from '@mui/material';
@@ -17,6 +17,7 @@ import Icon from '@/components/Icon';
 import AttendanceItem from '@/app/list-management/_components/AttendanceItem';
 import BottomDrawer from '@/components/BottomDrawer';
 import FormContents from '@/app/list-management/_components/FormContents';
+import { AttendanceDetail } from '@/api/attendances/schema';
 
 // Types
 export interface AttendanceItemType {
@@ -110,7 +111,7 @@ const ListManagement = () => {
             <BottomDrawer
                 open={isAddOpen}
                 onClose={() => setIsAddOpen(false)}
-                children={<FormContents />}
+                children={<FormContents data={attendance?.data} />}
             />
         </ListManagementContainer>
     );

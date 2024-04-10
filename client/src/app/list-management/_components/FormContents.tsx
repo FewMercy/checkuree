@@ -22,11 +22,13 @@ import {
 import { dateFormat } from '@/utils';
 
 // Styles
-import { Colors } from '@/styles/globalStyles';
+import { Colors, Icons } from '@/styles/globalStyles';
 import {
     CalendarContainer,
     FormContentsContainer,
 } from '@/styles/app/listManagement.styles';
+import { AttendanceData, AttendanceDetail } from '@/api/attendances/schema';
+import Icon from '@/components/Icon';
 
 // Types
 interface Inputs {
@@ -36,10 +38,25 @@ interface Inputs {
     birthYear: string;
     birthday: string;
     mobileNumber: string;
+    times: Record<string, string[]>;
 }
 
-const FormContents = () => {
+const FormContents = ({ data }: { data: AttendanceData | undefined }) => {
+    const [selectedDay, setSelectedDay] = useState<string>(data?.days[0] || '');
+    const [timeOptions, setTimeOptions] = useState<
+        { label: string; value: string }[]
+    >([]);
     const [showCalendar, setShowCalendar] = useState(false);
+
+    const days: Record<string, string> = {
+        MONDAY: '월',
+        TUESDAY: '화',
+        WEDNESDAY: '수',
+        THURSDAY: '목',
+        FRIDAY: '금',
+        SATURDAY: '토',
+        SUNDAY: '일',
+    };
 
     const {
         watch,
@@ -56,6 +73,53 @@ const FormContents = () => {
         console.log('???data', data);
     });
 
+    // 30분 간격으로 시간을 생성하는 함수
+    function generateTimeOptions() {
+        const options = [];
+        for (let hour = 0; hour < 24; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const timeLabel = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                const timeValue = (hour * 100 + minute)
+                    .toString()
+                    .padStart(4, '0');
+                options.push({ label: timeLabel, value: timeValue });
+            }
+        }
+        return options;
+    }
+
+    useEffect(() => {
+        if (data && data?.availableFrom && data?.availableTo) {
+            const fromMinutes =
+                parseInt(data.availableFrom.substring(0, 2)) * 60 +
+                parseInt(data.availableFrom.substring(2));
+            const toMinutes =
+                parseInt(data.availableTo.substring(0, 2)) * 60 +
+                parseInt(data.availableTo.substring(2));
+
+            // 생성된 시간 중에서 from에서 to까지의 범위에 해당하는 시간들을 필터링
+            const timeOptions = generateTimeOptions().filter((option) => {
+                const currentTimeInMinutes =
+                    parseInt(option.value.substring(0, 2)) * 60 +
+                    parseInt(option.value.substring(2));
+                return (
+                    currentTimeInMinutes >= fromMinutes &&
+                    currentTimeInMinutes <= toMinutes
+                );
+            });
+
+            setTimeOptions(timeOptions);
+        }
+
+        if (data && data.days) {
+            let initialDays = {};
+            data.days.forEach((day) => {
+                Object.assign(initialDays, { [day]: [] });
+            });
+            setValue('times', initialDays);
+        }
+    }, [data]);
+
     useEffect(() => {
         // 입력받은 생년월일 값은 년도, 날짜를 분리해서 DB에 저장해야 함.
         if (watch('birth')) {
@@ -65,6 +129,17 @@ const FormContents = () => {
             setValue('birthday', birth.slice(4, 8));
         }
     }, [watch('birth')]);
+
+    const handleSelectTime = (day: string, time: string) => {
+        const updatedTimes = watch('times');
+        const index = updatedTimes[day].indexOf(time);
+        if (index !== -1) {
+            updatedTimes[day].splice(index, 1);
+        } else {
+            updatedTimes[day].push(time);
+        }
+        setValue('times', updatedTimes);
+    };
 
     return (
         <FormContentsContainer gender={watch('gender')}>
@@ -176,6 +251,78 @@ const FormContents = () => {
                     <div className="label">핸드폰 번호</div>
                     <div className="value">
                         <TextField {...register('mobileNumber')} />
+                    </div>
+                </div>
+
+                <div className="days-times-container">
+                    <div className="days-container">
+                        {data?.days.map((day) => (
+                            <div
+                                className={`day ${selectedDay === day ? 'selected' : ''}`}
+                                onClick={() => setSelectedDay(day)}
+                            >
+                                {days[day]}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="time-container">
+                        <div className="selected-times">
+                            {watch('times') &&
+                                watch('times')[selectedDay].map((item) => (
+                                    <div className="selected-time">
+                                        {`${item.slice(0, 2)}:${item.slice(2)}`}
+                                        <Icon
+                                            icon={Icons.highlight_off}
+                                            size={20}
+                                            color={Colors.CheckureeGreen}
+                                            onClick={() =>
+                                                handleSelectTime(
+                                                    selectedDay,
+                                                    item
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                ))}
+                        </div>
+                        <div className="time-options">
+                            {timeOptions.map((item) => {
+                                const isSelected =
+                                    watch('times') &&
+                                    watch('times')[selectedDay].includes(
+                                        item.value
+                                    );
+
+                                return (
+                                    <div
+                                        className={`time-option ${isSelected ? 'selected' : ''}`}
+                                        onClick={() =>
+                                            handleSelectTime(
+                                                selectedDay,
+                                                item.value
+                                            )
+                                        }
+                                    >
+                                        {item.label}
+                                        <Icon
+                                            icon={
+                                                Icons[
+                                                    isSelected
+                                                        ? 'check_circle'
+                                                        : 'radio_button_unchecked'
+                                                ]
+                                            }
+                                            size={20}
+                                            color={
+                                                isSelected
+                                                    ? Colors.CheckureeGreen
+                                                    : Colors.Gray60
+                                            }
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </form>

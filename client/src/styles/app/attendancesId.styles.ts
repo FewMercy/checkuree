@@ -6,7 +6,7 @@ export const AttendanceIdContainer = styled.section`
     padding: 0 27px;
 
     & > .attendance-header {
-        width: 100%;
+        width: calc(100% - 54px);
         position: fixed;
         top: 0;
         padding: 42px 0 12px;

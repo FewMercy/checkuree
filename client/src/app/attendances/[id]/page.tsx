@@ -6,7 +6,7 @@ import { Colors, Icons } from '@/styles/globalStyles';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
-import AttendanceApiClient from '@/api/AttendanceApiClient';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
 import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
 // Components
@@ -76,9 +76,6 @@ const Index = () => {
             });
         });
     };
-
-    console.log(dummyList);
-    // console.log('attendance', attendance);
 
     // if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
 

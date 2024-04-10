@@ -4,6 +4,7 @@ import DetailOpen from '../../public/images/icons/ico-detail-open.svg';
 // Types
 type ColorKey =
     | 'CheckureeGreen'
+    | 'CheckureeGreen10'
     | 'LightGreen'
     | 'Orange'
     | 'WarningRed'
@@ -17,6 +18,7 @@ type ColorKey =
 
 export const Colors: Record<ColorKey, string> = {
     CheckureeGreen: '#59996B',
+    CheckureeGreen10: '#F0FFF4',
     LightGreen: '#EDF9E3',
     Orange: '#EDC588',
     WarningRed: '#DE6161',
@@ -38,6 +40,14 @@ export const Icons: Record<string, { src: string; type: string }> = {
     watch_later: { src: 'watch_later', type: 'material-icons-outlined' },
     highlight_off: { src: 'highlight_off', type: 'material-icons-outlined' },
     add: { src: 'add', type: 'material-icons-outlined' },
+    radio_button_unchecked: {
+        src: 'radio_button_unchecked',
+        type: 'material-icons-outlined',
+    },
+    check_circle: {
+        src: 'check_circle',
+        type: 'material-icons-outlined',
+    },
 };
 
 export const Images: Record<string, string> = { Logo, DetailOpen };
