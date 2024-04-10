@@ -5,6 +5,7 @@ import { AttendanceType } from '../const/attendance-type.enum';
 import { UserAttendance } from './user-attendance.entity';
 import { Attendee } from '../../attendees/entities/attendee.entity';
 import { AttendanceDay } from './attendance-day.entity';
+import { DayType } from '../../schedules/const/day-type.enum';
 
 @Entity()
 export class Attendance extends BaseTimeEntity {
@@ -43,4 +44,6 @@ export class Attendance extends BaseTimeEntity {
   @OneToMany(() => AttendanceDay, (attendanceDay) => attendanceDay.attendance)
   @ApiProperty({ type: () => UserAttendance })
   attendanceDays: AttendanceDay[];
+
+  days: DayType[];
 }

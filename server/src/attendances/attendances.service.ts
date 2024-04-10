@@ -57,21 +57,26 @@ export class AttendancesService {
       .loadRelationCountAndMap('attendance.attendeeCount', 'attendance.attendees')
       .where('userAttendance.userId = :userId', { userId })
       .getManyAndCount();
+
+    items.forEach((item) => {
+      item.attendance.days = item.attendance.attendanceDays.map((day) => day.day);
+    });
     return new ResponseWithoutPaginationDto(count, items);
   }
 
   async findOneById(id: string): Promise<CommonResponseDto<Attendance>> {
-    return new CommonResponseDto(
-      'SUCCESS FIND ATTENDANCE',
-      await this.attendanceRepository.findOne({
-        relations: {
-          attendanceDays: true,
-        },
-        where: {
-          id,
-        },
-      }),
-    );
+    const attendance = await this.attendanceRepository.findOne({
+      relations: {
+        attendanceDays: true,
+      },
+      where: {
+        id,
+      },
+    });
+
+    attendance.days = attendance.attendanceDays.map((day) => day.day);
+
+    return new CommonResponseDto('SUCCESS FIND ATTENDANCE', attendance);
   }
 
   async update(id: string, updateAttendanceDto: UpdateAttendanceDto): Promise<CommonResponseDto<any>> {
