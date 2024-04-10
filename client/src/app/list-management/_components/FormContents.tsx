@@ -34,7 +34,7 @@ import Icon from '@/components/Icon';
 interface Inputs {
     name: string;
     gender: string;
-    birth: string | Date;
+    birth: Date;
     birthYear: string;
     birthday: string;
     mobileNumber: string;
@@ -223,7 +223,7 @@ const FormContents = ({ data }: { data: AttendanceData | undefined }) => {
                             onClick={() => setShowCalendar(true)}
                         >
                             {watch('birth') ? (
-                                dateFormat(watch('birth'), 'slash')
+                                dateFormat(new Date(watch('birth')), 'slash')
                             ) : (
                                 <span>YYYY/MM/DD</span>
                             )}
