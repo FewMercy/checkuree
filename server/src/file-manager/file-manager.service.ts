@@ -19,26 +19,22 @@ export class FileManagerService {
 
     // 한글파일 인코딩 과정에서 NAMETOO LONG 에러 발생
     const uniqueFileName = this.createUniqueFileName(file.originalname);
-    const encodedFileName = encodeURIComponent(uniqueFileName);
-    const filePath = path.join(directoryPath, encodedFileName);
+    // const encodedFileName = encodeURIComponent(uniqueFileName);
+    const filePath = path.join(directoryPath, uniqueFileName);
 
     // 이미지 리사이징
     // sharp 라이브러리를 사용하여 이미지 리사이징
     const resizedBuffer = await this.imageProcessorService.resize(file, IMAGE_MAX_LENGTH);
 
     // 파일 저장
-    await this.s3Service.uploadFile(filePath, file.buffer);
-
-    return filePath;
+    return await this.s3Service.uploadFile(filePath, file.buffer);
   }
 
   async saveFile(file: Express.Multer.File): Promise<string> {
     const directoryPath = this.createDirectoryPath(file);
 
     const uniqueFileName = this.createUniqueFileName(file.originalname);
-    const encodedFileName = encodeURIComponent(uniqueFileName);
-    console.log(decodeURIComponent(encodedFileName));
-    const filePath = path.join(directoryPath, encodedFileName);
+    const filePath = path.join(directoryPath, uniqueFileName);
 
     // 파일 저장
     const location = await this.s3Service.uploadFile(filePath, file.buffer);
@@ -48,6 +44,7 @@ export class FileManagerService {
   }
 
   private createDirectoryPath(file: Express.Multer.File) {
+    console.log(file);
     const fileType = file.mimetype.split('/')[0];
     const fileTypePath = this.fileTypePathFactory(fileType);
 

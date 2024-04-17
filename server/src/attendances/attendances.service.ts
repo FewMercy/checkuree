@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Repository, UpdateResult } from 'typeorm';
@@ -10,6 +10,9 @@ import { RoleType } from '../roles/entities/role-type.enum';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { AttendanceDay } from './entities/attendance-day.entity';
+import { FileManagerService } from '../file-manager/file-manager.service';
+import { isArray } from 'class-validator';
+import { DayType } from '../schedules/const/day-type.enum';
 
 @Injectable()
 export class AttendancesService {
@@ -20,10 +23,22 @@ export class AttendancesService {
     private userAttendanceRepository: Repository<UserAttendance>,
     @InjectRepository(AttendanceDay)
     private attendanceDayRepository: Repository<AttendanceDay>,
+    private fileManagerService: FileManagerService,
   ) {}
-  async create(createAttendanceDto: CreateAttendanceDto, user: User): Promise<CommonResponseDto<any>> {
+  async create(createAttendanceDto: CreateAttendanceDto, user: User, image?: Express.Multer.File): Promise<CommonResponseDto<any>> {
+    const attendanceDays = this.convertToAttendanceDays(createAttendanceDto.attendanceDays);
+
+    if (!this.isValidDays(attendanceDays)) {
+      throw new BadRequestException('출석부 요일이 올바르지 않습니다.');
+    }
+
     const attendance = createAttendanceDto.toEntity();
     attendance.createId = user.id;
+
+    if (image) {
+      const imageUrl = await this.fileManagerService.saveImgFile(image);
+      attendance.imageUrl = imageUrl;
+    }
 
     const createdAttendance = await this.attendanceRepository.save(attendance);
 
@@ -35,10 +50,8 @@ export class AttendancesService {
 
     await this.userAttendanceRepository.save(userAttendance);
 
-    const attenadanceDays = createAttendanceDto.attendanceDays;
-
     await this.attendanceDayRepository.save(
-      attenadanceDays.map((day) => {
+      attendanceDays.map((day) => {
         return {
           attendanceId: createdAttendance.id,
           day: day,
@@ -88,5 +101,21 @@ export class AttendancesService {
     await this.attendanceRepository.softDelete(attendanceId);
     await this.userAttendanceRepository.softDelete({ attendanceId, userId });
     return new CommonResponseDto('SUCCESS DELETE ATTENDANCE');
+  }
+
+  private convertToAttendanceDays(daysString: string | undefined) {
+    if (!daysString) {
+      return [];
+    }
+
+    const arrayAttendanceDays = daysString.split(',').map((day) => {
+      return day.trim() as DayType;
+    });
+    return arrayAttendanceDays;
+  }
+
+  private isValidDays(days: string[]) {
+    console.log(days);
+    return days.every((day) => Object.values(DayType).includes(day as DayType));
   }
 }

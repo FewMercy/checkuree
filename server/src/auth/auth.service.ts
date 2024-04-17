@@ -14,6 +14,7 @@ import { LoginHistory } from './entity/login-history.entity';
 import { AvailabilityResult } from '../common/response/is-available-res';
 import { OAuth } from './const/oauth.interface';
 import { UserType } from '../users/const/user-type.enum';
+import { FileManagerService } from '../file-manager/file-manager.service';
 
 @Injectable()
 export class AuthService {
