@@ -26,7 +26,7 @@ export default async function handler(req: NextRequest) {
         PRIVATE_PATHS.some((path) => pathname.startsWith(path))
     ) {
         return NextResponse.redirect(
-            `${origin}?redirect_uri=${encodeURIComponent('/auth/signin')}`
+            `${origin + '/auth/signin'}?redirect_uri=${encodeURIComponent('/auth/signin')}`
         );
     }
 
