@@ -12,6 +12,8 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { LoginHistory } from './entity/login-history.entity';
 import { AvailabilityResult } from '../common/response/is-available-res';
+import { OAuth } from './const/oauth.interface';
+import { UserType } from '../users/const/user-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -58,6 +60,67 @@ export class AuthService {
     await this.userRepository.update(user.id, { isAutoLogin: signInDto.isAutoLogin ?? false });
 
     return new CommonResponseDto('SUCCESS SIGN IN', new TokenResponseDto(accessToken, refreshToken));
+  }
+
+  public async oauthSignIn(oauthUser: OAuth, ip: string, loginAt: Date = new Date()): Promise<CommonResponseDto<TokenResponseDto>> {
+    let user = await this.userRepository.findOne({
+      relations: {
+        userAttendance: true,
+      },
+      where: {
+        loginType: oauthUser.loginType,
+        username: oauthUser.username,
+      },
+    });
+    if (!user) {
+      user = await this.createOAuthMember(oauthUser);
+    }
+
+    const payload: JwtPayload = {
+      id: user.id,
+      username: user.username,
+      userType: user.type,
+      // 신규 가입 회원은 userAttendance가 없으므로 빈 배열
+      userAttendance: user.userAttendance ?? [],
+    };
+    const accessToken = this.generateAccessToken(payload);
+    const refreshToken = this.generateRefreshToken(payload, true);
+
+    await this.saveRefreshToken(user.id, refreshToken);
+    await this.createLoginHistory(user.id, ip, loginAt);
+
+    return new CommonResponseDto('SUCCESS SIGN IN', new TokenResponseDto(accessToken, refreshToken));
+  }
+
+  private async createOAuthMember(oauthUser: OAuth) {
+    const findOption = [];
+    if (oauthUser.email) {
+      findOption.push({ email: oauthUser.email });
+    }
+    if (oauthUser.mobileNumber) {
+      findOption.push({ mobileNumber: oauthUser.mobileNumber });
+    }
+
+    if (findOption.length > 0) {
+      const found = await this.userRepository.findOne({ where: findOption });
+
+      if (found) {
+        throw new BadRequestException('이미 가입된 회원입니다.');
+      }
+    }
+
+    const newUser = new User();
+    newUser.username = oauthUser.username;
+    newUser.type = UserType.GENERAL;
+    newUser.loginType = oauthUser.loginType;
+    newUser.name = oauthUser.name;
+    newUser.email = oauthUser.email;
+    newUser.loginType = oauthUser.loginType;
+    newUser.isAutoLogin = false;
+    newUser.createId = oauthUser.username;
+
+    const createdUser = await this.userRepository.save(newUser);
+    return createdUser;
   }
 
   public async refreshToken(oldRefreshToken: string, ip: string): Promise<CommonResponseDto<TokenResponseDto>> {

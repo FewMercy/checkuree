@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Query, BadRequestException, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -12,6 +12,8 @@ import { AvailabilityResult } from '../common/response/is-available-res';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { CurrentIp } from '../common/decorator/current-ip.decorator';
 import { Schedule } from '../schedules/entities/schedule.entity';
+import { OAuth } from './const/oauth.interface';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 @ApiTags('인증')
@@ -46,6 +48,28 @@ export class AuthController {
   })
   async signIn(@Body() signInDto: SignInDto, @CurrentIp() ip: string): Promise<CommonResponseDto<TokenResponseDto>> {
     return this.authService.signIn(signInDto, ip);
+  }
+
+  @Get('/kakao')
+  @UseGuards(AuthGuard('kakao'))
+  kakaoLogin(@Req() req: Request, @Res() res: Response) {}
+
+  @Get('/kakao/callback')
+  @UseGuards(AuthGuard('kakao'))
+  async kakaoLoginCallback(@Req() req: Request, @Res() res: Response, @CurrentIp() ip: string) {
+    const kakaoUser: OAuth = {
+      username: req.user?.['username'],
+      loginType: req.user?.['loginType'],
+      name: req.user?.['name'],
+      email: req.user?.['email'],
+      mobileNumber: req.user?.['mobileNumber'],
+    };
+
+    const tokenResponse = await this.authService.oauthSignIn(kakaoUser, ip);
+
+    res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}`);
+    res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}`);
+    res.redirect('https://checkuree.com/attendance');
   }
 
   @Post('/refresh-token')
