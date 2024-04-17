@@ -1,5 +1,6 @@
 'use client';
 
+import AuthApiClient, { RegisterData } from '@/api/AuthApiClient';
 // Api
 import {
     Box,
@@ -10,11 +11,11 @@ import {
     styled,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+
 import Image from 'next/image';
 import { useMediaQuery } from 'react-responsive';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import AuthApiClient, { RegisterData } from '@/api/AuthApiClient';
 
 const Index = () => {
     const isSmall = useMediaQuery({
@@ -329,43 +330,54 @@ const TextFieldProps2 = {
 };
 
 // Container에 대한 스타일
-const ContainerST = styled(Container)`
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-`;
+const ContainerST = styled(Container)(() => {
+    return {
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        height: '100%',
+    };
+});
 
 // Box에 대한 스타일
-const StyledBoxST = styled(Box)`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 28px;
-`;
+const StyledBoxST = styled(Box)(() => {
+    return {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '28px',
+    };
+});
 
 // Typography에 대한 스타일
-const LoginTypographyST = styled(Typography)`
-    font-weight: 600;
-    font-size: 32px;
-    line-height: 43.58px;
-`;
+const LoginTypographyST = styled(Typography)(() => {
+    return {
+        fontWeight: 600,
+        fontSize: '32px',
+        lineHeight: '43.58px',
+    };
+});
 
 // AuthButton 대한 스타일
-const AuthButton = styled(Button)`
-    borderradius: 8px;
-    width: 80px;
-    height: 39px;
-`;
+const AuthButton = styled(Button)(() => {
+    return {
+        borderRadius: '8px',
+        width: '80px',
+        height: '39px',
+    };
+});
+const AuthDisabledButton = styled(AuthButton)(() => {
+    return {
+        color: 'white',
+        backgroundColor: '#d5d5d5',
+    };
+});
 
-const AuthDisabledButton = styled(AuthButton)`
-    color: white;
-    background-color: #d5d5d5;
-`;
-
-const RegisterDisabledButton = styled(Button)`
-    color: white;
-    background-color: #d5d5d5;
-    width: 313px;
-    height: 48px;
-`;
+const RegisterDisabledButton = styled(Button)(() => {
+    return {
+        color: 'white',
+        backgroundColor: '#d5d5d5',
+        width: '313px',
+        height: '48px',
+    };
+});
