@@ -1,22 +1,28 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
-  UploadedFile,
-  FileTypeValidator,
-  ParseFilePipe,
 } from '@nestjs/common';
 import { AttendancesService } from './attendances.service';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
 import { GetUser } from '../common/decorator/user.decorator';
 import { Attendance } from './entities/attendance.entity';
@@ -24,9 +30,7 @@ import { UserAttendance } from './entities/user-attendance.entity';
 import { RoleGuard } from '../roles/role.guard';
 import { RoleType } from '../roles/entities/role-type.enum';
 import { Roles } from '../roles/role.decorator';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { CommonResponseDto } from '../common/response/common-response.dto';
-import { PageResponseDto } from '../common/response/pageResponse.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageValidatorPipe } from '../file-manager/const/image-validator.pipe';

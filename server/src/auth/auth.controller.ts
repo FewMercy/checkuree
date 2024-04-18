@@ -1,17 +1,15 @@
-import { Controller, Post, Body, UseGuards, Get, Query, BadRequestException, Req, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from '../common/decorator/user.decorator';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { AvailabilityResult } from '../common/response/is-available-res';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { CurrentIp } from '../common/decorator/current-ip.decorator';
-import { Schedule } from '../schedules/entities/schedule.entity';
 import { OAuth } from './const/oauth.interface';
 import { Request, Response } from 'express';
 
@@ -117,7 +115,9 @@ export class AuthController {
     description: '회원 전화번호 중복 확인',
     type: CommonResponseDto<AvailabilityResult>,
   })
-  async checkMobileNumberAvailability(@Query('mobileNumber') mobileNumber: string): Promise<CommonResponseDto<AvailabilityResult>> {
+  async checkMobileNumberAvailability(
+    @Query('mobileNumber') mobileNumber: string,
+  ): Promise<CommonResponseDto<AvailabilityResult>> {
     if (!mobileNumber) {
       throw new BadRequestException('Mobile number is required');
     }

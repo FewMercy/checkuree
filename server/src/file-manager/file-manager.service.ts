@@ -25,7 +25,7 @@ export class FileManagerService {
     const resizedBuffer = await this.imageProcessorService.resize(file, IMAGE_MAX_LENGTH);
 
     // 파일 저장
-    return await this.s3Service.uploadFile(filePath, file.buffer);
+    return await this.s3Service.uploadFile(filePath, resizedBuffer);
   }
 
   async saveFile(file: Express.Multer.File): Promise<string> {

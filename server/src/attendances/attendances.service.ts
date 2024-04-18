@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Attendance } from './entities/attendance.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
@@ -11,7 +11,6 @@ import { ResponseWithoutPaginationDto } from '../common/response/responseWithout
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { AttendanceDay } from './entities/attendance-day.entity';
 import { FileManagerService } from '../file-manager/file-manager.service';
-import { isArray } from 'class-validator';
 import { DayType } from '../schedules/const/day-type.enum';
 
 @Injectable()
@@ -25,7 +24,11 @@ export class AttendancesService {
     private attendanceDayRepository: Repository<AttendanceDay>,
     private fileManagerService: FileManagerService,
   ) {}
-  async create(createAttendanceDto: CreateAttendanceDto, user: User, image?: Express.Multer.File): Promise<CommonResponseDto<any>> {
+  async create(
+    createAttendanceDto: CreateAttendanceDto,
+    user: User,
+    image?: Express.Multer.File,
+  ): Promise<CommonResponseDto<any>> {
     const attendanceDays = this.convertToAttendanceDays(createAttendanceDto.attendanceDays);
 
     if (!this.isValidDays(attendanceDays)) {

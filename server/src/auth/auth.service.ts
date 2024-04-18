@@ -14,7 +14,6 @@ import { LoginHistory } from './entity/login-history.entity';
 import { AvailabilityResult } from '../common/response/is-available-res';
 import { OAuth } from './const/oauth.interface';
 import { UserType } from '../users/const/user-type.enum';
-import { FileManagerService } from '../file-manager/file-manager.service';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +40,11 @@ export class AuthService {
     throw new BadRequestException('ID 또는 비밀번호가 정확하지 않습니다.');
   }
 
-  public async signIn(signInDto: SignInDto, ip: string, loginAt: Date = new Date()): Promise<CommonResponseDto<TokenResponseDto>> {
+  public async signIn(
+    signInDto: SignInDto,
+    ip: string,
+    loginAt: Date = new Date(),
+  ): Promise<CommonResponseDto<TokenResponseDto>> {
     const user = await this.validateUser(signInDto.username, signInDto.password);
 
     const payload: JwtPayload = {
@@ -63,7 +66,11 @@ export class AuthService {
     return new CommonResponseDto('SUCCESS SIGN IN', new TokenResponseDto(accessToken, refreshToken));
   }
 
-  public async oauthSignIn(oauthUser: OAuth, ip: string, loginAt: Date = new Date()): Promise<CommonResponseDto<TokenResponseDto>> {
+  public async oauthSignIn(
+    oauthUser: OAuth,
+    ip: string,
+    loginAt: Date = new Date(),
+  ): Promise<CommonResponseDto<TokenResponseDto>> {
     let user = await this.userRepository.findOne({
       relations: {
         userAttendance: true,
@@ -76,8 +83,6 @@ export class AuthService {
     if (!user) {
       user = await this.createOAuthMember(oauthUser);
     }
-
-    throw new BadRequestException('이미 가입된 회원입니다. test');
 
     const payload: JwtPayload = {
       id: user.id,

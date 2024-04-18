@@ -1,11 +1,6 @@
-import { Column } from 'typeorm';
-import { AttendanceStatus } from '../const/record-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { DayType } from '../../schedules/const/day-type.enum';
-import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 import { Record } from '../entities/record.entity';
-import { Transform } from 'class-transformer';
-import { SingleSchedule } from '../../schedules/const/single-schedule.class';
 import { SingleRecord } from '../const/singleRecord.class';
 
 export class CreateRecordDto {
