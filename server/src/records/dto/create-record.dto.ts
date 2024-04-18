@@ -32,7 +32,6 @@ export class CreateRecordDto {
       record.day = singleRecord.day;
       record.attendeeId = singleRecord.attendeeId;
       record.createId = createId;
-      record.lateReason = singleRecord?.lateReason;
       record.createdAt = new Date();
       return record;
     });

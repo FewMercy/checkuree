@@ -41,15 +41,6 @@ export class SingleRecord {
   @IsOptional()
   @IsString()
   @ApiProperty({
-    description: '지각사유',
-    type: 'text',
-    example: '이래저래 늦었습니다',
-  })
-  lateReason: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
     description: '비고',
     type: 'text',
     example: '출석체크의 특이사항 입니다.',

@@ -33,10 +33,6 @@ export class RecordsService {
       if (record.day !== realDay.toUpperCase()) {
         throw new BadRequestException('요일이 정확하지 않습니다.');
       }
-
-      if (record.status !== AttendanceStatus.ABSENT) {
-        delete record.lateReason;
-      }
     });
 
     const uniqueRecords = this.removeDuplicateRecords(records);
