@@ -6,6 +6,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Attendance } from '../../attendances/entities/attendance.entity';
 import { UserAttendance } from '../../attendances/entities/user-attendance.entity';
 import { UserType } from '../const/user-type.enum';
+import { LoginType } from '../../auth/const/login-type.enum';
 
 @Entity()
 @Unique(['mobileNumber'])
@@ -20,11 +21,15 @@ export class User extends BaseTimeEntity {
   @ApiProperty({ description: '회원 타입', type: 'string' })
   type: UserType;
 
+  @Column({ comment: '로그인 타입', type: 'varchar', nullable: false, default: LoginType.LOCAL })
+  @ApiProperty({ description: '로그인 타입', type: 'string' })
+  loginType: LoginType;
+
   @Column({ comment: '회원 아이디', type: 'varchar' })
   @ApiProperty({ description: '회원 아이디', type: 'string' })
   username: string;
 
-  @Column({ comment: '회원 비밀번호', type: 'varchar' })
+  @Column({ comment: '회원 비밀번호', type: 'varchar', nullable: true })
   @ApiProperty({ description: '회원 비밀번호', type: 'string' })
   password: string;
 
@@ -32,7 +37,7 @@ export class User extends BaseTimeEntity {
   @ApiProperty({ description: '회원 이름', type: 'string' })
   name: string;
 
-  @Column({ comment: '회원 전화번호', type: 'varchar' })
+  @Column({ comment: '회원 전화번호', type: 'varchar', nullable: true })
   @ApiProperty({ description: '회원 전화번호', type: 'string' })
   mobileNumber: string;
 

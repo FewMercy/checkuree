@@ -32,7 +32,10 @@ export class SchedulesController {
     type: CreateScheduleDto,
     description: '출석 스케쥴 생성 DTO',
   })
-  create(@Body() createScheduleDto: CreateScheduleDto, @GetUser() user: User): Promise<CommonResponseDto<{ ids: number[] }>> {
+  create(
+    @Body() createScheduleDto: CreateScheduleDto,
+    @GetUser() user: User,
+  ): Promise<CommonResponseDto<{ ids: number[] }>> {
     return this.schedulesService.create(createScheduleDto, user);
   }
 
@@ -47,20 +50,6 @@ export class SchedulesController {
     return this.schedulesService.findByAttendeeId(attendeeId);
   }
 
-  @Get('/attendanceId/:attendanceId/today')
-  @ApiOperation({ summary: '해당 출석부의 오늘의 스케쥴과 출석내역 조회' })
-  @ApiResponse({
-    status: 200,
-    description: '해당 출석부의 오늘의 스케쥴과 출석내역 조회',
-    type: ResponseWithoutPaginationDto<Schedule>,
-  })
-  findTodayScheduleByAttendanceId(
-    @Param('attendanceId') attendanceId: string,
-    @Query() scheduleFilterDto: ScheduleFilterDto,
-  ): Promise<ResponseWithoutPaginationDto<Schedule>> {
-    return this.schedulesService.findTodayScheduleByAttendanceId(attendanceId);
-  }
-
   @Get('/attendanceId/:attendanceId')
   @ApiOperation({ summary: '출석부에 속한 모든 스케쥴 조회' })
   @ApiResponse({
@@ -73,6 +62,22 @@ export class SchedulesController {
     @Query() scheduleFilterDto: ScheduleFilterDto,
   ): Promise<ResponseWithoutPaginationDto<Schedule>> {
     return this.schedulesService.findAllByAttendanceId(attendanceId);
+  }
+
+  @Get('/attendanceId/:attendanceId/:date')
+  @ApiOperation({ summary: '해당 출석부의 오늘의 스케쥴과 출석내역 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '해당 출석부의 오늘의 스케쥴과 출석내역 조회',
+    type: ResponseWithoutPaginationDto<Schedule>,
+  })
+  findTodayScheduleByAttendanceId(
+    @Param('attendanceId') attendanceId: string,
+    @Param('date') dateString: string,
+    @Query()
+    scheduleFilterDto: ScheduleFilterDto,
+  ): Promise<ResponseWithoutPaginationDto<Schedule>> {
+    return this.schedulesService.findScheduleByAttendanceIdAndDate(attendanceId, dateString);
   }
 
   @Delete()

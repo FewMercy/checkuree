@@ -4,6 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AttendanceStatus } from '../const/record-type.enum';
 import { DayType } from '../../schedules/const/day-type.enum';
 import { Attendee } from '../../attendees/entities/attendee.entity';
+import { LateTimeType } from '../const/late-time-type.enum';
+import { AbsenceType } from '../const/absence-type.enum';
 
 // 출석 체크 방법
 //
@@ -38,13 +40,17 @@ export class Record extends BaseTimeEntity {
   })
   day: DayType;
 
-  @Column({ comment: '지각사유', type: 'varchar', nullable: true })
-  @ApiProperty({ description: '지각사유', type: 'string', nullable: true })
-  lateReason: string;
-
   @Column({ comment: '비고', type: 'varchar', nullable: true })
   @ApiProperty({ description: '비고', type: 'string', nullable: true })
   etc: string;
+
+  @Column({ comment: '지각 시간', type: 'varchar', nullable: true })
+  @ApiProperty({ description: '지각 시간', type: 'string', nullable: true })
+  lateTime: LateTimeType;
+
+  @Column({ comment: '결석 종류', type: 'varchar', nullable: true, default: null })
+  @ApiProperty({ description: '결석 종류', type: 'string', nullable: true })
+  absenceType: AbsenceType;
 
   @ManyToOne(() => Attendee, (attendee) => attendee.records)
   @JoinColumn({ name: 'attendeeId', referencedColumnName: 'id' })

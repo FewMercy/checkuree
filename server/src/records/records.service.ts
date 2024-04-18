@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRecordDto } from './dto/create-record.dto';
-import { UpdateRecordDto } from './dto/update-record.dto';
 import { User } from '../users/entities/user.entity';
 import { Record } from './entities/record.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,7 +12,6 @@ import { ExcelService } from '../common/excel.service';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
-import { AffectedResponse } from '../common/response/affectedResponse';
 import { CreateAllRecordDto } from './dto/createAll-record.dto';
 import { MultiIdsResponseDto } from '../common/response/multi-ids-response.dto';
 
@@ -35,7 +33,10 @@ export class RecordsService {
       }
 
       if (record.status !== AttendanceStatus.ABSENT) {
-        delete record.lateReason;
+        delete record.absenceType;
+      }
+      if (record.status !== AttendanceStatus.LATE) {
+        delete record.lateTime;
       }
     });
 
@@ -46,7 +47,9 @@ export class RecordsService {
       upsertType: 'on-conflict-do-update',
     });
 
-    return new CommonResponseDto('SUCCESS CREATE RECORD', { ids: result.identifiers.map((identifier) => identifier.id) });
+    return new CommonResponseDto('SUCCESS CREATE RECORD', {
+      ids: result.identifiers.map((identifier) => identifier.id),
+    });
   }
 
   async createAll(createAllRecordDto: CreateAllRecordDto, user: User): Promise<CommonResponseDto<any>> {
@@ -77,8 +80,7 @@ export class RecordsService {
   }
 
   async findByAttendanceId(attendanceId: string, recordFilterDto: RecordFilterDto): Promise<PageResponseDto<Record>> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
         attendanceId: attendanceId,
@@ -107,7 +109,10 @@ export class RecordsService {
     return new PageResponseDto<Record>(recordFilterDto.pageSize, count, items);
   }
 
-  async findByAttendeeId(attendeeId: string, recordFilterDto: RecordFilterDto): Promise<ResponseWithoutPaginationDto<Record>> {
+  async findByAttendeeId(
+    attendeeId: string,
+    recordFilterDto: RecordFilterDto,
+  ): Promise<ResponseWithoutPaginationDto<Record>> {
     let queryBuilder: SelectQueryBuilder<Record>;
     queryBuilder = this.recordRepository
       .createQueryBuilder('record')
@@ -146,7 +151,9 @@ export class RecordsService {
     });
 
     if (filteredRecord.length !== deleteRecordDto.ids.length) {
-      throw new BadRequestException(`AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`);
+      throw new BadRequestException(
+        `AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`,
+      );
     }
 
     await this.recordRepository.softDelete({

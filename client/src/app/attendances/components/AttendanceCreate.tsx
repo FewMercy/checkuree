@@ -31,12 +31,10 @@ const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
 
 const AttendanceCreateForm = (props: IProps) => {
     const { setIsCreate } = props;
-    const hours = [];
-    for (let i = 0; i <= 23; i++) {
-        const hour = i < 10 ? `0${i}` : `${i}`;
-        hours.push(hour);
-    }
+    const startHours = [];
+    const endHours = [];
 
+    // for
     //State
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [fileImage, setFileImage] = useState<File | undefined>();
@@ -44,6 +42,22 @@ const AttendanceCreateForm = (props: IProps) => {
     const [attendanceCreate, setAttendanceCreate] = useState<
         AttendanceData | undefined
     >();
+
+    // 시간 선택
+    const [startTimeValue, setStartTimeValue] = useState<string>('');
+    const [endTimeValue, setEndTimeValue] = useState('');
+    for (let i = 0; i <= 23; i++) {
+        const hour = i < 10 ? `0${i}` : `${i}`;
+        startHours.push(hour);
+    }
+
+    for (let i = parseInt(startTimeValue); i <= 23; i++) {
+        const hour = i < 10 ? `0${i}` : `${i}`;
+        endHours.push(hour);
+    }
+
+    // 출석부 지각 사용 여부
+    const [isTardy, setIsTardy] = useState<string>('N');
 
     const { mutate } = useMutation({
         mutationKey: [''],
@@ -93,6 +107,7 @@ const AttendanceCreateForm = (props: IProps) => {
         setSelectedDays(updatedSelectedDays);
     };
 
+    console.log(isTardy);
     return (
         <ContainerSTForm>
             <Image
@@ -147,7 +162,15 @@ const AttendanceCreateForm = (props: IProps) => {
             {/*  출석부 지각 사용 여부*/}
             <BoxSTTitle>
                 <TypoST>출석부 지각 사용 여부</TypoST>
-                <RadioGroup aria-label="gender" name="gender1" row>
+                <RadioGroup
+                    aria-label="gender"
+                    name="gender1"
+                    value={isTardy}
+                    row
+                    onChange={(e) => {
+                        setIsTardy(e.target.value);
+                    }}
+                >
                     <FormControlLabel
                         value="Y"
                         control={<Radio />}
@@ -192,6 +215,9 @@ const AttendanceCreateForm = (props: IProps) => {
                             labelId="start-time-label"
                             id="start-time-select"
                             displayEmpty
+                            onChange={(e) => {
+                                setStartTimeValue(e.target.value as string);
+                            }}
                             renderValue={(v: any) =>
                                 v?.length ? (
                                     v
@@ -200,7 +226,7 @@ const AttendanceCreateForm = (props: IProps) => {
                                 )
                             }
                         >
-                            {hours.map((hour) => (
+                            {startHours.map((hour) => (
                                 <MenuItem key={hour} value={hour}>
                                     {hour}
                                 </MenuItem>
@@ -212,6 +238,10 @@ const AttendanceCreateForm = (props: IProps) => {
                             labelId="end-time-label"
                             id="end-time-select"
                             displayEmpty
+                            disabled={startTimeValue === ''}
+                            onChange={(e) => {
+                                setEndTimeValue(e.target.value as string);
+                            }}
                             renderValue={(v: any) =>
                                 v?.length ? (
                                     v
@@ -220,7 +250,7 @@ const AttendanceCreateForm = (props: IProps) => {
                                 )
                             }
                         >
-                            {hours.map((hour) => (
+                            {endHours.map((hour) => (
                                 <MenuItem key={hour} value={hour}>
                                     {hour}
                                 </MenuItem>

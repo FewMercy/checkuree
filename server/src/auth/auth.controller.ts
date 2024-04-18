@@ -1,17 +1,17 @@
-import { Controller, Post, Body, UseGuards, Get, Query, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from '../common/decorator/user.decorator';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { AvailabilityResult } from '../common/response/is-available-res';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { CurrentIp } from '../common/decorator/current-ip.decorator';
-import { Schedule } from '../schedules/entities/schedule.entity';
+import { OAuth } from './const/oauth.interface';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 @ApiTags('인증')
@@ -46,6 +46,34 @@ export class AuthController {
   })
   async signIn(@Body() signInDto: SignInDto, @CurrentIp() ip: string): Promise<CommonResponseDto<TokenResponseDto>> {
     return this.authService.signIn(signInDto, ip);
+  }
+
+  @Get('/kakao')
+  @UseGuards(AuthGuard('kakao'))
+  kakaoLogin(@Req() req: Request, @Res() res: Response) {}
+
+  @Get('/kakao/callback')
+  @UseGuards(AuthGuard('kakao'))
+  async kakaoLoginCallback(@Req() req: Request, @Res() res: Response, @CurrentIp() ip: string) {
+    try {
+      const kakaoUser: OAuth = {
+        username: req.user?.['username'],
+        loginType: req.user?.['loginType'],
+        name: req.user?.['name'],
+        email: req.user?.['email'],
+        mobileNumber: req.user?.['mobileNumber'],
+      };
+
+      const tokenResponse = await this.authService.oauthSignIn(kakaoUser, ip);
+
+      res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}; HttpOnly; Secure`);
+      res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}; HttpOnly; Secure`);
+      res.redirect('https://checkuree.com/attendance');
+    } catch (error) {
+      const errorMessage = encodeURIComponent(error.message || 'unknown_error');
+      const errorCode = encodeURIComponent(error.code || 'unknown_error');
+      res.redirect(`https://checkuree.com/auth/signin?errorMessage=${errorMessage}&errorCode=${errorCode}`);
+    }
   }
 
   @Post('/refresh-token')
@@ -87,7 +115,9 @@ export class AuthController {
     description: '회원 전화번호 중복 확인',
     type: CommonResponseDto<AvailabilityResult>,
   })
-  async checkMobileNumberAvailability(@Query('mobileNumber') mobileNumber: string): Promise<CommonResponseDto<AvailabilityResult>> {
+  async checkMobileNumberAvailability(
+    @Query('mobileNumber') mobileNumber: string,
+  ): Promise<CommonResponseDto<AvailabilityResult>> {
     if (!mobileNumber) {
       throw new BadRequestException('Mobile number is required');
     }

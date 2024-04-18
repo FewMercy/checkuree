@@ -1,6 +1,6 @@
 import { BaseTimeEntity } from '../../common/BaseTimeEntity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AttendanceType } from '../const/attendance-type.enum';
 import { UserAttendance } from './user-attendance.entity';
 import { Attendee } from '../../attendees/entities/attendee.entity';
@@ -32,6 +32,10 @@ export class Attendance extends BaseTimeEntity {
   @Column({ comment: '지각 상태 사용 유무', type: 'boolean', default: true })
   @ApiProperty({ description: '지각 상태 사용 유무', type: 'boolean' })
   allowLateness: boolean;
+
+  @Column({ nullable: true, comment: '출석부 이미지 url', type: 'text' })
+  @ApiPropertyOptional({ description: '출석부 이미지 url', type: 'string' })
+  imageUrl?: string;
 
   @OneToMany(() => UserAttendance, (userAttendance) => userAttendance.attendance)
   @ApiProperty({ type: () => UserAttendance })
