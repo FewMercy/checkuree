@@ -48,7 +48,7 @@ export class Record extends BaseTimeEntity {
   @ApiProperty({ description: '지각 시간', type: 'string', nullable: true })
   lateTime: LateTimeType;
 
-  @Column({ comment: '결석 종류', type: 'varchar', nullable: true, default: AbsenceType.GENERAL })
+  @Column({ comment: '결석 종류', type: 'varchar', nullable: true, default: null })
   @ApiProperty({ description: '결석 종류', type: 'string', nullable: true })
   absenceType: AbsenceType;
 
