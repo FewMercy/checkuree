@@ -57,19 +57,25 @@ export class AuthController {
   @Get('/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoLoginCallback(@Req() req: Request, @Res() res: Response, @CurrentIp() ip: string) {
-    const kakaoUser: OAuth = {
-      username: req.user?.['username'],
-      loginType: req.user?.['loginType'],
-      name: req.user?.['name'],
-      email: req.user?.['email'],
-      mobileNumber: req.user?.['mobileNumber'],
-    };
+    try {
+      const kakaoUser: OAuth = {
+        username: req.user?.['username'],
+        loginType: req.user?.['loginType'],
+        name: req.user?.['name'],
+        email: req.user?.['email'],
+        mobileNumber: req.user?.['mobileNumber'],
+      };
 
-    const tokenResponse = await this.authService.oauthSignIn(kakaoUser, ip);
+      const tokenResponse = await this.authService.oauthSignIn(kakaoUser, ip);
 
-    res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}`);
-    res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}`);
-    res.redirect('https://checkuree.com/attendance');
+      res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}; HttpOnly; Secure`);
+      res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}; HttpOnly; Secure`);
+      res.redirect('https://checkuree.com/attendance');
+    } catch (error) {
+      const errorMessage = encodeURIComponent(error.message || 'unknown_error');
+      const errorCode = encodeURIComponent(error.code || 'unknown_error');
+      res.redirect(`https://checkuree.com/auth/signin?errorMessage=${errorMessage}&errorCode=${errorCode}`);
+    }
   }
 
   @Post('/refresh-token')

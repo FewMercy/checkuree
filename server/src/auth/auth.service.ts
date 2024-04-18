@@ -77,6 +77,8 @@ export class AuthService {
       user = await this.createOAuthMember(oauthUser);
     }
 
+    throw new BadRequestException('이미 가입된 회원입니다. test');
+
     const payload: JwtPayload = {
       id: user.id,
       username: user.username,
