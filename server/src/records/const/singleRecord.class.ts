@@ -1,7 +1,9 @@
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 import { AttendanceStatus } from './record-type.enum';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DayType } from '../../schedules/const/day-type.enum';
+import { LateTimeType } from './late-time-type.enum';
+import { AbsenceType } from './absence-type.enum';
 
 export class SingleRecord {
   @IsEnum(AttendanceStatus)
@@ -46,4 +48,12 @@ export class SingleRecord {
     example: '출석체크의 특이사항 입니다.',
   })
   etc: string;
+
+  @IsEnum(LateTimeType)
+  @ApiPropertyOptional({ description: '지각 시간', type: 'enum', enum: LateTimeType })
+  lateTime: LateTimeType;
+
+  @IsEnum(AbsenceType)
+  @ApiPropertyOptional({ description: '결석 종류', type: 'enum', enum: AbsenceType })
+  absenceType: AbsenceType;
 }

@@ -33,6 +33,13 @@ export class RecordsService {
       if (record.day !== realDay.toUpperCase()) {
         throw new BadRequestException('요일이 정확하지 않습니다.');
       }
+
+      if (record.status !== AttendanceStatus.ABSENT) {
+        delete record.absenceType;
+      }
+      if (record.status !== AttendanceStatus.LATE) {
+        delete record.lateTime;
+      }
     });
 
     const uniqueRecords = this.removeDuplicateRecords(records);
@@ -42,7 +49,9 @@ export class RecordsService {
       upsertType: 'on-conflict-do-update',
     });
 
-    return new CommonResponseDto('SUCCESS CREATE RECORD', { ids: result.identifiers.map((identifier) => identifier.id) });
+    return new CommonResponseDto('SUCCESS CREATE RECORD', {
+      ids: result.identifiers.map((identifier) => identifier.id),
+    });
   }
 
   async createAll(createAllRecordDto: CreateAllRecordDto, user: User): Promise<CommonResponseDto<any>> {
@@ -103,7 +112,10 @@ export class RecordsService {
     return new PageResponseDto<Record>(recordFilterDto.pageSize, count, items);
   }
 
-  async findByAttendeeId(attendeeId: string, recordFilterDto: RecordFilterDto): Promise<ResponseWithoutPaginationDto<Record>> {
+  async findByAttendeeId(
+    attendeeId: string,
+    recordFilterDto: RecordFilterDto,
+  ): Promise<ResponseWithoutPaginationDto<Record>> {
     let queryBuilder: SelectQueryBuilder<Record>;
     queryBuilder = this.recordRepository
       .createQueryBuilder('record')
@@ -142,7 +154,9 @@ export class RecordsService {
     });
 
     if (filteredRecord.length !== deleteRecordDto.ids.length) {
-      throw new BadRequestException(`AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`);
+      throw new BadRequestException(
+        `AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`,
+      );
     }
 
     await this.recordRepository.softDelete({

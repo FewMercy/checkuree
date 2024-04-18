@@ -25,6 +25,9 @@ export class CreateRecordDto {
       record.status = singleRecord.status;
       record.date = singleRecord.date;
       record.day = singleRecord.day;
+      record.etc = singleRecord?.etc;
+      record.lateTime = singleRecord?.lateTime;
+      record.absenceType = singleRecord?.absenceType;
       record.attendeeId = singleRecord.attendeeId;
       record.createId = createId;
       record.createdAt = new Date();
