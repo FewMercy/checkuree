@@ -43,7 +43,6 @@ export class CreateAttendanceDto {
   @ApiProperty({ description: '지각 상태 사용 유무', type: 'enum', enum: ['0', '1'] })
   allowLateness: boolean;
 
-  // @ApiProperty({ description: '출석부 사용 요일', isArray: true, type: 'enum', enum: DayType })
   @ApiProperty({
     description: '출석부 사용 요일 ( 요일을 쉼표로 구분한 String )',
     type: 'string',
@@ -62,11 +61,11 @@ export class CreateAttendanceDto {
 
   toEntity() {
     const attendance = new Attendance();
-    attendance.title = this.title;
+    attendance.title = this?.title;
     attendance.description = this?.description;
-    attendance.availableFrom = this.availableFrom;
-    attendance.availableTo = this.availableTo;
-    attendance.allowLateness = !!+this.allowLateness ?? false;
+    attendance.availableFrom = this?.availableFrom;
+    attendance.availableTo = this?.availableTo;
+    attendance.allowLateness = !!+this.allowLateness;
     return attendance;
   }
 }

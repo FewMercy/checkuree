@@ -95,8 +95,50 @@ export class AttendancesService {
     return new CommonResponseDto('SUCCESS FIND ATTENDANCE', attendance);
   }
 
-  async update(id: string, updateAttendanceDto: UpdateAttendanceDto): Promise<CommonResponseDto<any>> {
-    await this.attendanceRepository.update(id, updateAttendanceDto);
+  async update(
+    id: string,
+    updateAttendanceDto: UpdateAttendanceDto,
+    image?: Express.Multer.File,
+  ): Promise<CommonResponseDto<any>> {
+    const attendance = await this.attendanceRepository.findOneBy({ id });
+
+    if (!attendance) {
+      throw new BadRequestException('존재하지 않는 출석부입니다.');
+    }
+
+    Object.assign(attendance, updateAttendanceDto);
+    attendance.allowLateness = !!+updateAttendanceDto.allowLateness ?? attendance.allowLateness;
+
+    // 입력 받은 AttendanceDays String을 Array로 변환 및 검증
+    const attendanceDays = this.convertToAttendanceDays(updateAttendanceDto?.attendanceDays);
+
+    if (!this.isValidDays(attendanceDays)) {
+      throw new BadRequestException('출석부 요일이 올바르지 않습니다.');
+    }
+
+    if (image) {
+      const imageUrl = await this.fileManagerService.saveImgFile(image);
+      attendance.imageUrl = imageUrl;
+    }
+
+    // AttendanceDays는 Attendance Entity에 포함되어 있지 않기 때문에 삭제 후 따로 업데이트
+    delete attendance.attendanceDays;
+
+    await this.attendanceRepository.update(id, attendance);
+
+    if (attendanceDays.length > 0) {
+      await this.attendanceDayRepository.delete({ attendanceId: id });
+
+      await this.attendanceDayRepository.save(
+        attendanceDays.map((day) => {
+          return {
+            attendanceId: id,
+            day: day,
+          };
+        }),
+      );
+    }
+
     return new CommonResponseDto('SUCCESS UPDATE ATTENDANCE');
   }
 

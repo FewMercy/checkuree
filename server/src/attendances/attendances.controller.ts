@@ -90,20 +90,24 @@ export class AttendancesController {
   }
 
   @Patch(':attendanceId')
-  @UseGuards(RoleGuard)
-  @Roles(RoleType.MASTER, RoleType.MANAGER)
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: '출석부 정보 수정' })
   @ApiOkResponse({
     status: 200,
     description: '출석부 정보 수정',
     type: CommonResponseDto<any>,
   })
+  @UseGuards(RoleGuard)
+  @Roles(RoleType.MASTER, RoleType.MANAGER)
+  @UseInterceptors(FileInterceptor('image'))
   update(
     // RoleGuard 적용을 위해 attendanceId로 parameter 이름 지정
     @Param('attendanceId') attendanceId: string,
     @Body() updateAttendanceDto: UpdateAttendanceDto,
+    @UploadedFile(ImageValidatorPipe(PROFILE_IMAGE_MAX_SIZE_IN_MB))
+    image?: Express.Multer.File,
   ): Promise<CommonResponseDto<any>> {
-    return this.attendancesService.update(attendanceId, updateAttendanceDto);
+    return this.attendancesService.update(attendanceId, updateAttendanceDto, image);
   }
 
   @Delete(':attendanceId')
