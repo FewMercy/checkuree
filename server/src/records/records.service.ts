@@ -80,8 +80,7 @@ export class RecordsService {
   }
 
   async findByAttendanceId(attendanceId: string, recordFilterDto: RecordFilterDto): Promise<PageResponseDto<Record>> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
         attendanceId: attendanceId,
