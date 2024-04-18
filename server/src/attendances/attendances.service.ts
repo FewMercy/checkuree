@@ -115,7 +115,6 @@ export class AttendancesService {
   }
 
   private isValidDays(days: string[]) {
-    console.log(days);
     return days.every((day) => Object.values(DayType).includes(day as DayType));
   }
 }

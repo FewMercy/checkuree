@@ -29,6 +29,8 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageValidatorPipe } from '../file-manager/const/image-validator.pipe';
+import { PROFILE_IMAGE_MAX_SIZE_IN_MB } from '../file-manager/const/file.const';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('attendances')
@@ -53,12 +55,7 @@ export class AttendancesController {
   createAttendance(
     @Body() createAttendanceDto: CreateAttendanceDto,
     @GetUser() user: User,
-    @UploadedFile(
-      new ParseFilePipe({
-        fileIsRequired: false,
-        validators: [new FileTypeValidator({ fileType: /^image\/.*$/ })],
-      }),
-    )
+    @UploadedFile(ImageValidatorPipe(PROFILE_IMAGE_MAX_SIZE_IN_MB))
     image?: Express.Multer.File,
   ): Promise<CommonResponseDto<any>> {
     return this.attendancesService.create(createAttendanceDto, user, image);

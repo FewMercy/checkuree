@@ -17,9 +17,7 @@ export class FileManagerService {
   async saveImgFile(file: Express.Multer.File): Promise<string> {
     const directoryPath = this.createDirectoryPath(file);
 
-    // 한글파일 인코딩 과정에서 NAMETOO LONG 에러 발생
     const uniqueFileName = this.createUniqueFileName(file.originalname);
-    // const encodedFileName = encodeURIComponent(uniqueFileName);
     const filePath = path.join(directoryPath, uniqueFileName);
 
     // 이미지 리사이징
@@ -76,7 +74,6 @@ export class FileManagerService {
     const now = LocalTime.now();
     const timeStamp = now.hour() + now.minute() + now.second() + now.nano();
 
-    // return `${fileName}_${timeStamp}${ext}`;
     return `${fileName}_${timeStamp}${ext}`;
   }
 }

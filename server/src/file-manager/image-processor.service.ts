@@ -24,8 +24,8 @@ export class ImageProcessorService {
       const resizeOption = width >= height ? { width: maxLength } : { height: maxLength };
 
       return await sharp(file.buffer)
-        .resize({ ...resizeOption })
         .withMetadata()
+        .resize({ ...resizeOption, fit: 'contain' })
         .toBuffer();
     } catch (error) {
       throw new InternalServerErrorException('이미지 리사이징에 실패했습니다');
