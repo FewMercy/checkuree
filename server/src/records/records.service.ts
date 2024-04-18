@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRecordDto } from './dto/create-record.dto';
-import { UpdateRecordDto } from './dto/update-record.dto';
 import { User } from '../users/entities/user.entity';
 import { Record } from './entities/record.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,7 +12,6 @@ import { ExcelService } from '../common/excel.service';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
-import { AffectedResponse } from '../common/response/affectedResponse';
 import { CreateAllRecordDto } from './dto/createAll-record.dto';
 import { MultiIdsResponseDto } from '../common/response/multi-ids-response.dto';
 
