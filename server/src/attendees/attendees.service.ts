@@ -10,6 +10,8 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { ExtractJwt } from 'passport-jwt';
 import fromAuthHeaderWithScheme = ExtractJwt.fromAuthHeaderWithScheme;
+import { AttendeeGrade } from './grade.enum';
+import { Gender } from './gender.enum';
 
 @Injectable()
 export class AttendeesService {
@@ -19,6 +21,15 @@ export class AttendeesService {
   ) {}
   async createAttendee(createAttendeeDto: CreateAttendeeDto, user: User): Promise<CommonResponseDto<any>> {
     const attendee = createAttendeeDto.toEntity();
+    if (!Object.values(Gender).includes(attendee.gender)) {
+      throw new BadRequestException('성별이 올바르지 않습니다.');
+    }
+
+    if (attendee.grade) {
+      if (!Object.values(AttendeeGrade).includes(attendee.grade)) {
+        throw new BadRequestException('학년이 올바르지 않습니다.');
+      }
+    }
     attendee.createId = user.id;
 
     const createdAttendee = await this.attendeeRepository.save(attendee);

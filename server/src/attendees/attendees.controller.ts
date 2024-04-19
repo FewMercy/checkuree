@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AttendeesService } from './attendees.service';
 import { CreateAttendeeDto } from './dto/create-attendee.dto';
 import { UpdateAttendeeDto } from './dto/update-attendee.dto';
@@ -6,8 +6,6 @@ import { GetUser } from '../common/decorator/user.decorator';
 import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Attendance } from '../attendances/entities/attendance.entity';
-import { CreateAttendanceDto } from '../attendances/dto/create-attendance.dto';
 import { Attendee } from './entities/attendee.entity';
 import { RoleGuard } from '../roles/role.guard';
 import { Roles } from '../roles/role.decorator';
@@ -34,6 +32,8 @@ export class AttendeesController {
     type: CreateAttendeeDto,
     description: '출석 대상 생성 DTO',
   })
+  @UseGuards(RoleGuard)
+  @Roles(RoleType.MASTER, RoleType.MANAGER, RoleType.GENERAL)
   async create(@Body() createAttendeeDto: CreateAttendeeDto, @GetUser() user: User): Promise<CommonResponseDto<any>> {
     return this.attendeesService.createAttendee(createAttendeeDto, user);
   }
@@ -47,7 +47,9 @@ export class AttendeesController {
   })
   @UseGuards(RoleGuard)
   @Roles(RoleType.MASTER, RoleType.GENERAL, RoleType.MANAGER, RoleType.READER)
-  async findAllByAttendanceId(@Param('attendanceId') attendanceId: string): Promise<ResponseWithoutPaginationDto<Attendee>> {
+  async findAllByAttendanceId(
+    @Param('attendanceId') attendanceId: string,
+  ): Promise<ResponseWithoutPaginationDto<Attendee>> {
     return this.attendeesService.findAllByAttendanceId(attendanceId);
   }
 
