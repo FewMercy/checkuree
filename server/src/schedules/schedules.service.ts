@@ -15,6 +15,8 @@ import { DayType } from './const/day-type.enum';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { LocalDate } from '@js-joda/core';
+import { ScheduleFilterDto } from './dto/schedule-filter.dto';
+import { PageResponseDto } from '../common/response/pageResponse.dto';
 
 @Injectable()
 export class SchedulesService {
@@ -42,7 +44,10 @@ export class SchedulesService {
     return new ResponseWithoutPaginationDto(count, items);
   }
 
-  async findAllByAttendanceId(attendanceId: string): Promise<ResponseWithoutPaginationDto<Schedule>> {
+  async findAllByAttendanceId(
+    attendanceId: string,
+    scheduleFilterDto: ScheduleFilterDto,
+  ): Promise<PageResponseDto<Schedule>> {
     const [items, count] = await this.scheduleRepository.findAndCount({
       relations: {
         attendee: true,
@@ -57,15 +62,18 @@ export class SchedulesService {
           attendanceId: true,
         },
       },
+      skip: scheduleFilterDto.getOffset(),
+      take: scheduleFilterDto.getLimit(),
     });
 
-    return new ResponseWithoutPaginationDto(count, items);
+    return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
   }
 
   async findScheduleByAttendanceIdAndDate(
     attendanceId: string,
     dateString: string,
-  ): Promise<ResponseWithoutPaginationDto<Schedule>> {
+    scheduleFilterDto: ScheduleFilterDto,
+  ): Promise<PageResponseDto<Schedule>> {
     const date = new Date(dateString);
     const dayNumber = date.getDay();
 
@@ -96,11 +104,14 @@ export class SchedulesService {
         'attendee',
         'records', // 필요한 records 필드 선택
       ])
+      .skip(scheduleFilterDto.getOffset())
+      .take(scheduleFilterDto.getLimit())
       .orderBy('schedule.time , attendee.name', 'ASC');
 
     const [items, count] = await querybuilder.getManyAndCount();
 
-    return new ResponseWithoutPaginationDto(count, items);
+    // TODO 페이지네이션 리스폰스 적용
+    return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
   }
 
   async deleteAll(deleteScheduleDto: DeleteScheduleDto): Promise<CommonResponseDto<any>> {

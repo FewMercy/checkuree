@@ -1,18 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { SchedulesService } from './schedules.service';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
-import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { GetUser } from '../common/decorator/user.decorator';
 import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Attendee } from '../attendees/entities/attendee.entity';
-import { CreateAttendeeDto } from '../attendees/dto/create-attendee.dto';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Schedule } from './entities/schedule.entity';
 import { ScheduleFilterDto } from './dto/schedule-filter.dto';
 import { DeleteScheduleDto } from './dto/delete-schedule.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
+import { PageResponseDto } from '../common/response/pageResponse.dto';
 
 @Controller('schedules')
 @UseGuards(AuthGuard('jwt'))
@@ -61,7 +59,7 @@ export class SchedulesController {
     @Param('attendanceId') attendanceId: string,
     @Query() scheduleFilterDto: ScheduleFilterDto,
   ): Promise<ResponseWithoutPaginationDto<Schedule>> {
-    return this.schedulesService.findAllByAttendanceId(attendanceId);
+    return this.schedulesService.findAllByAttendanceId(attendanceId, scheduleFilterDto);
   }
 
   @Get('/attendanceId/:attendanceId/:date')
@@ -71,13 +69,13 @@ export class SchedulesController {
     description: '해당 출석부의 오늘의 스케쥴과 출석내역 조회',
     type: ResponseWithoutPaginationDto<Schedule>,
   })
-  findTodayScheduleByAttendanceId(
+  findScheduleByAttendanceIdAndDate(
     @Param('attendanceId') attendanceId: string,
     @Param('date') dateString: string,
     @Query()
     scheduleFilterDto: ScheduleFilterDto,
-  ): Promise<ResponseWithoutPaginationDto<Schedule>> {
-    return this.schedulesService.findScheduleByAttendanceIdAndDate(attendanceId, dateString);
+  ): Promise<PageResponseDto<Schedule>> {
+    return this.schedulesService.findScheduleByAttendanceIdAndDate(attendanceId, dateString, scheduleFilterDto);
   }
 
   @Delete()

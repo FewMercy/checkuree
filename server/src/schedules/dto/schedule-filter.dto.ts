@@ -1,14 +1,10 @@
-import { Column, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { DayType } from '../const/day-type.enum';
-import { Attendee } from '../../attendees/entities/attendee.entity';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { Schedule } from '../entities/schedule.entity';
-import { share } from 'rxjs';
+import { IsEnum, IsOptional } from 'class-validator';
 import { IsTimeFormat } from '../../common/decorator/isTimeformat.decorator';
-import { Optional } from '@nestjs/common';
+import { Pagination } from '../../common/response/pagination';
 
-export class ScheduleFilterDto {
+export class ScheduleFilterDto extends Pagination {
   @IsEnum(DayType, { each: true })
   @IsOptional()
   @ApiPropertyOptional({
