@@ -14,6 +14,7 @@ import { ResponseWithoutPaginationDto } from '../common/response/responseWithout
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { CreateAllRecordDto } from './dto/createAll-record.dto';
 import { MultiIdsResponseDto } from '../common/response/multi-ids-response.dto';
+import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
 
 @Injectable()
 export class RecordsService {
@@ -79,6 +80,48 @@ export class RecordsService {
     return new CommonResponseDto('SUCCESS FIND RECORD', await this.recordRepository.findOneBy({ id }));
   }
 
+  async getRecordSummaryByAttendanceId(attendanceId: string, date: string): Promise<any> {
+    if (!this.isValidDate(date)) {
+      throw new BadRequestException('날짜 형식이 올바르지 않습니다.');
+    }
+
+    const summary = await this.recordRepository
+      .createQueryBuilder('record')
+      .select('record.status', 'status')
+      .addSelect('COUNT(record.id)', 'count')
+      .innerJoin('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
+        attendanceId: attendanceId,
+      })
+      .groupBy('record.status')
+      .getRawMany();
+
+    let presentCount = 0,
+      absenceCount = 0,
+      lateCount = 0;
+    summary.forEach((record) => {
+      switch (record.status) {
+        case 'PRESENT':
+          presentCount = parseInt(record.count);
+          break;
+        case 'ABSENT':
+          absenceCount = parseInt(record.count);
+          break;
+        case 'LATE':
+          lateCount = parseInt(record.count);
+          break;
+      }
+    });
+
+    const result: DateRecordSummaryResponseDto = {
+      date: date,
+      presentCount,
+      absenceCount,
+      lateCount,
+    };
+
+    return result;
+  }
+
   async findByAttendanceId(attendanceId: string, recordFilterDto: RecordFilterDto): Promise<PageResponseDto<Record>> {
     const queryBuilder = this.recordRepository
       .createQueryBuilder('record')
@@ -113,8 +156,7 @@ export class RecordsService {
     attendeeId: string,
     recordFilterDto: RecordFilterDto,
   ): Promise<ResponseWithoutPaginationDto<Record>> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.id=:attendeeId', {
         attendeeId: attendeeId,
@@ -256,5 +298,10 @@ export class RecordsService {
 
     // Map에서 레코드 배열을 재구성
     return Array.from(uniqueRecordsMap.values());
+  }
+
+  private isValidDate(date: string): boolean {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    return datePattern.test(date);
   }
 }

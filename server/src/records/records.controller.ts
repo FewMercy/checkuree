@@ -15,6 +15,7 @@ import { RecordFilterDto } from './dto/record-filter.dto';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
+import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('records')
@@ -95,6 +96,25 @@ export class RecordsController {
     @Query() recordFilterDto: RecordFilterDto,
   ): Promise<ResponseWithoutPaginationDto<Record>> {
     return this.recordsService.findByAttendeeId(attendeeId, recordFilterDto);
+  }
+
+  @Get('attendance/:attendanceId/:date/summary')
+  @ApiOperation({
+    description: '출석부에 속한 출석기록 요약 조회',
+    summary: '출석부에 속한 출석기록 요약 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '출석부에 속한 출석기록 요약 조회',
+    type: DateRecordSummaryResponseDto,
+  })
+  @UseGuards(RoleGuard)
+  @Roles(RoleType.MASTER, RoleType.MANAGER, RoleType.GENERAL)
+  async getRecordSummaryByAttendanceId(
+    @Param('attendanceId') attendanceId: string,
+    @Param('date') date: string,
+  ): Promise<any> {
+    return this.recordsService.getRecordSummaryByAttendanceId(attendanceId, date);
   }
 
   @Get('attendance/:attendanceId')
