@@ -52,18 +52,21 @@ export class SchedulesService {
       relations: {
         attendee: true,
       },
-      where: {
-        attendee: {
-          attendanceId: attendanceId,
-        },
-      },
       select: {
         attendee: {
           attendanceId: true,
         },
       },
+      where: {
+        attendee: {
+          attendanceId: attendanceId,
+        },
+      },
       skip: scheduleFilterDto.getOffset(),
       take: scheduleFilterDto.getLimit(),
+      order: {
+        time: 'ASC',
+      },
     });
 
     return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
@@ -95,15 +98,15 @@ export class SchedulesService {
 
     const querybuilder = this.scheduleRepository
       .createQueryBuilder('schedule')
-      .leftJoinAndSelect('schedule.attendee', 'attendee')
-      .leftJoinAndSelect('attendee.records', 'records', 'records.date = :date', { date: dateString })
-      .where('attendee.attendanceId = :attendanceId', { attendanceId })
-      .andWhere('schedule.day = :day', { day: dayType })
       .select([
         'schedule', // 필요한 schedule 필드 선택
         'attendee',
         'records', // 필요한 records 필드 선택
       ])
+      .leftJoinAndSelect('schedule.attendee', 'attendee')
+      .leftJoinAndSelect('attendee.records', 'records', 'records.date = :date', { date: dateString })
+      .where('attendee.attendanceId = :attendanceId', { attendanceId })
+      .andWhere('schedule.day = :day', { day: dayType })
       .skip(scheduleFilterDto.getOffset())
       .take(scheduleFilterDto.getLimit())
       .orderBy('schedule.time , attendee.name', 'ASC');
