@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { ImageProcessorService } from './image-processor.service';
 import { S3Service } from './s3.service';
 export declare class FileManagerService {

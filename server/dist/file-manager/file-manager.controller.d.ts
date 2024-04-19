@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { FileManagerService } from './file-manager.service';
 export declare class FileManagerController {
     private readonly fileManagerService;

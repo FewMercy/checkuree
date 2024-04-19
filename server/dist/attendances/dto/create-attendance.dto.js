@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateAttendanceDto = void 0;
 const class_validator_1 = require("class-validator");
@@ -81,6 +82,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
+    __metadata("design:type", typeof (_b = typeof Express !== "undefined" && (_a = Express.Multer) !== void 0 && _a.File) === "function" ? _b : Object)
 ], CreateAttendanceDto.prototype, "image", void 0);
 //# sourceMappingURL=create-attendance.dto.js.map

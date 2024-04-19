@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttendancesController = void 0;
 const common_1 = require("@nestjs/common");
@@ -69,7 +70,7 @@ __decorate([
     __param(2, (0, common_1.UploadedFile)((0, image_validator_pipe_1.ImageValidatorPipe)(file_const_1.PROFILE_IMAGE_MAX_SIZE_IN_MB))),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_attendance_dto_1.CreateAttendanceDto,
-        user_entity_1.User, Object]),
+        user_entity_1.User, typeof (_b = typeof Express !== "undefined" && (_a = Express.Multer) !== void 0 && _a.File) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], AttendancesController.prototype, "createAttendance", null);
 __decorate([
@@ -116,7 +117,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.UploadedFile)((0, image_validator_pipe_1.ImageValidatorPipe)(file_const_1.PROFILE_IMAGE_MAX_SIZE_IN_MB))),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_attendance_dto_1.UpdateAttendanceDto, Object]),
+    __metadata("design:paramtypes", [String, update_attendance_dto_1.UpdateAttendanceDto, typeof (_d = typeof Express !== "undefined" && (_c = Express.Multer) !== void 0 && _c.File) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], AttendancesController.prototype, "update", null);
 __decorate([

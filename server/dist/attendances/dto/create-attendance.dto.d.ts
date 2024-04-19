@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { Attendance } from '../entities/attendance.entity';
 export declare class CreateAttendanceDto {
     title: string;

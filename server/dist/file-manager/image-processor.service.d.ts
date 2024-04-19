@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 /// <reference types="node" />
 export declare class ImageProcessorService {
     constructor();
