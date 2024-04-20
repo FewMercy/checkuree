@@ -24,12 +24,6 @@ export class CreateRecordDto {
 
   toEntities(createId: string): Record[] {
     return this.singleRecords.map((singleRecord) => {
-      // const errors = await validate(plainToInstance(SingleRecord, singleRecord));
-      //
-      // if (errors.length > 0) {
-      //   throw new Error('Record 값이 올바르지 않습니다.');
-      // }
-
       const record = new Record();
       record.status = singleRecord.status;
       record.date = singleRecord.date;
