@@ -47,6 +47,7 @@ const Index = () => {
         { id: 7, name: '계창선', status: '', isDetailOpen: false },
         { id: 8, name: '계창선', status: '', isDetailOpen: false },
     ]);
+
     const shouldShowNavigation = dummyList.some((item) => item.status !== '');
     // // fetching API
     // const { data: attendance, isLoading } = useQuery({
