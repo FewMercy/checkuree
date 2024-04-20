@@ -1,11 +1,6 @@
-import { Column } from 'typeorm';
-import { AttendanceStatus } from '../const/record-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { DayType } from '../../schedules/const/day-type.enum';
-import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 import { Record } from '../entities/record.entity';
-import { Transform } from 'class-transformer';
-import { SingleSchedule } from '../../schedules/const/single-schedule.class';
 import { SingleRecord } from '../const/singleRecord.class';
 
 export class CreateRecordDto {
@@ -30,9 +25,11 @@ export class CreateRecordDto {
       record.status = singleRecord.status;
       record.date = singleRecord.date;
       record.day = singleRecord.day;
+      record.etc = singleRecord?.etc;
+      record.lateTime = singleRecord?.lateTime;
+      record.absenceType = singleRecord?.absenceType;
       record.attendeeId = singleRecord.attendeeId;
       record.createId = createId;
-      record.lateReason = singleRecord?.lateReason;
       record.createdAt = new Date();
       return record;
     });

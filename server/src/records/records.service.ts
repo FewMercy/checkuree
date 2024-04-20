@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRecordDto } from './dto/create-record.dto';
-import { UpdateRecordDto } from './dto/update-record.dto';
 import { User } from '../users/entities/user.entity';
 import { Record } from './entities/record.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,9 +12,9 @@ import { ExcelService } from '../common/excel.service';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
-import { AffectedResponse } from '../common/response/affectedResponse';
 import { CreateAllRecordDto } from './dto/createAll-record.dto';
 import { MultiIdsResponseDto } from '../common/response/multi-ids-response.dto';
+import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
 
 @Injectable()
 export class RecordsService {
@@ -35,7 +34,10 @@ export class RecordsService {
       }
 
       if (record.status !== AttendanceStatus.ABSENT) {
-        delete record.lateReason;
+        delete record.absenceType;
+      }
+      if (record.status !== AttendanceStatus.LATE) {
+        delete record.lateTime;
       }
     });
 
@@ -46,7 +48,9 @@ export class RecordsService {
       upsertType: 'on-conflict-do-update',
     });
 
-    return new CommonResponseDto('SUCCESS CREATE RECORD', { ids: result.identifiers.map((identifier) => identifier.id) });
+    return new CommonResponseDto('SUCCESS CREATE RECORD', {
+      ids: result.identifiers.map((identifier) => identifier.id),
+    });
   }
 
   async createAll(createAllRecordDto: CreateAllRecordDto, user: User): Promise<CommonResponseDto<any>> {
@@ -76,9 +80,50 @@ export class RecordsService {
     return new CommonResponseDto('SUCCESS FIND RECORD', await this.recordRepository.findOneBy({ id }));
   }
 
+  async getRecordSummaryByAttendanceId(attendanceId: string, date: string): Promise<any> {
+    if (!this.isValidDate(date)) {
+      throw new BadRequestException('날짜 형식이 올바르지 않습니다.');
+    }
+
+    const summary = await this.recordRepository
+      .createQueryBuilder('record')
+      .select('record.status', 'status')
+      .addSelect('COUNT(record.id)', 'count')
+      .innerJoin('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
+        attendanceId: attendanceId,
+      })
+      .groupBy('record.status')
+      .getRawMany();
+
+    let presentCount = 0,
+      absenceCount = 0,
+      lateCount = 0;
+    summary.forEach((record) => {
+      switch (record.status) {
+        case 'PRESENT':
+          presentCount = parseInt(record.count);
+          break;
+        case 'ABSENT':
+          absenceCount = parseInt(record.count);
+          break;
+        case 'LATE':
+          lateCount = parseInt(record.count);
+          break;
+      }
+    });
+
+    const result: DateRecordSummaryResponseDto = {
+      date: date,
+      presentCount,
+      absenceCount,
+      lateCount,
+    };
+
+    return result;
+  }
+
   async findByAttendanceId(attendanceId: string, recordFilterDto: RecordFilterDto): Promise<PageResponseDto<Record>> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
         attendanceId: attendanceId,
@@ -107,9 +152,11 @@ export class RecordsService {
     return new PageResponseDto<Record>(recordFilterDto.pageSize, count, items);
   }
 
-  async findByAttendeeId(attendeeId: string, recordFilterDto: RecordFilterDto): Promise<ResponseWithoutPaginationDto<Record>> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+  async findByAttendeeId(
+    attendeeId: string,
+    recordFilterDto: RecordFilterDto,
+  ): Promise<ResponseWithoutPaginationDto<Record>> {
+    const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.id=:attendeeId', {
         attendeeId: attendeeId,
@@ -146,7 +193,9 @@ export class RecordsService {
     });
 
     if (filteredRecord.length !== deleteRecordDto.ids.length) {
-      throw new BadRequestException(`AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`);
+      throw new BadRequestException(
+        `AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`,
+      );
     }
 
     await this.recordRepository.softDelete({
@@ -249,5 +298,10 @@ export class RecordsService {
 
     // Map에서 레코드 배열을 재구성
     return Array.from(uniqueRecordsMap.values());
+  }
+
+  private isValidDate(date: string): boolean {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    return datePattern.test(date);
   }
 }

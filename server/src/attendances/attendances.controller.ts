@@ -1,9 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AttendancesService } from './attendances.service';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
 import { GetUser } from '../common/decorator/user.decorator';
 import { Attendance } from './entities/attendance.entity';
@@ -11,10 +30,11 @@ import { UserAttendance } from './entities/user-attendance.entity';
 import { RoleGuard } from '../roles/role.guard';
 import { RoleType } from '../roles/entities/role-type.enum';
 import { Roles } from '../roles/role.decorator';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { CommonResponseDto } from '../common/response/common-response.dto';
-import { PageResponseDto } from '../common/response/pageResponse.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageValidatorPipe } from '../file-manager/const/image-validator.pipe';
+import { PROFILE_IMAGE_MAX_SIZE_IN_MB } from '../file-manager/const/file.const';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('attendances')
@@ -24,6 +44,7 @@ export class AttendancesController {
   constructor(private readonly attendancesService: AttendancesService) {}
 
   @Post()
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: '출석부 생성' })
   @ApiResponse({
     status: 200,
@@ -34,8 +55,14 @@ export class AttendancesController {
     type: CreateAttendanceDto,
     description: '출석부 생성 DTO',
   })
-  createAttendance(@Body() createAttendanceDto: CreateAttendanceDto, @GetUser() user: User): Promise<CommonResponseDto<any>> {
-    return this.attendancesService.create(createAttendanceDto, user);
+  @UseInterceptors(FileInterceptor('image'))
+  createAttendance(
+    @Body() createAttendanceDto: CreateAttendanceDto,
+    @GetUser() user: User,
+    @UploadedFile(ImageValidatorPipe(PROFILE_IMAGE_MAX_SIZE_IN_MB))
+    image?: Express.Multer.File,
+  ): Promise<CommonResponseDto<any>> {
+    return this.attendancesService.create(createAttendanceDto, user, image);
   }
 
   @Get()
@@ -63,20 +90,24 @@ export class AttendancesController {
   }
 
   @Patch(':attendanceId')
-  @UseGuards(RoleGuard)
-  @Roles(RoleType.MASTER, RoleType.MANAGER)
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: '출석부 정보 수정' })
   @ApiOkResponse({
     status: 200,
     description: '출석부 정보 수정',
     type: CommonResponseDto<any>,
   })
+  @UseGuards(RoleGuard)
+  @Roles(RoleType.MASTER, RoleType.MANAGER)
+  @UseInterceptors(FileInterceptor('image'))
   update(
     // RoleGuard 적용을 위해 attendanceId로 parameter 이름 지정
     @Param('attendanceId') attendanceId: string,
     @Body() updateAttendanceDto: UpdateAttendanceDto,
+    @UploadedFile(ImageValidatorPipe(PROFILE_IMAGE_MAX_SIZE_IN_MB))
+    image?: Express.Multer.File,
   ): Promise<CommonResponseDto<any>> {
-    return this.attendancesService.update(attendanceId, updateAttendanceDto);
+    return this.attendancesService.update(attendanceId, updateAttendanceDto, image);
   }
 
   @Delete(':attendanceId')

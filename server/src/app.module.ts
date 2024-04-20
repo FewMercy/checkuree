@@ -18,6 +18,7 @@ import { ConfigModule } from '@nestjs/config';
 import { InvitationsModule } from './invitations/invitations.module';
 import { Invitation } from './invitations/entities/invitation.entity';
 import { LoginHistory } from './auth/entity/login-history.entity';
+import { FileManagerModule } from './file-manager/file-manager.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { LoginHistory } from './auth/entity/login-history.entity';
     SchedulesModule,
     RecordsModule,
     InvitationsModule,
+    FileManagerModule,
   ],
 })
 export class AppModule {}

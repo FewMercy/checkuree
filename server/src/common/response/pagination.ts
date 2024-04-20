@@ -1,15 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsPositive, Max, Min } from 'class-validator';
+import { IsPositive, Max } from 'class-validator';
 
 export abstract class Pagination {
   @ApiProperty({
     type: 'number',
-    description: '스킵할 개수',
-    default: 0,
+    description: '페이지 넘버',
+    default: 1,
   })
-  @IsNumber()
-  @Min(0)
-  pageNo: number = 0;
+  @IsPositive()
+  pageNo: number = 1;
 
   @ApiProperty({
     type: 'number',

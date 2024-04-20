@@ -9,10 +9,14 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './const/auth.const';
 import { LoginHistory } from './entity/login-history.entity';
+import { KakaoStrategy } from './kakao.strategy';
+import { FileManagerService } from '../file-manager/file-manager.service';
+import { S3Service } from '../file-manager/s3.service';
+import { ImageProcessorService } from '../file-manager/image-processor.service';
 
 @Module({
   imports: [UsersModule, PassportModule, TypeOrmModule.forFeature([User, LoginHistory]), JwtModule.register({})],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, KakaoStrategy],
 })
 export class AuthModule {}

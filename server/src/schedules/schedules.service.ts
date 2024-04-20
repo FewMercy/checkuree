@@ -14,6 +14,9 @@ import { DeleteScheduleDto } from './dto/delete-schedule.dto';
 import { DayType } from './const/day-type.enum';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
+import { LocalDate } from '@js-joda/core';
+import { ScheduleFilterDto } from './dto/schedule-filter.dto';
+import { PageResponseDto } from '../common/response/pageResponse.dto';
 
 @Injectable()
 export class SchedulesService {
@@ -41,29 +44,41 @@ export class SchedulesService {
     return new ResponseWithoutPaginationDto(count, items);
   }
 
-  async findAllByAttendanceId(attendanceId: string): Promise<ResponseWithoutPaginationDto<Schedule>> {
+  async findAllByAttendanceId(
+    attendanceId: string,
+    scheduleFilterDto: ScheduleFilterDto,
+  ): Promise<PageResponseDto<Schedule>> {
     const [items, count] = await this.scheduleRepository.findAndCount({
       relations: {
         attendee: true,
-      },
-      where: {
-        attendee: {
-          attendanceId: attendanceId,
-        },
       },
       select: {
         attendee: {
           attendanceId: true,
         },
       },
+      where: {
+        attendee: {
+          attendanceId: attendanceId,
+        },
+      },
+      skip: scheduleFilterDto.getOffset(),
+      take: scheduleFilterDto.getLimit(),
+      order: {
+        time: 'ASC',
+      },
     });
 
-    return new ResponseWithoutPaginationDto(count, items);
+    return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
   }
 
-  async findTodayScheduleByAttendanceId(attendanceId: string, date = new Date()): Promise<ResponseWithoutPaginationDto<Schedule>> {
-    const formattedDate = date.toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 변환
-    const day = date.getDay().toString();
+  async findScheduleByAttendanceIdAndDate(
+    attendanceId: string,
+    dateString: string,
+    scheduleFilterDto: ScheduleFilterDto,
+  ): Promise<PageResponseDto<Schedule>> {
+    const date = new Date(dateString);
+    const dayNumber = date.getDay();
 
     const convertNumberToDay = (dayNumber) => {
       const days = [
@@ -79,23 +94,27 @@ export class SchedulesService {
       return days[dayNumber % 7];
     };
 
-    const dayType = convertNumberToDay(day);
+    const dayType = convertNumberToDay(dayNumber);
 
-    const [items, count] = await this.scheduleRepository
+    const querybuilder = this.scheduleRepository
       .createQueryBuilder('schedule')
-      .leftJoinAndSelect('schedule.attendee', 'attendee')
-      .leftJoinAndSelect('attendee.records', 'records', 'records.date = :formattedDate', { formattedDate })
-      .where('attendee.attendanceId = :attendanceId', { attendanceId })
-      .andWhere('schedule.day = :day', { day: dayType })
       .select([
         'schedule', // 필요한 schedule 필드 선택
         'attendee',
         'records', // 필요한 records 필드 선택
       ])
-      .orderBy('schedule.time , attendee.name', 'ASC')
-      .getManyAndCount();
+      .leftJoinAndSelect('schedule.attendee', 'attendee')
+      .leftJoinAndSelect('attendee.records', 'records', 'records.date = :date', { date: dateString })
+      .where('attendee.attendanceId = :attendanceId', { attendanceId })
+      .andWhere('schedule.day = :day', { day: dayType })
+      .skip(scheduleFilterDto.getOffset())
+      .take(scheduleFilterDto.getLimit())
+      .orderBy('schedule.time , attendee.name', 'ASC');
 
-    return new ResponseWithoutPaginationDto(count, items);
+    const [items, count] = await querybuilder.getManyAndCount();
+
+    // TODO 페이지네이션 리스폰스 적용
+    return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
   }
 
   async deleteAll(deleteScheduleDto: DeleteScheduleDto): Promise<CommonResponseDto<any>> {
