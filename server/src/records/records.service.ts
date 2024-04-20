@@ -15,6 +15,7 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { CreateAllRecordDto } from './dto/createAll-record.dto';
 import { MultiIdsResponseDto } from '../common/response/multi-ids-response.dto';
 import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
+import { AttendeeRecordSummaryDto } from './dto/attendee-record-summary.dto';
 
 @Injectable()
 export class RecordsService {
@@ -120,6 +121,54 @@ export class RecordsService {
     };
 
     return result;
+  }
+
+  async getRecordSummaryByAttendeeId(attendanceId: string, attendeeRecordSummaryDto: AttendeeRecordSummaryDto) {
+    const qb = this.recordRepository
+      .createQueryBuilder('record')
+      .innerJoin('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
+        attendanceId,
+      })
+      .select('attendee.id', 'attendeeId')
+      .addSelect('record.status')
+      .addSelect('COUNT(record.id)', 'count')
+      .where('attendee.id IN (:...attendeeIds)', { attendeeIds: attendeeRecordSummaryDto.attendeeIds })
+      .groupBy('attendee.id,record.status');
+
+    const summary = await qb.getRawMany();
+
+    const results = [];
+    attendeeRecordSummaryDto.attendeeIds.forEach((attendeeId) => {
+      results.push({
+        attendeeId: attendeeId,
+        presentCount: 0,
+        absenceCount: 0,
+        lateCount: 0,
+      });
+    });
+
+    console.log(summary);
+
+    summary.forEach((record) => {
+      const result = results.find((result) => result.attendeeId === record.attendeeId);
+      const status = record.status + ''.toUpperCase();
+      console.log(status);
+      switch (status) {
+        case 'PRESENT':
+          result.presentCount = parseInt(record.count);
+          break;
+        case 'ABSENT':
+          result.absenceCount = parseInt(record.count);
+          break;
+        case 'LATE':
+          result.lateCount = parseInt(record.count);
+          break;
+      }
+
+      console.log(result);
+    });
+
+    return results;
   }
 
   async findByAttendanceId(attendanceId: string, recordFilterDto: RecordFilterDto): Promise<PageResponseDto<Record>> {
