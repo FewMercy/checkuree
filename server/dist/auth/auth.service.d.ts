@@ -1,0 +1,30 @@
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { User } from '../users/entities/user.entity';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { SignInDto } from './dto/sign-in.dto';
+import { CommonResponseDto } from '../common/response/common-response.dto';
+import { TokenResponseDto } from './dto/token-response.dto';
+import { LoginHistory } from './entity/login-history.entity';
+import { AvailabilityResult } from '../common/response/is-available-res';
+import { OAuth } from './const/oauth.interface';
+export declare class AuthService {
+    private userRepository;
+    private loginHistoryRepository;
+    private jwtService;
+    constructor(userRepository: Repository<User>, loginHistoryRepository: Repository<LoginHistory>, jwtService: JwtService);
+    signup(createAuthDto: CreateAuthDto): Promise<CommonResponseDto<User>>;
+    validateUser(username: string, password: string): Promise<User>;
+    signIn(signInDto: SignInDto, ip: string, loginAt?: Date): Promise<CommonResponseDto<TokenResponseDto>>;
+    oauthSignIn(oauthUser: OAuth, ip: string, loginAt?: Date): Promise<CommonResponseDto<TokenResponseDto>>;
+    private createOAuthMember;
+    refreshToken(oldRefreshToken: string, ip: string): Promise<CommonResponseDto<TokenResponseDto>>;
+    isAvailableEmail(email: string): Promise<CommonResponseDto<AvailabilityResult>>;
+    isAvailableMobileNumber(mobileNumber: string): Promise<CommonResponseDto<AvailabilityResult>>;
+    isAvailableUsername(username: string): Promise<CommonResponseDto<AvailabilityResult>>;
+    private generateAccessToken;
+    private generateRefreshToken;
+    private saveRefreshToken;
+    private verifyRefreshToken;
+    private createLoginHistory;
+}
