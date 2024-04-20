@@ -14,6 +14,7 @@ const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const record_entity_1 = require("../entities/record.entity");
 const singleRecord_class_1 = require("../const/singleRecord.class");
+const class_transformer_1 = require("class-transformer");
 class CreateRecordDto {
     toEntities(createId) {
         return this.singleRecords.map((singleRecord) => {
@@ -44,6 +45,8 @@ __decorate([
 ], CreateRecordDto.prototype, "attendanceId", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => singleRecord_class_1.SingleRecord),
     (0, swagger_1.ApiProperty)({ description: '출석 기록', type: Array.of(singleRecord_class_1.SingleRecord) }),
     __metadata("design:type", Array)
 ], CreateRecordDto.prototype, "singleRecords", void 0);

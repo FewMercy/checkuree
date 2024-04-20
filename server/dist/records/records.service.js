@@ -114,7 +114,7 @@ let RecordsService = class RecordsService {
             attendanceId,
         })
             .select('attendee.id', 'attendeeId')
-            .addSelect('record.status')
+            .addSelect('record.status', 'status')
             .addSelect('COUNT(record.id)', 'count')
             .where('attendee.id IN (:...attendeeIds)', { attendeeIds: attendeeRecordSummaryDto.attendeeIds })
             .groupBy('attendee.id,record.status');
@@ -131,7 +131,7 @@ let RecordsService = class RecordsService {
         console.log(summary);
         summary.forEach((record) => {
             const result = results.find((result) => result.attendeeId === record.attendeeId);
-            const status = record.status + ''.toUpperCase();
+            const status = (record.status + '').toUpperCase();
             console.log(status);
             switch (status) {
                 case 'PRESENT':
