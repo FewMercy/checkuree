@@ -1,9 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { BaseTimeEntity } from '../../common/BaseTimeEntity';
 import * as bcrypt from 'bcrypt';
 import { SALT } from '../../auth/const/auth.const';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Attendance } from '../../attendances/entities/attendance.entity';
 import { UserAttendance } from '../../attendances/entities/user-attendance.entity';
 import { UserType } from '../const/user-type.enum';
 import { LoginType } from '../../auth/const/login-type.enum';

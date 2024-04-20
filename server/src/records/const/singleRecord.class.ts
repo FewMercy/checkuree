@@ -31,7 +31,7 @@ export class SingleRecord {
   })
   date: string;
 
-  @IsEnum(DayType)
+  @IsEnum(DayType, { message: '요일이 정확하지 않습니다.' })
   @ApiProperty({
     description: '출석요일',
     type: 'enum',
@@ -49,11 +49,11 @@ export class SingleRecord {
   })
   etc: string;
 
-  @IsEnum(LateTimeType)
+  @IsEnum(LateTimeType, { message: '지각타입이 정확하지 않습니다.' })
   @ApiPropertyOptional({ description: '지각 시간', type: 'enum', enum: LateTimeType })
   lateTime: LateTimeType;
 
-  @IsEnum(AbsenceType)
+  @IsEnum(AbsenceType, { message: '결석타입이 정확하지 않습니다.' })
   @ApiPropertyOptional({ description: '결석 종류', type: 'enum', enum: AbsenceType })
   absenceType: AbsenceType;
 }

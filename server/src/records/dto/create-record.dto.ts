@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, validate, ValidateNested } from 'class-validator';
 import { Record } from '../entities/record.entity';
 import { SingleRecord } from '../const/singleRecord.class';
+import { plainToInstance, Type } from 'class-transformer';
 
 export class CreateRecordDto {
   @IsString()
@@ -14,6 +15,8 @@ export class CreateRecordDto {
   attendanceId: string;
 
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SingleRecord)
   @ApiProperty({ description: '출석 기록', type: Array.of(SingleRecord) })
   singleRecords: SingleRecord[];
 

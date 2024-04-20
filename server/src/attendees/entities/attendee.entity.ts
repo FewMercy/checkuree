@@ -4,6 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Attendance } from '../../attendances/entities/attendance.entity';
 import { Schedule } from '../../schedules/entities/schedule.entity';
 import { Record } from '../../records/entities/record.entity';
+import { AttendeeGrade } from '../grade.enum';
+import { Gender } from '../gender.enum';
 
 @Entity()
 export class Attendee extends BaseTimeEntity {
@@ -19,6 +21,10 @@ export class Attendee extends BaseTimeEntity {
   @ApiProperty({ description: '출석 대상자 이름', type: 'string' })
   name: string;
 
+  @Column({ comment: '출석 대상자 성별', type: 'varchar' })
+  @ApiProperty({ description: '출석 대상자 성별', type: 'enum', enum: Gender })
+  gender: Gender;
+
   @Column({ comment: '출석 대상자 전화번호', type: 'varchar', nullable: true })
   @ApiProperty({ description: '출석 대상자 전화번호', type: 'string' })
   mobileNumber: string;
@@ -31,9 +37,21 @@ export class Attendee extends BaseTimeEntity {
   @ApiProperty({ description: '출석 대상자 비상 전화번호', type: 'string' })
   subMobileNumber: string;
 
-  @Column({ comment: '출석 대상자 나이', type: 'int', nullable: true })
-  @ApiProperty({ description: '출석 대상자 나이', type: 'int' })
-  age: number;
+  @Column({ comment: '출석 대상자 생년월일', type: 'varchar', nullable: true })
+  @ApiProperty({ description: '출석 대상자 생년월일', type: 'string' })
+  birth?: string;
+
+  @Column({ comment: '출석 대상자 과정', type: 'varchar', nullable: true })
+  @ApiProperty({ description: '출석 대상자 과정', type: 'string' })
+  course?: string;
+
+  @Column({ comment: '출석 대상자 학교', type: 'varchar', nullable: true })
+  @ApiProperty({ description: '출석 대상자 학교', type: 'string' })
+  school?: string;
+
+  @Column({ comment: '출석 대상자 학년', type: 'varchar', nullable: true })
+  @ApiProperty({ description: '출석 대상자 학년', type: 'enum', enum: AttendeeGrade, example: AttendeeGrade.초등3학년 })
+  grade?: AttendeeGrade;
 
   @Column({ comment: '출석 대상자 설명', type: 'varchar', nullable: true })
   @ApiProperty({ description: '출석 대상자 설명', type: 'string' })

@@ -1,11 +1,21 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { Attendance } from '../../attendances/entities/attendance.entity';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Attendee } from '../entities/attendee.entity';
 import { INVALID_MOBILENUMBER_MESSAGE } from '../../auth/const/error-message';
 import { MobileNumberTransform } from '../../common/decorator/phoneNumber.decorator';
+import { AttendeeGrade } from '../grade.enum';
+import { Gender } from '../gender.enum';
 
 export class CreateAttendeeDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: '출석부 ID',
+    type: 'string',
+    example: 'attendanceId',
+  })
+  attendanceId: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -16,13 +26,12 @@ export class CreateAttendeeDto {
   name: string;
 
   @IsString()
-  @IsNotEmpty()
   @ApiProperty({
-    description: '출석부 ID',
+    description: '출석 대상 성별 ( MALE / FEMALE )',
     type: 'string',
-    example: 'attendanceId',
+    example: 'MALE',
   })
-  attendanceId: string;
+  gender: Gender;
 
   @IsString()
   @Matches(/^01[01]{1}\d{7,8}$/, {
@@ -50,14 +59,43 @@ export class CreateAttendeeDto {
   })
   subMobileNumber: string;
 
-  @IsInt()
+  @IsString()
+  @Matches(/^\d{4}-[01][0-9]-[0-3][0-9]$/, { message: '생년월일이 올바르지 않습니다.' })
   @IsOptional()
-  @ApiProperty({
-    description: '출석 대상 나이',
-    type: 'int',
-    example: 15,
+  @ApiPropertyOptional({
+    description: '출석 대상 생년월일',
+    type: 'string',
+    example: '2000',
   })
-  age: number;
+  birth?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: '출석 대상 과정',
+    type: 'string',
+    example: '바이엘 1',
+  })
+  course?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: '출석 대상 학년',
+    type: 'enum',
+    enum: AttendeeGrade,
+    example: AttendeeGrade.초등3학년,
+  })
+  grade?: AttendeeGrade;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: '출석 대상 학교',
+    type: 'string',
+    example: '장로회 신학 대학교',
+  })
+  school?: string;
 
   @IsString()
   @IsOptional()
@@ -75,11 +113,15 @@ export class CreateAttendeeDto {
   toEntity() {
     const attendee = new Attendee();
     attendee.name = this.name;
+    attendee.gender = this.gender;
     attendee.attendanceId = this.attendanceId;
     attendee.mobileNumber = this.mobileNumber;
     attendee.subMobileNumber = this.subMobileNumber;
     attendee.description = this?.description;
-    attendee.age = this?.age;
+    attendee.birth = this?.birth;
+    attendee.course = this?.course;
+    attendee.grade = this?.grade;
+    attendee.school = this?.school;
     return attendee;
   }
 }

@@ -45,6 +45,7 @@ export class AttendancesService {
 
     const createdAttendance = await this.attendanceRepository.save(attendance);
 
+    // UserAttendance 저장, 권한 생성
     const userAttendance = new UserAttendance();
     userAttendance.attendanceId = createdAttendance.id;
     userAttendance.userId = user.id;
@@ -53,6 +54,7 @@ export class AttendancesService {
 
     await this.userAttendanceRepository.save(userAttendance);
 
+    // AttendanceDays 저장
     await this.attendanceDayRepository.save(
       attendanceDays.map((day) => {
         return {
