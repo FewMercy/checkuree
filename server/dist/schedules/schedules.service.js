@@ -78,21 +78,16 @@ let SchedulesService = class SchedulesService {
             return days[dayNumber % 7];
         };
         const dayType = convertNumberToDay(dayNumber);
-        const querybuilder = this.scheduleRepository
+        const queryBuilder = this.scheduleRepository
             .createQueryBuilder('schedule')
-            .select([
-            'schedule',
-            'attendee',
-            'records',
-        ])
             .leftJoinAndSelect('schedule.attendee', 'attendee')
             .leftJoinAndSelect('attendee.records', 'records', 'records.date = :date', { date: dateString })
             .where('attendee.attendanceId = :attendanceId', { attendanceId })
             .andWhere('schedule.day = :day', { day: dayType })
             .skip(scheduleFilterDto.getOffset())
             .take(scheduleFilterDto.getLimit())
-            .orderBy('schedule.time , attendee.name', 'ASC');
-        const [items, count] = await querybuilder.getManyAndCount();
+            .orderBy('schedule.time', 'ASC');
+        const [items, count] = await queryBuilder.getManyAndCount();
         return new pageResponse_dto_1.PageResponseDto(scheduleFilterDto.pageSize, count, items);
     }
     async deleteAll(deleteScheduleDto) {
