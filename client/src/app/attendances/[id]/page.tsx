@@ -102,6 +102,8 @@ const Index = () => {
         });
     };
 
+    console.log('attendance', attendance);
+
     // if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
 
     return (
