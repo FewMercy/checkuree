@@ -56,10 +56,11 @@ class AttendanceApiClient extends BaseApiClient {
             url: `/attendances/${attendanceId}`,
         });
 
-    public getAttendanceDetailList = (id: string) =>
+    public createAttandance = (id: string) =>
         this.axios.request({
-            method: 'GET',
+            method: 'POST',
             url: `/schedules/attendanceId/${id}?days=TUESDAY&days=MONDAY&timeFrom=0900&timeTo=1830`,
+            data: '',
         });
 }
 
