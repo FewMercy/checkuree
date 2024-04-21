@@ -160,11 +160,15 @@ export default Index;
 Index.GetServerSideProps = async (context: any) => {
     const queryClient = new QueryClient();
     const id = context.params!.id as string;
+    const today = context.params!.today as string;
     await queryClient.prefetchQuery({
         queryKey: ['attendance', id],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceById(id);
+                await AttendanceApiClient.getInstance().getAttendanceById(
+                    id,
+                    today
+                );
             return response.data;
         },
     });
