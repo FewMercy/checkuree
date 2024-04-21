@@ -84,13 +84,11 @@
 
 html,
 body {
-    margin: 0;
-    padding: 0;
+    width: 100%;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(
-        var(--background-start-rgb),
-        var(--background-end-rgb)
-    );
+    padding: 0;
+    color: #222222;
+    margin: 0;
 }

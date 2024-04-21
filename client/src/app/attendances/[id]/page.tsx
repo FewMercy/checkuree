@@ -6,12 +6,12 @@ import { Colors, Icons } from '@/styles/globalStyles';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
-import AttendanceApiClient from '@/api/AttendanceApiClient';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
-import AttendanceItem from '@/app/attendances/components/AttendanceItem';
+import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
 // Components
 import Icon from '@/components/Icon';
-import Navigation from '../components/Navigation';
+import Navigation from '@/app/attendances/_components/Navigation';
 // Next
 import { usePathname } from 'next/navigation';
 
@@ -47,6 +47,7 @@ const Index = () => {
         { id: 7, name: '계창선', status: '', isDetailOpen: false },
         { id: 8, name: '계창선', status: '', isDetailOpen: false },
     ]);
+
     const shouldShowNavigation = dummyList.some((item) => item.status !== '');
     // // fetching API
     // const { data: attendance, isLoading } = useQuery({
@@ -76,9 +77,6 @@ const Index = () => {
             });
         });
     };
-
-    console.log(dummyList);
-    // console.log('attendance', attendance);
 
     // if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
 

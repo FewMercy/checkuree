@@ -6,8 +6,8 @@ import { Box, Container, Typography, styled } from '@mui/material';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
 
-import AttendanceApiClient from '@/api/AttendanceApiClient';
-import AttendanceCreateForm from './components/AttendanceCreate';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
+import AttendanceCreateForm from '@/app/attendances/_components/AttendanceCreate';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
@@ -55,7 +55,7 @@ const Page: React.FC = () => {
     const [isCreate, setIsCreate] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormData | null>(null);
 
-    const { data: attendancyList } = useQuery({
+    const { data: attendancyList, isLoading } = useQuery({
         queryKey: ['attendancy-list'],
         queryFn: async () => {
             const response =
@@ -72,6 +72,10 @@ const Page: React.FC = () => {
             setFormData(newFormData);
         }
     };
+
+    if (isLoading) {
+        return <div>loading...</div>;
+    }
 
     return (
         <ContainerST>

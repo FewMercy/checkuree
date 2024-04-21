@@ -1,12 +1,14 @@
 // JavaScript
-import { Box, Typography, styled } from '@mui/material';
+import { Box, styled, Typography } from '@mui/material';
 import React, { SetStateAction, useState } from 'react';
 
 import { AttendanceItemType } from '../[id]/page';
 import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface Menu {
     name: string;
+    path: string;
     icon: string;
     iconActivate: string;
     label: string;
@@ -17,39 +19,50 @@ interface Iprops {
     setDummyList: React.Dispatch<SetStateAction<AttendanceItemType[]>>;
 }
 
-const menus: Menu[] = [
-    {
-        name: 'attendance',
-        icon: '/images/icons/check-icon.svg',
-        iconActivate: '/images/icons/check-activate-icon.svg',
-        label: '출석 체크',
-    },
-    {
-        name: 'statistics',
-        icon: '/images/icons/statistics-icon.svg',
-        iconActivate: '/images/icons/statistics-activate-icon.svg',
-        label: '출석 통계',
-    },
-    {
-        name: 'management',
-        icon: '/images/icons/list-icon.svg',
-        iconActivate: '/images/icons/list-activate-icon.svg',
-        label: '명단 관리',
-    },
-    {
-        name: 'settings',
-        icon: '/images/icons/setting-icon.svg',
-        iconActivate: '/images/icons/setting-activate-icon.svg',
-        label: '출석부 설정',
-    },
-];
+const menuList = (attendanceId: string): Menu[] => {
+    return [
+        {
+            name: 'attendance',
+            path: '/attendanceId',
+            icon: '/images/icons/check-icon.svg',
+            iconActivate: '/images/icons/check-activate-icon.svg',
+            label: '출석 체크',
+        },
+        {
+            name: 'statistics',
+            path: '/attendanceId',
+            icon: '/images/icons/statistics-icon.svg',
+            iconActivate: '/images/icons/statistics-activate-icon.svg',
+            label: '출석 통계',
+        },
+        {
+            name: 'management',
+            path: `/list-management/${attendanceId}`,
+            icon: '/images/icons/list-icon.svg',
+            iconActivate: '/images/icons/list-activate-icon.svg',
+            label: '명단 관리',
+        },
+        {
+            name: 'settings',
+            path: '/attendanceId',
+            icon: '/images/icons/setting-icon.svg',
+            iconActivate: '/images/icons/setting-activate-icon.svg',
+            label: '출석부 설정',
+        },
+    ];
+};
 
 const Navigation = (props: Iprops) => {
     const { status, setDummyList } = props;
+
+    const router = useRouter();
+    const attendanceId = usePathname().split('/')[2];
+
     const [activeMenu, setActiveMenu] = useState<string>('attendance');
 
-    const handleMenuClick = (menuName: string) => {
-        setActiveMenu(menuName);
+    const handleMenuClick = (menu: Menu) => {
+        setActiveMenu(menu.name);
+        router.push(menu.path);
     };
 
     const resetAllStatus = () => {
@@ -72,10 +85,10 @@ const Navigation = (props: Iprops) => {
                 </BoxSTNavigationActivate>
             ) : (
                 <BoxSTNavigation>
-                    {menus.map((menu, index) => (
+                    {menuList(attendanceId).map((menu, index) => (
                         <BoxSTMenu
                             key={menu.name}
-                            onClick={() => handleMenuClick(menu.name)}
+                            onClick={() => handleMenuClick(menu)}
                         >
                             {activeMenu === menu.name ? (
                                 <Image
