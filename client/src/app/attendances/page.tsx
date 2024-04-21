@@ -79,7 +79,6 @@ const Page: React.FC = () => {
 
     return (
         <ContainerST>
-            {' '}
             <StyledBoxST>
                 {isCreate ? (
                     <AttendanceCreateForm setIsCreate={setIsCreate} />
