@@ -43,10 +43,17 @@ class AttendanceApiClient extends BaseApiClient {
         });
 
     /** 날짜에 따른 출석부 명단 */
-    public getAttendanceById = (attendanceId: string) =>
+    public getAttendanceById = (attendanceId: string, date: string) =>
         this.axios.request({
             method: 'GET',
-            url: `/schedules/attendanceId/${attendanceId}/today`,
+            url: `/schedules/attendanceId/${attendanceId}/${date}`,
+        });
+
+    /** 오늘 출석 요약 */
+    public getAttendanceSummary = (attendanceId: string, date: string) =>
+        this.axios.request({
+            method: 'GET',
+            url: `/records/attendance/${attendanceId}/${date}/summary `,
         });
 
     /** 특정 출석부 정보(상세) */

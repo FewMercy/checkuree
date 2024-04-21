@@ -89,22 +89,17 @@ export class SchedulesService {
 
     const dayType = convertNumberToDay(dayNumber);
 
-    const querybuilder = this.scheduleRepository
+    const queryBuilder = this.scheduleRepository
       .createQueryBuilder('schedule')
-      .select([
-        'schedule', // 필요한 schedule 필드 선택
-        'attendee',
-        'records', // 필요한 records 필드 선택
-      ])
       .leftJoinAndSelect('schedule.attendee', 'attendee')
       .leftJoinAndSelect('attendee.records', 'records', 'records.date = :date', { date: dateString })
       .where('attendee.attendanceId = :attendanceId', { attendanceId })
       .andWhere('schedule.day = :day', { day: dayType })
       .skip(scheduleFilterDto.getOffset())
       .take(scheduleFilterDto.getLimit())
-      .orderBy('schedule.time , attendee.name', 'ASC');
+      .orderBy('schedule.time', 'ASC');
 
-    const [items, count] = await querybuilder.getManyAndCount();
+    const [items, count] = await queryBuilder.getManyAndCount();
 
     return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
   }
