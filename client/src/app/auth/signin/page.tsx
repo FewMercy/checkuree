@@ -4,7 +4,6 @@
 import AuthApiClient, { LoginData } from '@/api/AuthApiClient';
 import {
     Box,
-    Button,
     Checkbox,
     Container,
     CssBaseline,
@@ -17,15 +16,11 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { setTokens } from '@/libs/auth';
-import { useMediaQuery } from 'react-responsive';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 const Index = () => {
     const router = useRouter();
-    const isSmall = useMediaQuery({
-        query: '(min-width: 393px)',
-    });
 
     const [mounted, setMounted] = useState<boolean>(false);
     const [login, setLogin] = useState<LoginData>({
@@ -80,51 +75,51 @@ const Index = () => {
     }, []);
 
     return (
-        <>
-            <ContainerST>
-                <CssBaseline />
-                <StyledBoxST>
-                    <LoginTypographyST>로그인</LoginTypographyST>
-                    <Box
-                        component="form"
-                        display={'flex'}
-                        flexDirection={'column'}
-                        gap={'10px'}
-                    >
-                        <TextField
-                            value={login.username || ''}
-                            placeholder="아이디를 입력해주세요."
+        <ContainerST>
+            <StyledBoxST>
+                <LoginTypographyST>로그인</LoginTypographyST>
+                <Box
+                    component="form"
+                    display={'flex'}
+                    flexDirection={'column'}
+                    gap={'12px'}
+                >
+                    <TextField
+                        value={login.username || ''}
+                        placeholder="아이디를 입력해주세요."
+                        onChange={(e) => onChange('username', e.target.value)}
+                        inputProps={TextFiledInputProps}
+                        sx={{
+                            borderRadius: '8px',
+                        }}
+                    />
+                    <TextField
+                        type="password"
+                        placeholder="비밀번호를 입력해주세요."
+                        onChange={(e) => onChange('password', e.target.value)}
+                        inputProps={TextFiledInputProps}
+                    />
+                </Box>
+            </StyledBoxST>
+            <BoxSTLoginCommon gap={'38px'}>
+                <BoxSTLoginCommon gap={'4px'}>
+                    <BoxSTLoginMaintain>
+                        <StyledCheckbox
+                            inputProps={{
+                                style: {
+                                    padding: 0,
+                                },
+                            }}
                             onChange={(e) =>
-                                onChange('username', e.target.value)
+                                onChange('isAutoLogin', e.target?.checked)
                             }
-                            inputProps={TextFiledInputProps}
                         />
-                        <TextField
-                            type="password"
-                            placeholder="비밀번호를 입력해주세요."
-                            onChange={(e) =>
-                                onChange('password', e.target.value)
-                            }
-                            inputProps={TextFiledInputProps}
-                        />
-                        <BoxSTLoginMaintain>
-                            <StyledCheckbox
-                                inputProps={{
-                                    style: {
-                                        padding: 0,
-                                    },
-                                }}
-                                sx={{
-                                    color: '#D9D9D9',
-                                }}
-                                onChange={(e) =>
-                                    onChange('isAutoLogin', e.target?.checked)
-                                }
-                            />
-                            <StyledLoginMaintainTypography>
-                                로그인 유지
-                            </StyledLoginMaintainTypography>
-                        </BoxSTLoginMaintain>
+                        <StyledLoginMaintainTypography>
+                            로그인 유지
+                        </StyledLoginMaintainTypography>
+                    </BoxSTLoginMaintain>
+
+                    <BoxSTLoginCommon gap={'10px'}>
                         <BoxSTLogin
                             onClick={() => {
                                 loginMutation(login);
@@ -132,7 +127,11 @@ const Index = () => {
                         >
                             로그인 하기
                         </BoxSTLogin>
-                        <Box display={'flex'} justifyContent={'space-between'}>
+                        <Box
+                            display={'flex'}
+                            justifyContent={'space-between'}
+                            padding={'0px 4px'}
+                        >
                             <StyledLinkTypography
                                 onClick={() => router.push('/auth/signup')}
                             >
@@ -144,37 +143,37 @@ const Index = () => {
                                 아이디/비밀번호 찾기
                             </StyledLinkTypography>
                         </Box>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                            }}
-                        >
-                            <StyledKakaoLoginButton
-                                onClick={() => {
-                                    alert('준비중인 기능입니다.');
-                                }}
-                            >
-                                카카오 로그인
-                            </StyledKakaoLoginButton>
-                            <StyledNaverLoginButton
-                                onClick={() => {
-                                    alert('준비중인 기능입니다.');
-                                }}
-                            >
-                                네이버 로그인
-                            </StyledNaverLoginButton>
-                        </Box>
-                    </Box>
-                    <Image
-                        src={'/images/logos/checkuree_logo.svg'}
-                        width={100}
-                        height={100}
-                        alt=""
-                    />
-                </StyledBoxST>
-            </ContainerST>
-        </>
+                    </BoxSTLoginCommon>
+                </BoxSTLoginCommon>
+                <Box display={'flex'} justifyContent={'space-between'}>
+                    <StyledKakaoLoginButton
+                        onClick={() => {
+                            alert('준비중인 기능입니다.');
+                        }}
+                    >
+                        카카오 로그인
+                    </StyledKakaoLoginButton>
+                    <StyledNaverLoginButton
+                        onClick={() => {
+                            alert('준비중인 기능입니다.');
+                        }}
+                    >
+                        네이버 로그인
+                    </StyledNaverLoginButton>
+                </Box>
+            </BoxSTLoginCommon>
+
+            <Image
+                src={'/images/logos/checkuree_logo.svg'}
+                width={100}
+                height={100}
+                alt=""
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                }}
+            />
+        </ContainerST>
     );
 };
 
@@ -196,9 +195,11 @@ const TextFiledInputProps = {
 const ContainerST = styled(Container)(() => {
     return {
         display: 'flex',
-        justifyContent: 'space-around',
+        flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
         height: '100%',
+        gap: '20px',
     };
 });
 
@@ -228,6 +229,7 @@ const StyledCheckbox = styled(Checkbox)(() => {
         border: 0,
         width: '14px',
         height: '14px',
+        color: '#D9D9D9',
     };
 });
 
@@ -253,6 +255,13 @@ const StyledLoginMaintainTypography = styled(Typography)(() => {
     };
 });
 
+const BoxSTLoginCommon = styled(Box)(() => {
+    return {
+        display: 'flex',
+        flexDirection: 'column',
+    };
+});
+
 const BoxSTLogin = styled(Box)(() => {
     return {
         width: '318px',
@@ -268,22 +277,27 @@ const BoxSTLogin = styled(Box)(() => {
 
 const BoxSTLoginMaintain = styled(Box)(() => {
     return {
+        marginTop: '10px',
         display: 'flex',
         alignItems: 'center',
         gap: '5px',
-        paddingLeft: '1px',
+        paddingLeft: '5px',
     };
 });
 
 // 카카오 및 네이버 로그인 버튼 스타일
-const StyledLoginButton = styled(Button)(() => {
+const StyledLoginButton = styled(Box)(() => {
     return {
         width: '152px',
         height: '40px',
         borderRadius: '20px',
         fontSize: '14px',
+        lineHeight: '19.07px',
         fontWeight: 600,
         textTransform: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     };
 });
 
