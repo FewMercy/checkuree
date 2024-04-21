@@ -107,7 +107,6 @@ const AttendanceCreateForm = (props: IProps) => {
         setSelectedDays(updatedSelectedDays);
     };
 
-    console.log(isTardy);
     return (
         <ContainerSTForm>
             <Image
@@ -127,16 +126,21 @@ const AttendanceCreateForm = (props: IProps) => {
                 출석부 이미지
             </Typography>
             {imageSrc ? (
-                <Avatar
+                <Image
                     src={imageSrc}
                     alt="profile"
-                    sx={{
-                        width: '92px',
-                        height: '92px',
-                    }}
+                    width={92}
+                    height={92}
+                    objectFit="contain"
+                    style={{ border: '1px solid #D5D5D5', borderRadius: '8px' }}
                 />
             ) : (
-                <BoxSTImage onClick={handleImageClick} />
+                <BoxSTImage
+                    onClick={handleImageClick}
+                    sx={{
+                        background: 'lightgray',
+                    }}
+                />
             )}
             <input
                 type="file"
