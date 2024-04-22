@@ -18,6 +18,8 @@ import { SetStateAction, useRef, useState } from 'react';
 
 import Image from 'next/image';
 import { useMutation } from '@tanstack/react-query';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
+import CommonApiClient from '@/api/CommonApiClient';
 
 interface AttendanceData {
     title: string;
@@ -59,8 +61,19 @@ const AttendanceCreateForm = (props: IProps) => {
     // 출석부 지각 사용 여부
     const [isTardy, setIsTardy] = useState<string>('N');
 
-    const { mutate } = useMutation({
+    // 이미지 업로드
+    const { mutate: imageMutation } = useMutation({
         mutationKey: [''],
+        mutationFn: async () => await CommonApiClient.getInstance().uploadImage,
+    });
+
+    // 출석부 생성
+    const { mutate: attendanceMutaion } = useMutation({
+        mutationKey: [''],
+        mutationFn: async () =>
+            await AttendanceApiClient.getInstance()
+                .createAttandance('')
+                .then((res) => res.data),
     });
 
     // TODO 파일 업로드
@@ -107,7 +120,6 @@ const AttendanceCreateForm = (props: IProps) => {
         setSelectedDays(updatedSelectedDays);
     };
 
-    console.log(isTardy);
     return (
         <ContainerSTForm>
             <Image
@@ -127,16 +139,21 @@ const AttendanceCreateForm = (props: IProps) => {
                 출석부 이미지
             </Typography>
             {imageSrc ? (
-                <Avatar
+                <Image
                     src={imageSrc}
                     alt="profile"
-                    sx={{
-                        width: '92px',
-                        height: '92px',
-                    }}
+                    width={92}
+                    height={92}
+                    objectFit="contain"
+                    style={{ border: '1px solid #D5D5D5', borderRadius: '8px' }}
                 />
             ) : (
-                <BoxSTImage onClick={handleImageClick} />
+                <BoxSTImage
+                    onClick={handleImageClick}
+                    sx={{
+                        background: 'lightgray',
+                    }}
+                />
             )}
             <input
                 type="file"
@@ -267,6 +284,15 @@ const AttendanceCreateForm = (props: IProps) => {
 
 export default AttendanceCreateForm;
 
+const ContainerSTForm = styled(Container)(() => {
+    return {
+        display: 'flex',
+        gap: '24px',
+        flexDirection: 'column',
+        flexWrap: 'wrap',
+    };
+});
+
 const TextFieldProps = {
     style: {
         backgroundColor: 'white',
@@ -279,15 +305,6 @@ const TextFieldProps = {
         fontSize: '16px',
     },
 };
-
-const ContainerSTForm = styled(Container)(() => {
-    return {
-        display: 'flex',
-        gap: '24px',
-        flexDirection: 'column',
-        flexWrap: 'wrap',
-    };
-});
 
 const BoxSTImage = styled(Box)(() => {
     return {

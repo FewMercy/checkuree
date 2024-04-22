@@ -15,7 +15,6 @@ import Navigation from '@/app/attendances/_components/Navigation';
 // Next
 import { usePathname } from 'next/navigation';
 import { dateFormat } from '@/utils';
-import { GetServerSideProps } from 'next';
 
 // Types
 export interface AttendanceItemType {
@@ -157,24 +156,25 @@ const Index = () => {
 export default Index;
 
 // TODO: 좀 더 작업 해야 함
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//     const queryClient = new QueryClient();
-//     const id = context.params!.id as string;
-//
-//     const today = dateFormat(new Date(), 'dash');
-//     await queryClient.prefetchQuery({
-//         queryKey: ['attendance', id],
-//         queryFn: async () => {
-//             const response =
-//                 await AttendanceApiClient.getInstance().getAttendanceById(
-//                     id,
-//                     today
-//                 );
-//             return response.data;
-//         },
-//     });
-//
-//     return {
-//         props: {},
-//     };
-// };
+
+Index.GetServerSideProps = async (context: any) => {
+    const queryClient = new QueryClient();
+    const id = context.params!.id as string;
+    const today = context.params!.today as string;
+    await queryClient.prefetchQuery({
+        queryKey: ['attendance', id],
+        queryFn: async () => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceById(
+                    id,
+                    today
+                );
+            return response.data;
+        },
+    });
+    return {
+        props: {
+            dehydratedState: dehydrate(queryClient),
+        },
+    };
+};
