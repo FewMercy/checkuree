@@ -1,5 +1,5 @@
 import BaseApiClient, { Tokens } from '../BaseApiClient';
-import { AttendanceDetail } from '@/api/attendances/schema';
+import { AttendanceData, AttendanceDetail } from '@/api/attendances/schema';
 
 export interface ICommonResponse<T> {
     code: number;
@@ -61,6 +61,13 @@ class AttendanceApiClient extends BaseApiClient {
         this.axios.request<AttendanceDetail>({
             method: 'GET',
             url: `/attendees/attendanceId/${attendanceId}`,
+        });
+
+    /** 출석대상의 스케쥴조회 */
+    public getAttendeeSchedule = (attendeeId: string) =>
+        this.axios.request<AttendanceData[]>({
+            method: 'GET',
+            url: `/schedules/attendee/${attendeeId}`,
         });
 
     public createAttandance = (id: string) =>

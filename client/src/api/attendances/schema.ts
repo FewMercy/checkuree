@@ -9,12 +9,13 @@ export interface AttendanceData {
     deletedAt: string | null;
     description: '범수교회';
     id: string;
+    name: string;
     title: string;
     updateId: string | null;
     updatedAt: string;
 }
 export interface AttendanceDetail {
-    data: AttendanceData;
-    message: string;
+    items: AttendanceData[];
     success: boolean;
+    count: number;
 }

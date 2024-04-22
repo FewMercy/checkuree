@@ -48,7 +48,7 @@ const FormContents = ({
     data,
     onClose,
 }: {
-    data: AttendanceData | undefined;
+    data: AttendanceData;
     onClose: () => void;
 }) => {
     const [selectedDay, setSelectedDay] = useState<string>(data?.days[0] || '');
