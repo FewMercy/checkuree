@@ -34,7 +34,7 @@ const ListManagement = () => {
 
     // fetching API
     const { data, isLoading } = useQuery({
-        queryKey: ['attendance-detail'],
+        queryKey: ['attendee-list'],
         queryFn: async () => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceDetail(
@@ -114,6 +114,7 @@ const ListManagement = () => {
                 children={
                     <FormContents
                         data={{ ...attendeeList, days: ['MONDAY'] }}
+                        attendanceId={attendanceId}
                         onClose={() => setIsAddOpen(false)}
                     />
                 }

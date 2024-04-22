@@ -19,3 +19,22 @@ export interface AttendanceDetail {
     success: boolean;
     count: number;
 }
+
+export interface CreateAttendee {
+    attendanceId: string;
+    name: string;
+    gender: string;
+    mobileNumber?: string;
+    subMobileNumber?: string;
+    birth: string;
+    course?: string;
+    grade?: string;
+    school?: string;
+    description?: string;
+}
+
+export interface CreateSchedules {
+    attendanceId: string;
+    attendeeId: string;
+    singleSchedules: { day: string; time: string }[];
+}

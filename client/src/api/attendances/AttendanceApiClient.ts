@@ -1,5 +1,10 @@
 import BaseApiClient, { Tokens } from '../BaseApiClient';
-import { AttendanceData, AttendanceDetail } from '@/api/attendances/schema';
+import {
+    AttendanceData,
+    AttendanceDetail,
+    CreateAttendee,
+    CreateSchedules,
+} from '@/api/attendances/schema';
 
 export interface ICommonResponse<T> {
     code: number;
@@ -78,11 +83,19 @@ class AttendanceApiClient extends BaseApiClient {
         });
 
     /** 명단관리 > 출석대상 등록 */
-    public createAttendee = () =>
+    public createAttendee = (parameters: CreateAttendee) =>
         this.axios.request({
             method: 'POST',
             url: `/attendees`,
-            data: '',
+            data: parameters,
+        });
+
+    /** 명단관리 > 출석대상 등록 후 스케쥴 등록 */
+    public createSchedules = (parameters: CreateSchedules) =>
+        this.axios.request({
+            method: 'POST',
+            url: `/schedules`,
+            data: parameters,
         });
 }
 
