@@ -56,17 +56,25 @@ class AttendanceApiClient extends BaseApiClient {
             url: `/records/attendance/${attendanceId}/${date}/summary `,
         });
 
-    /** 특정 출석부 정보(상세) */
+    /** 특정 출석부의 출석대상 명단 */
     public getAttendanceDetail = (attendanceId: string) =>
         this.axios.request<AttendanceDetail>({
             method: 'GET',
-            url: `/attendances/${attendanceId}`,
+            url: `/attendees/attendanceId/${attendanceId}`,
         });
 
     public createAttandance = (id: string) =>
         this.axios.request({
             method: 'POST',
             url: `/schedules/attendanceId/${id}?days=TUESDAY&days=MONDAY&timeFrom=0900&timeTo=1830`,
+            data: '',
+        });
+
+    /** 명단관리 > 출석대상 등록 */
+    public createAttendee = () =>
+        this.axios.request({
+            method: 'POST',
+            url: `/attendees`,
             data: '',
         });
 }

@@ -29,6 +29,8 @@ import {
 } from '@/styles/app/listManagement.styles';
 import { AttendanceData, AttendanceDetail } from '@/api/attendances/schema';
 import Icon from '@/components/Icon';
+import { useMutation } from '@tanstack/react-query';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
 // Types
 interface Inputs {
@@ -38,6 +40,7 @@ interface Inputs {
     birthYear: string;
     birthday: string;
     mobileNumber: string;
+    subMobileNumber: string;
     times: Record<string, string[]>;
 }
 
@@ -77,7 +80,18 @@ const FormContents = ({
     });
     const onSubmit = handleSubmit((data) => {
         console.log('???data', data);
+        // mutate();
     });
+
+    const { data: attendee, mutate } = useMutation({
+        mutationFn: async () => {
+            const response =
+                await AttendanceApiClient.getInstance().createAttendee();
+            return response.data;
+        },
+    });
+
+    console.log('attendee', attendee);
 
     // 30분 간격으로 시간을 생성하는 함수
     function generateTimeOptions() {
@@ -257,6 +271,13 @@ const FormContents = ({
                     <div className="label">핸드폰 번호</div>
                     <div className="value">
                         <TextField {...register('mobileNumber')} />
+                    </div>
+                </div>
+
+                <div className="form-row">
+                    <div className="label">보호자 핸드폰 번호</div>
+                    <div className="value">
+                        <TextField {...register('subMobileNumber')} />
                     </div>
                 </div>
 
