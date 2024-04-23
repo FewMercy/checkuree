@@ -34,13 +34,38 @@ export class AttendeesService {
 
   async findAllByAttendanceId(attendanceId: string): Promise<ResponseWithoutPaginationDto<Attendee>> {
     const [items, count] = await this.attendeeRepository.findAndCount({
+      select: {
+        schedules: {
+          id: true,
+          time: true,
+          day: true,
+        },
+      },
+      relations: { schedules: true },
       where: { attendanceId: attendanceId },
     });
     return new ResponseWithoutPaginationDto(count, items);
   }
 
   async findOneById(id: string): Promise<CommonResponseDto<Attendee>> {
-    return new CommonResponseDto('SUCCESS FIND ATTENDEE', await this.attendeeRepository.findOneBy({ id }));
+    return new CommonResponseDto(
+      'SUCCESS FIND ATTENDEE',
+      await this.attendeeRepository.findOne({
+        select: {
+          schedules: {
+            id: true,
+            time: true,
+            day: true,
+          },
+        },
+        relations: {
+          schedules: true,
+        },
+        where: {
+          id,
+        },
+      }),
+    );
   }
 
   async update(id: string, updateAttendeeDto: UpdateAttendeeDto): Promise<CommonResponseDto<any>> {

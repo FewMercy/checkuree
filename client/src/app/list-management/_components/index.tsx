@@ -3,7 +3,7 @@
 import {
     Avatar,
     Box,
-    Container,
+    Button,
     FormControlLabel,
     Grid,
     MenuItem,
@@ -12,12 +12,10 @@ import {
     Select,
     TextField,
     Typography,
-    styled,
 } from '@mui/material';
 import { SetStateAction, useRef, useState } from 'react';
 
 import Image from 'next/image';
-import { useMutation } from '@tanstack/react-query';
 
 interface AttendanceData {
     title: string;
@@ -26,48 +24,28 @@ interface AttendanceData {
 }
 interface IProps {
     setIsCreate: React.Dispatch<SetStateAction<boolean>>;
+    setAttendanceCreate: React.Dispatch<
+        SetStateAction<AttendanceData | undefined>
+    >;
 }
-const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
 
 const AttendanceCreateForm = (props: IProps) => {
-    const { setIsCreate } = props;
-    const startHours = [];
-    const endHours = [];
-
-    // for
-    //State
-    const [imageSrc, setImageSrc] = useState<string | null>(null);
-    const [fileImage, setFileImage] = useState<File | undefined>();
-    const [tempSelected, setTempSelected] = useState<string | undefined>();
-    const [attendanceCreate, setAttendanceCreate] = useState<
-        AttendanceData | undefined
-    >();
-
-    // 시간 선택
-    const [startTimeValue, setStartTimeValue] = useState<string>('');
-    const [endTimeValue, setEndTimeValue] = useState('');
+    const { setIsCreate, setAttendanceCreate } = props;
+    const hours = [];
     for (let i = 0; i <= 23; i++) {
         const hour = i < 10 ? `0${i}` : `${i}`;
-        startHours.push(hour);
+        hours.push(hour);
     }
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
 
-    for (let i = parseInt(startTimeValue); i <= 23; i++) {
-        const hour = i < 10 ? `0${i}` : `${i}`;
-        endHours.push(hour);
-    }
-
-    // 출석부 지각 사용 여부
-    const [isTardy, setIsTardy] = useState<string>('N');
-
-    const { mutate } = useMutation({
-        mutationKey: [''],
-    });
-
+    const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
+    const [fileImage, setFileImage] = useState<any>();
+    const [tempSelected, setTempSelected] = useState<string | undefined>();
     // TODO 파일 업로드
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = event.target.files?.[0];
-        setFileImage(selectedFile);
+    const handleFileChange = (event: any) => {
+        const selectedFile = event.target.files[0];
+        setFileImage(event.target.files[0]);
         const reader = new FileReader();
 
         reader.onload = (e) => {
@@ -107,9 +85,8 @@ const AttendanceCreateForm = (props: IProps) => {
         setSelectedDays(updatedSelectedDays);
     };
 
-    console.log(isTardy);
     return (
-        <ContainerSTForm>
+        <Box gap={'24px'} display={'flex'} flexDirection={'column'}>
             <Image
                 src={'/images/icons/arrow-back-icon.svg'}
                 alt=""
@@ -120,10 +97,22 @@ const AttendanceCreateForm = (props: IProps) => {
                 }}
                 onClick={() => setIsCreate(false)}
             />
-            <Typography fontSize={20} fontWeight={600} lineHeight={'27.24px'}>
+            <Typography
+                sx={{
+                    fontSize: '20px',
+                    fontWeight: 600,
+                    lineHeight: '27.24px',
+                }}
+            >
                 정보 입력
             </Typography>
-            <Typography fontSize={14} lineHeight={'19.07px'} color={'#797979'}>
+            <Typography
+                sx={{
+                    fontSize: '14px',
+                    lineHeight: '19.07px',
+                    color: '#797979',
+                }}
+            >
                 출석부 이미지
             </Typography>
             {imageSrc ? (
@@ -136,18 +125,40 @@ const AttendanceCreateForm = (props: IProps) => {
                     }}
                 />
             ) : (
-                <BoxSTImage onClick={handleImageClick} />
+                <Box
+                    sx={{
+                        width: '92px',
+                        height: '92px',
+                        border: '1px solid #D5D5D5',
+                        borderRadius: '8px',
+                    }}
+                    onClick={handleImageClick}
+                    style={{ cursor: 'pointer' }}
+                />
             )}
             <input
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e)}
             />
-
             {/* 출석부 이름 */}
-            <BoxSTTitle>
-                <TypoST>출석부 이름</TypoST>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                }}
+            >
+                <Typography
+                    sx={{
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        lineHeight: '19.07px',
+                    }}
+                >
+                    출석부 이름
+                </Typography>
                 <TextField
                     sx={{
                         '&::placeholder': {
@@ -158,19 +169,25 @@ const AttendanceCreateForm = (props: IProps) => {
                     inputProps={TextFieldProps}
                     onChange={(e) => onChange('title', e.target.value)}
                 />
-            </BoxSTTitle>
+            </Box>
             {/*  출석부 지각 사용 여부*/}
-            <BoxSTTitle>
-                <TypoST>출석부 지각 사용 여부</TypoST>
-                <RadioGroup
-                    aria-label="gender"
-                    name="gender1"
-                    value={isTardy}
-                    row
-                    onChange={(e) => {
-                        setIsTardy(e.target.value);
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                }}
+            >
+                <Typography
+                    sx={{
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        lineHeight: '19.07px',
                     }}
                 >
+                    출석부 지각 사용 여부
+                </Typography>
+                <RadioGroup aria-label="gender" name="gender1" row>
                     <FormControlLabel
                         value="Y"
                         control={<Radio />}
@@ -182,92 +199,146 @@ const AttendanceCreateForm = (props: IProps) => {
                         label="사용하지 않음"
                     />
                 </RadioGroup>
-            </BoxSTTitle>
+            </Box>
             {/*  요일 선택 */}
-            <BoxSTTitle>
-                <TypoST>요일 선택</TypoST>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                }}
+            >
+                <Typography
+                    sx={{
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        lineHeight: '19.07px',
+                    }}
+                >
+                    요일 선택
+                </Typography>
                 <Grid container spacing={0} justifyContent="space-between">
                     {daysOfWeek.map((day, index) => (
                         <Grid key={index} item>
-                            <TypoSTDay
+                            <Typography
                                 align="center"
                                 sx={{
+                                    width: 40,
+                                    height: 40,
+                                    lineHeight: '40px',
                                     border: `1px solid ${selectedDays.has(day) ? '#59996B' : '#D5D5D5'}`,
                                     color: selectedDays.has(day)
                                         ? '#59996B'
                                         : '#C9C9C9',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
                                 }}
                                 onClick={() => handleSelectDay(day)}
                             >
                                 {day}
-                            </TypoSTDay>
+                            </Typography>
                         </Grid>
                     ))}
                 </Grid>
-            </BoxSTTitle>
+            </Box>
 
             {/*  시간 선택 */}
-            <BoxSTTitle>
-                <TypoST>시간 선택</TypoST>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                }}
+            >
+                <Typography
+                    sx={{
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        lineHeight: '19.07px',
+                    }}
+                >
+                    시간 선택
+                </Typography>
                 <Grid container spacing={2} justifyContent="space-between">
                     <Grid item>
-                        <SelectSTTime
+                        <Select
                             labelId="start-time-label"
                             id="start-time-select"
                             displayEmpty
-                            onChange={(e) => {
-                                setStartTimeValue(e.target.value as string);
-                            }}
                             renderValue={(v: any) =>
                                 v?.length ? (
                                     v
                                 ) : (
-                                    <span color="#D5D5D5">시작 시간 선택</span>
+                                    <span style={{ color: '#D5D5D5' }}>
+                                        시작 시간 선택
+                                    </span>
                                 )
                             }
+                            sx={{
+                                width: 163,
+                                height: 40,
+                                border: '1px solid #D5D5D5',
+                                borderRadius: '8px',
+                            }}
                         >
-                            {startHours.map((hour) => (
+                            {hours.map((hour) => (
                                 <MenuItem key={hour} value={hour}>
                                     {hour}
                                 </MenuItem>
                             ))}
-                        </SelectSTTime>
+                        </Select>
                     </Grid>
                     <Grid item>
-                        <SelectSTTime
+                        <Select
                             labelId="end-time-label"
                             id="end-time-select"
                             displayEmpty
-                            disabled={startTimeValue === ''}
-                            onChange={(e) => {
-                                setEndTimeValue(e.target.value as string);
-                            }}
                             renderValue={(v: any) =>
                                 v?.length ? (
                                     v
                                 ) : (
-                                    <span color="#D5D5D5">종료 시간 선택</span>
+                                    <span style={{ color: '#D5D5D5' }}>
+                                        종료 시간 선택
+                                    </span>
                                 )
                             }
+                            sx={{
+                                width: 163,
+                                height: 40,
+                                border: '1px solid #D5D5D5',
+                                borderRadius: '8px',
+                            }}
                         >
-                            {endHours.map((hour) => (
+                            {hours.map((hour) => (
                                 <MenuItem key={hour} value={hour}>
                                     {hour}
                                 </MenuItem>
                             ))}
-                        </SelectSTTime>
+                        </Select>
                     </Grid>
                 </Grid>
-            </BoxSTTitle>
+            </Box>
 
-            <BoxSTSave>저장하기</BoxSTSave>
-        </ContainerSTForm>
+            <Button
+                sx={{
+                    width: '100%',
+                    height: '48px',
+                    border: '1px solid #59996B',
+                    background: ' #59996B',
+                    color: 'white',
+                    borderRadius: '8px',
+                }}
+            >
+                저장하기
+            </Button>
+        </Box>
     );
 };
 
 export default AttendanceCreateForm;
 
 const TextFieldProps = {
+    disableUnderline: true,
     style: {
         backgroundColor: 'white',
         padding: '0px',
@@ -279,70 +350,3 @@ const TextFieldProps = {
         fontSize: '16px',
     },
 };
-
-const ContainerSTForm = styled(Container)(() => {
-    return {
-        display: 'flex',
-        gap: '24px',
-        flexDirection: 'column',
-        flexWrap: 'wrap',
-    };
-});
-
-const BoxSTImage = styled(Box)(() => {
-    return {
-        width: '92px',
-        height: '92px',
-        border: '1px solid #D5D5D5',
-        borderRadius: '8px',
-        cursor: 'pointer',
-    };
-});
-const BoxSTTitle = styled(Box)(() => {
-    return {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-    };
-});
-
-const TypoST = styled(Typography)(() => {
-    return {
-        fontSize: '14px',
-        fontWeight: 500,
-        lineHeight: '19.07px',
-    };
-});
-
-const BoxSTSave = styled(Box)(() => {
-    return {
-        width: '100%',
-        height: '48px',
-        border: '1px solid #59996B',
-        background: ' #59996B',
-        color: 'white',
-        borderRadius: '8px',
-        display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    };
-});
-
-const SelectSTTime = styled(Select)(() => {
-    return {
-        width: 163,
-        height: 40,
-        border: '1px solid #D5D5D5',
-        borderRadius: '8px',
-    };
-});
-
-const TypoSTDay = styled(Typography)(() => {
-    return {
-        width: 40,
-        height: 40,
-        lineHeight: '40px',
-        borderRadius: '8px',
-        cursor: 'pointer',
-    };
-});
