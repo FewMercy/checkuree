@@ -111,8 +111,7 @@ const ListManagement = () => {
             <BottomDrawer
                 open={isAddOpen}
                 onClose={() => setIsAddOpen(false)}
-                // children={<FormContents />}
-                children={<></>}
+                children={<FormContents />}
             />
         </ListManagementContainer>
     );

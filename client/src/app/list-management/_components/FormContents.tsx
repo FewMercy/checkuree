@@ -52,8 +52,7 @@ const FormContents = ({
     attendanceId,
     onClose,
 }: {
-    // data: AttendanceData;
-    data: any;
+    data: AttendanceData;
     attendanceId: string;
     onClose: () => void;
 }) => {
@@ -175,7 +174,7 @@ const FormContents = ({
 
         if (data && data.days) {
             let initialDays = {};
-            data.days.forEach((day: any) => {
+            data.days.forEach((day) => {
                 Object.assign(initialDays, { [day]: [] });
             });
             setValue('times', initialDays);
@@ -318,7 +317,7 @@ const FormContents = ({
 
                 <div className="days-times-container">
                     <div className="days-container">
-                        {data?.days.map((day: any) => (
+                        {data?.days.map((day) => (
                             <div
                                 className={`day ${selectedDay === day ? 'selected' : ''}`}
                                 onClick={() => setSelectedDay(day)}
