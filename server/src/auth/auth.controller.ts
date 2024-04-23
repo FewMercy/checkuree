@@ -68,7 +68,9 @@ export class AuthController {
 
       res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}; HttpOnly; Secure`);
       res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}; HttpOnly; Secure`);
-      res.redirect('https://checkuree.com/attendance');
+      res.cookie('ACCESS_TOKEN', tokenResponse.data.accessToken, { httpOnly: true, secure: true })
+      res.cookie('REFRESH_TOKEN', tokenResponse.data.refreshToken, { httpOnly: true, secure: true })
+      res.redirect('https://checkuree.com/attendances');
     } catch (error) {
       const errorMessage = encodeURIComponent(error.message || 'unknown_error');
       const errorCode = encodeURIComponent(error.code || 'unknown_error');
