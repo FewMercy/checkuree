@@ -19,7 +19,7 @@ interface ItemType extends AttendanceData {
 
 interface PropsType {
     index: number;
-    item: ItemType;
+    item: any;
     handleListItem: (
         index: number,
         field: string,
