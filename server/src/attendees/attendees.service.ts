@@ -8,8 +8,6 @@ import { In, Repository } from 'typeorm';
 import { DeleteAttendeeDto } from './dto/delete-attendee.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
-import { ExtractJwt } from 'passport-jwt';
-import fromAuthHeaderWithScheme = ExtractJwt.fromAuthHeaderWithScheme;
 import { AttendeeGrade } from './grade.enum';
 import { Gender } from './gender.enum';
 
@@ -21,15 +19,12 @@ export class AttendeesService {
   ) {}
   async createAttendee(createAttendeeDto: CreateAttendeeDto, user: User): Promise<CommonResponseDto<any>> {
     const attendee = createAttendeeDto.toEntity();
-    if (!Object.values(Gender).includes(attendee.gender)) {
-      throw new BadRequestException('성별이 올바르지 않습니다.');
-    }
+    this.validateGender(attendee.gender);
 
     if (attendee.grade) {
-      if (!Object.values(AttendeeGrade).includes(attendee.grade)) {
-        throw new BadRequestException('학년이 올바르지 않습니다.');
-      }
+      this.validateGrade(attendee.grade);
     }
+
     attendee.createId = user.id;
 
     const createdAttendee = await this.attendeeRepository.save(attendee);
@@ -74,7 +69,14 @@ export class AttendeesService {
   }
 
   async update(id: string, updateAttendeeDto: UpdateAttendeeDto): Promise<CommonResponseDto<any>> {
-    await this.attendeeRepository.update({ id }, updateAttendeeDto);
+    if (updateAttendeeDto.gender) {
+      this.validateGender(updateAttendeeDto.gender);
+    }
+
+    if (updateAttendeeDto.grade) {
+      this.validateGrade(updateAttendeeDto.grade);
+    }
+    await this.attendeeRepository.update({ id, attendanceId: updateAttendeeDto.attendanceId }, updateAttendeeDto);
     return new CommonResponseDto('SUCCESS UPDATE ATTENDEE', { id: id });
   }
 
@@ -95,5 +97,17 @@ export class AttendeesService {
       attendanceId: deleteAttendeeDto.attendanceId,
     });
     return new CommonResponseDto('SUCCESS DELETE ATTENDEES');
+  }
+
+  private validateGender(gender: Gender | undefined): void {
+    if (gender && !Object.values(Gender).includes(gender)) {
+      throw new BadRequestException('성별이 올바르지 않습니다.');
+    }
+  }
+
+  private validateGrade(grade: AttendeeGrade | undefined): void {
+    if (grade && !Object.values(AttendeeGrade).includes(grade)) {
+      throw new BadRequestException('학년이 올바르지 않습니다.');
+    }
   }
 }

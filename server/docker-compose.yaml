@@ -17,6 +17,6 @@ services:
     build: .
     container_name: my-backend-container
     ports:
-      - "12310:3000"
+      - "12310:12310"
     depends_on:
       - db

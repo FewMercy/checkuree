@@ -39,7 +39,7 @@ export class CreateAttendeeDto {
   })
   @MobileNumberTransform()
   @IsOptional()
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '출석 대상 전화번호',
     type: 'string',
     example: '01012345678',
@@ -52,7 +52,7 @@ export class CreateAttendeeDto {
   })
   @MobileNumberTransform()
   @IsOptional()
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '출석 대상 비상 전화번호',
     type: 'string',
     example: '01012345678',
