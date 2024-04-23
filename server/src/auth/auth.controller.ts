@@ -66,11 +66,11 @@ export class AuthController {
 
       const tokenResponse = await this.authService.oauthSignIn(kakaoUser, ip);
 
-      res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}; HttpOnly; Secure`);
-      res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}; HttpOnly; Secure`);
+      // res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}; HttpOnly; Secure`);
+      // res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}; HttpOnly; Secure`);
       res.cookie('ACCESS_TOKEN', tokenResponse.data.accessToken, { httpOnly: true, secure: true })
       res.cookie('REFRESH_TOKEN', tokenResponse.data.refreshToken, { httpOnly: true, secure: true })
-      res.redirect('https://checkuree.com/attendances');
+      res.redirect('localhost:3000/attendances');
     } catch (error) {
       const errorMessage = encodeURIComponent(error.message || 'unknown_error');
       const errorCode = encodeURIComponent(error.code || 'unknown_error');

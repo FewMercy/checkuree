@@ -8,7 +8,7 @@ class KakaoStrategy extends (0, passport_1.PassportStrategy)(passport_kakao_1.St
     constructor() {
         super({
             clientID: process.env.KAKAO_ID,
-            callbackURL: 'https://pond-checkuree.com/auth/kakao/callback',
+            callbackURL: 'http://localhost:12310/auth/kakao/callback',
         });
     }
     async validate(accessToken, refreshToken, profile, done) {
