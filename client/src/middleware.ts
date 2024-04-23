@@ -14,9 +14,11 @@ export default async function handler(req: NextRequest) {
     const accessToken = req.cookies.get(ACCESS_TOKEN_KEY);
     const refreshToken = req.cookies.get(REFRESH_TOKEN_KEY);
 
+    if (pathname === '/') {
+        return NextResponse.redirect(`${origin + '/auth/signin'}`);
+    }
     // 로그인 / 회원가입 페이지의 경우 로그인 되어 있을 시 메인으로 보낸다.
     if (accessToken != null && pathname === '/auth/signin') {
-        ``;
         return NextResponse.redirect(`${origin}/attendances`);
     }
 
