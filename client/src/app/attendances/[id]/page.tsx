@@ -6,14 +6,15 @@ import { Colors, Icons } from '@/styles/globalStyles';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
-import AttendanceApiClient from '@/api/AttendanceApiClient';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
-import AttendanceItem from '@/app/attendances/components/AttendanceItem';
+import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
 // Components
 import Icon from '@/components/Icon';
-import Navigation from '../components/Navigation';
+import Navigation from '@/app/attendances/_components/Navigation';
 // Next
 import { usePathname } from 'next/navigation';
+import { dateFormat } from '@/utils';
 
 // Types
 export interface AttendanceItemType {
@@ -29,12 +30,7 @@ export interface AttendanceItemType {
 const Index = () => {
     const attendanceId = usePathname().split('/')[2];
 
-    const statusIcons: { icon: string; count: number }[] = [
-        { icon: 'groups', count: 12 },
-        { icon: 'sentiment_satisfied_alt', count: 10 },
-        { icon: 'watch_later', count: 1 },
-        { icon: 'highlight_off', count: 1 },
-    ];
+    const today = dateFormat(new Date(), 'dash');
 
     // TODO: api 데이터 제대로 내려오면 하단의 attendance로 대체될 예정.
     const [dummyList, setDummyList] = useState<AttendanceItemType[]>([
@@ -47,18 +43,47 @@ const Index = () => {
         { id: 7, name: '계창선', status: '', isDetailOpen: false },
         { id: 8, name: '계창선', status: '', isDetailOpen: false },
     ]);
+
     const shouldShowNavigation = dummyList.some((item) => item.status !== '');
-    // // fetching API
-    // const { data: attendance, isLoading } = useQuery({
-    //     queryKey: ['attendance'],
-    //     queryFn: async () => {
-    //         const response =
-    //             await AttendanceApiClient.getInstance().getAttendanceById(
-    //                 attendanceId
-    //             );
-    //         return response.data;
-    //     },
-    // });
+    // fetching API
+    const { data: attendance, isLoading } = useQuery({
+        queryKey: ['attendanceToday'],
+        queryFn: async () => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceById(
+                    attendanceId,
+                    today
+                );
+            return response.data;
+        },
+    });
+    const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
+        queryKey: ['attendanceSummary'],
+        queryFn: async () => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceSummary(
+                    attendanceId,
+                    today
+                );
+            return response.data;
+        },
+    });
+
+    const statusIcons: { icon: string; count: number }[] = [
+        {
+            icon: 'groups',
+            count:
+                summaryData?.presentCount +
+                summaryData?.lateCount +
+                summaryData?.absenceCount,
+        },
+        {
+            icon: 'sentiment_satisfied_alt',
+            count: summaryData?.presentCount || 0,
+        },
+        { icon: 'watch_later', count: summaryData?.lateCount || 0 },
+        { icon: 'highlight_off', count: summaryData?.absenceCount || 0 },
+    ];
 
     /**
      * @description 출석/지각/결석 선택 및 상세사유 입력 등 출석대상 목록의 값을 변경하는 함수
@@ -77,8 +102,7 @@ const Index = () => {
         });
     };
 
-    console.log(dummyList);
-    // console.log('attendance', attendance);
+    console.log('attendance', attendance);
 
     // if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
 
@@ -136,11 +160,15 @@ export default Index;
 Index.GetServerSideProps = async (context: any) => {
     const queryClient = new QueryClient();
     const id = context.params!.id as string;
+    const today = context.params!.today as string;
     await queryClient.prefetchQuery({
         queryKey: ['attendance', id],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceById(id);
+                await AttendanceApiClient.getInstance().getAttendanceById(
+                    id,
+                    today
+                );
             return response.data;
         },
     });
