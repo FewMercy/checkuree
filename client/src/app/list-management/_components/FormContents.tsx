@@ -27,32 +27,63 @@ import {
     CalendarContainer,
     FormContentsContainer,
 } from '@/styles/app/listManagement.styles';
-import { AttendanceData, AttendanceDetail } from '@/api/attendances/schema';
+import {
+    AttendanceData,
+    AttendanceDetail,
+    CreateAttendee,
+    CreateSchedules,
+} from '@/api/attendances/schema';
 import Icon from '@/components/Icon';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
 // Types
 interface Inputs {
     name: string;
     gender: string;
-    birth: Date;
-    birthYear: string;
-    birthday: string;
+    birth: string;
     mobileNumber: string;
+    subMobileNumber: string;
     times: Record<string, string[]>;
 }
 
 const FormContents = ({
     data,
+    attendanceId,
     onClose,
 }: {
-    data: AttendanceData | undefined;
+    data: AttendanceData;
+    attendanceId: string;
     onClose: () => void;
 }) => {
+    const queryClient = useQueryClient();
+
     const [selectedDay, setSelectedDay] = useState<string>(data?.days[0] || '');
     const [timeOptions, setTimeOptions] = useState<
         { label: string; value: string }[]
     >([]);
     const [showCalendar, setShowCalendar] = useState(false);
+
+    const {
+        watch,
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<Inputs>({
+        defaultValues: { gender: 'MALE' },
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
+    });
+
+    const onSubmit = handleSubmit((data) => {
+        // TODO: times 정보는 schedule로 보내야 함.
+        const { times, subMobileNumber, ...rest } = data;
+
+        if (attendanceId) {
+            mutateAttendee({ ...rest, attendanceId });
+        }
+    });
 
     const days: Record<string, string> = {
         MONDAY: '월',
@@ -64,19 +95,43 @@ const FormContents = ({
         SUNDAY: '일',
     };
 
-    const {
-        watch,
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors },
-    } = useForm<Inputs>({
-        defaultValues: { gender: 'male' },
-        mode: 'onSubmit',
-        reValidateMode: 'onSubmit',
+    const { mutate: mutateAttendee } = useMutation({
+        mutationFn: async (parameters: CreateAttendee) => {
+            const response =
+                await AttendanceApiClient.getInstance().createAttendee(
+                    parameters
+                );
+            return response.data;
+        },
+        onSuccess: async (data) => {
+            // TODO: 출석부 정보 api 수정되면 선택 가능 시간 내에서 선택한 수업 시간으로 파라미터 수정 필요
+            mutateSchedules({
+                attendanceId,
+                attendeeId: data.data.id,
+                singleSchedules: [
+                    {
+                        day: 'SUNDAY',
+                        time: '0930',
+                    },
+                ],
+            });
+        },
     });
-    const onSubmit = handleSubmit((data) => {
-        console.log('???data', data);
+
+    const { mutate: mutateSchedules } = useMutation({
+        mutationFn: async (parameters: CreateSchedules) => {
+            const response =
+                await AttendanceApiClient.getInstance().createSchedules(
+                    parameters
+                );
+            return response.data;
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['attendee-list'],
+            });
+            onClose();
+        },
     });
 
     // 30분 간격으로 시간을 생성하는 함수
@@ -126,16 +181,6 @@ const FormContents = ({
         }
     }, [data]);
 
-    useEffect(() => {
-        // 입력받은 생년월일 값은 년도, 날짜를 분리해서 DB에 저장해야 함.
-        if (watch('birth')) {
-            const birth = format(watch('birth'), 'yyyyMMdd');
-
-            setValue('birthYear', birth.slice(0, 4));
-            setValue('birthday', birth.slice(4, 8));
-        }
-    }, [watch('birth')]);
-
     const handleSelectTime = (day: string, time: string) => {
         const updatedTimes = watch('times');
         const index = updatedTimes[day].indexOf(time);
@@ -162,24 +207,24 @@ const FormContents = ({
                     <div className="value">
                         <FormControl>
                             <RadioGroup
-                                defaultValue="male"
+                                defaultValue="MALE"
                                 aria-labelledby="gender-radio-buttons-group-label"
                                 name="radio-buttons-group"
                             >
                                 <FormControlLabel
-                                    value="male"
+                                    value="MALE"
                                     control={
                                         <Radio
                                             {...register('gender')}
                                             sx={{
                                                 color:
-                                                    watch('gender') === 'male'
+                                                    watch('gender') === 'MALE'
                                                         ? Colors.CheckureeGreen
                                                         : Colors.Gray60,
                                                 '&.Mui-checked': {
                                                     color:
                                                         watch('gender') ===
-                                                        'male'
+                                                        'MALE'
                                                             ? Colors.CheckureeGreen
                                                             : Colors.Gray60,
                                                 },
@@ -192,19 +237,19 @@ const FormContents = ({
                                     label="남"
                                 />
                                 <FormControlLabel
-                                    value="female"
+                                    value="FEMALE"
                                     control={
                                         <Radio
                                             {...register('gender')}
                                             sx={{
                                                 color:
-                                                    watch('gender') === 'female'
+                                                    watch('gender') === 'FEMALE'
                                                         ? Colors.CheckureeGreen
                                                         : Colors.Gray60,
                                                 '&.Mui-checked': {
                                                     color:
                                                         watch('gender') ===
-                                                        'female'
+                                                        'FEMALE'
                                                             ? Colors.CheckureeGreen
                                                             : Colors.Gray60,
                                                 },
@@ -243,7 +288,10 @@ const FormContents = ({
                                     value={watch('birth')}
                                     onChange={(date) => {
                                         if (date && date instanceof Date) {
-                                            setValue('birth', date);
+                                            setValue(
+                                                'birth',
+                                                dateFormat(date, 'dash')
+                                            );
                                         }
                                         setShowCalendar(false);
                                     }}
@@ -257,6 +305,13 @@ const FormContents = ({
                     <div className="label">핸드폰 번호</div>
                     <div className="value">
                         <TextField {...register('mobileNumber')} />
+                    </div>
+                </div>
+
+                <div className="form-row">
+                    <div className="label">보호자 핸드폰 번호</div>
+                    <div className="value">
+                        <TextField {...register('subMobileNumber')} />
                     </div>
                 </div>
 

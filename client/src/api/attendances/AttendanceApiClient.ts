@@ -1,5 +1,10 @@
 import BaseApiClient, { Tokens } from '../BaseApiClient';
-import { AttendanceDetail } from '@/api/attendances/schema';
+import {
+    AttendanceData,
+    AttendanceDetail,
+    CreateAttendee,
+    CreateSchedules,
+} from '@/api/attendances/schema';
 
 export interface ICommonResponse<T> {
     code: number;
@@ -56,11 +61,18 @@ class AttendanceApiClient extends BaseApiClient {
             url: `/records/attendance/${attendanceId}/${date}/summary `,
         });
 
-    /** 특정 출석부 정보(상세) */
+    /** 특정 출석부의 출석대상 명단 */
     public getAttendanceDetail = (attendanceId: string) =>
         this.axios.request<AttendanceDetail>({
             method: 'GET',
-            url: `/attendances/${attendanceId}`,
+            url: `/attendees/attendanceId/${attendanceId}`,
+        });
+
+    /** 출석대상의 스케쥴조회 */
+    public getAttendeeSchedule = (attendeeId: string) =>
+        this.axios.request<AttendanceData[]>({
+            method: 'GET',
+            url: `/schedules/attendee/${attendeeId}`,
         });
 
     public createAttandance = (id: string) =>
@@ -68,6 +80,22 @@ class AttendanceApiClient extends BaseApiClient {
             method: 'POST',
             url: `/schedules/attendanceId/${id}?days=TUESDAY&days=MONDAY&timeFrom=0900&timeTo=1830`,
             data: '',
+        });
+
+    /** 명단관리 > 출석대상 등록 */
+    public createAttendee = (parameters: CreateAttendee) =>
+        this.axios.request({
+            method: 'POST',
+            url: `/attendees`,
+            data: parameters,
+        });
+
+    /** 명단관리 > 출석대상 등록 후 스케쥴 등록 */
+    public createSchedules = (parameters: CreateSchedules) =>
+        this.axios.request({
+            method: 'POST',
+            url: `/schedules`,
+            data: parameters,
         });
 }
 

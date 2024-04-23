@@ -2,23 +2,24 @@
 
 import React from 'react';
 
-// Next
-import Image from 'next/image';
-
 // Styles
-import { Colors, Icons, Images } from '@/styles/globalStyles';
+import { Colors, Icons } from '@/styles/globalStyles';
 import { AttendanceItemContainer } from '@/styles/app/listManagement.styles';
 
 // Components
-import DetailInputBox from '@/app/attendances/_components/DetailInputBox';
+import Icon from '@/components/Icon';
 
 // Types
-import { AttendanceItemType } from '@/app/attendances/[id]/page';
-import Icon from '@/components/Icon';
+import { AttendanceData } from '@/api/attendances/schema';
+
+interface ItemType extends AttendanceData {
+    status: string;
+    isDetailOpen: boolean;
+}
 
 interface PropsType {
     index: number;
-    item: AttendanceItemType;
+    item: ItemType;
     handleListItem: (
         index: number,
         field: string,

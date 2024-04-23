@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 // Styles
@@ -14,47 +14,40 @@ import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 // Components
 import { Fab } from '@mui/material';
 import Icon from '@/components/Icon';
-import AttendanceItem from '@/app/list-management/_components/AttendanceItem';
 import BottomDrawer from '@/components/BottomDrawer';
+import AttendanceItem from '@/app/list-management/_components/AttendanceItem';
 import FormContents from '@/app/list-management/_components/FormContents';
-import { AttendanceDetail } from '@/api/attendances/schema';
 
 // Types
-export interface AttendanceItemType {
-    id: number;
-    name: string;
+import { AttendanceData } from '@/api/attendances/schema';
+
+interface AttendanceItem extends AttendanceData {
     status: string;
     isDetailOpen: boolean;
-    lateTime?: string;
-    absentType?: string;
-    lateReason?: string;
 }
 
 const ListManagement = () => {
     const attendanceId = usePathname().split('/')[2];
 
+    const [attendeeList, setAttendeeList] = useState<AttendanceItem[]>([]);
     const [isAddOpen, setIsAddOpen] = useState<boolean>(false);
 
-    // TODO: api 데이터 제대로 내려오면 하단의 attendance로 대체될 예정.
-    const [dummyList, setDummyList] = useState<AttendanceItemType[]>([
-        { id: 1, name: '김차력', status: '', isDetailOpen: false },
-        { id: 2, name: '김차린', status: '', isDetailOpen: false },
-        { id: 3, name: '김하력', status: '', isDetailOpen: false },
-        { id: 4, name: '계창선', status: '', isDetailOpen: false },
-        { id: 5, name: '계창선', status: '', isDetailOpen: false },
-        { id: 6, name: '계창선', status: '', isDetailOpen: false },
-        { id: 7, name: '계창선', status: '', isDetailOpen: false },
-        { id: 8, name: '계창선', status: '', isDetailOpen: false },
-    ]);
-
     // fetching API
-    const { data: attendance, isLoading } = useQuery({
-        queryKey: ['attendance-detail'],
+    const { data, isLoading } = useQuery({
+        queryKey: ['attendee-list'],
         queryFn: async () => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceDetail(
                     attendanceId
                 );
+
+            if (response.status === 200) {
+                return response.data.items.map((item) => ({
+                    ...item,
+                    status: '',
+                    isDetailOpen: false,
+                }));
+            }
             return response.data;
         },
     });
@@ -67,7 +60,7 @@ const ListManagement = () => {
         field: string,
         value: string | boolean
     ) => {
-        setDummyList((prevState) => {
+        setAttendeeList((prevState) => {
             return prevState.map((item, idx) => {
                 if (idx === index)
                     return Object.assign(item, { [field]: value });
@@ -75,6 +68,12 @@ const ListManagement = () => {
             });
         });
     };
+
+    useEffect(() => {
+        if (data && Array.isArray(data) && data?.length > 0) {
+            setAttendeeList(data);
+        }
+    }, [data]);
 
     return (
         <ListManagementContainer>
@@ -89,13 +88,14 @@ const ListManagement = () => {
 
             {/* 출석부 명단 */}
             <section className="attendance-list">
-                {dummyList.map((item, index) => (
-                    <AttendanceItem
-                        item={item}
-                        index={index}
-                        handleListItem={handleListItem}
-                    />
-                ))}
+                {attendeeList &&
+                    attendeeList.map((item, index) => (
+                        <AttendanceItem
+                            item={item}
+                            index={index}
+                            handleListItem={handleListItem}
+                        />
+                    ))}
             </section>
 
             {/* 등록 버튼 */}
@@ -113,7 +113,8 @@ const ListManagement = () => {
                 onClose={() => setIsAddOpen(false)}
                 children={
                     <FormContents
-                        data={attendance?.data}
+                        data={{ ...attendeeList, days: ['MONDAY'] }}
+                        attendanceId={attendanceId}
                         onClose={() => setIsAddOpen(false)}
                     />
                 }
