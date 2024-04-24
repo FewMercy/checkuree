@@ -2,11 +2,11 @@ import './globals.css';
 import React from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
-
 // Provider
-import QueryClientProviders from './provider';
+import QueryClientProviders from './components/providers/QueryClientProvider';
 import { ThemeProvider } from '@mui/material';
 import theme from '@/styles/theme';
+import { NextAuthProvider } from './components/providers/NextAuthProvider';
 
 const notoSans = Noto_Sans({ subsets: ['latin'] });
 
@@ -17,9 +17,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
     children,
-}: Readonly<{
+}: {
     children: React.ReactNode;
-}>) {
+}) {
     return (
         <html lang="en">
             <head>
@@ -31,7 +31,9 @@ export default function RootLayout({
             </head>
             <body className={notoSans.className}>
                 <QueryClientProviders>
-                    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                    <NextAuthProvider>
+                        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                    </NextAuthProvider>
                 </QueryClientProviders>
             </body>
         </html>
