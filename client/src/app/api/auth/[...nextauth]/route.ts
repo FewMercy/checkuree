@@ -10,4 +10,4 @@ const handler = NextAuth({
     ],
 });
 
-export default handler;
+export { handler as GET, handler as POST };
