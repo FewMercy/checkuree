@@ -2,15 +2,8 @@
 
 //Api
 import AuthApiClient, { LoginData } from '@/api/AuthApiClient';
-import {
-    Box,
-    Checkbox,
-    Container,
-    CssBaseline,
-    TextField,
-    Typography,
-    styled,
-} from '@mui/material';
+import { signIn, useSession } from 'next-auth/react';
+import { Box, Checkbox, Container, Typography, styled } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
@@ -22,6 +15,8 @@ import { useRouter } from 'next/navigation';
 const Index = () => {
     const router = useRouter();
 
+    //카카오 로그인
+    const { data: session } = useSession();
     const [mounted, setMounted] = useState<boolean>(false);
     const [login, setLogin] = useState<LoginData>({
         username: '',
@@ -102,52 +97,9 @@ const Index = () => {
                 </Box> */}
             </StyledBoxST>
             <BoxSTLoginCommon gap={'38px'}>
-                {/* <BoxSTLoginCommon gap={'4px'}>
-                    <BoxSTLoginMaintain>
-                        <StyledCheckbox
-                            inputProps={{
-                                style: {
-                                    padding: 0,
-                                },
-                            }}
-                            onChange={(e) =>
-                                onChange('isAutoLogin', e.target?.checked)
-                            }
-                        />
-                        <StyledLoginMaintainTypography>
-                            로그인 유지
-                        </StyledLoginMaintainTypography>
-                    </BoxSTLoginMaintain>
-
-                    <BoxSTLoginCommon gap={'10px'}>
-                        <BoxSTLogin
-                            onClick={() => {
-                                loginMutation(login);
-                            }}
-                        >
-                            로그인 하기
-                        </BoxSTLogin>
-                        <Box
-                            display={'flex'}
-                            justifyContent={'space-between'}
-                            padding={'0px 4px'}
-                        >
-                            <StyledLinkTypography
-                                onClick={() => router.push('/auth/signup')}
-                            >
-                                회원가입
-                            </StyledLinkTypography>
-                            <StyledLinkTypography
-                                onClick={() => alert('준비중인 기능입니다.')}
-                            >
-                                아이디/비밀번호 찾기
-                            </StyledLinkTypography>
-                        </Box>
-                    </BoxSTLoginCommon>
-                </BoxSTLoginCommon> */}
                 <StyledKakaoLoginButton
                     onClick={() => {
-                        alert('준비중인 기능입니다.');
+                        signIn('kakao', { callbackUrl: '/attendances' });
                     }}
                 >
                     카카오 로그인
