@@ -37,12 +37,34 @@ let AttendeesService = class AttendeesService {
     }
     async findAllByAttendanceId(attendanceId) {
         const [items, count] = await this.attendeeRepository.findAndCount({
+            select: {
+                schedules: {
+                    id: true,
+                    time: true,
+                    day: true,
+                },
+            },
+            relations: { schedules: true },
             where: { attendanceId: attendanceId },
         });
         return new responseWithoutPagination_dto_1.ResponseWithoutPaginationDto(count, items);
     }
     async findOneById(id) {
-        return new common_response_dto_1.CommonResponseDto('SUCCESS FIND ATTENDEE', await this.attendeeRepository.findOneBy({ id }));
+        return new common_response_dto_1.CommonResponseDto('SUCCESS FIND ATTENDEE', await this.attendeeRepository.findOne({
+            select: {
+                schedules: {
+                    id: true,
+                    time: true,
+                    day: true,
+                },
+            },
+            relations: {
+                schedules: true,
+            },
+            where: {
+                id,
+            },
+        }));
     }
     async update(id, updateAttendeeDto) {
         if (updateAttendeeDto.gender) {
