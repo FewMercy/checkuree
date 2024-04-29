@@ -1,17 +1,17 @@
-import {BadRequestException, Body, Controller, Get, Post, Query, Req, Res, UseGuards} from '@nestjs/common';
-import {AuthService} from './auth.service';
-import {CreateAuthDto} from './dto/create-auth.dto';
-import {ApiBody, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {User} from '../users/entities/user.entity';
-import {SignInDto} from './dto/sign-in.dto';
-import {AuthGuard} from '@nestjs/passport';
-import {RefreshTokenDto} from './dto/refresh-token.dto';
-import {CommonResponseDto} from '../common/response/common-response.dto';
-import {AvailabilityResult} from '../common/response/is-available-res';
-import {TokenResponseDto} from './dto/token-response.dto';
-import {CurrentIp} from '../common/decorator/current-ip.decorator';
-import {OAuth} from './const/oauth.interface';
-import {Request, Response} from 'express';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from '../users/entities/user.entity';
+import { SignInDto } from './dto/sign-in.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { CommonResponseDto } from '../common/response/common-response.dto';
+import { AvailabilityResult } from '../common/response/is-available-res';
+import { TokenResponseDto } from './dto/token-response.dto';
+import { CurrentIp } from '../common/decorator/current-ip.decorator';
+import { OAuth } from './const/oauth.interface';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 @ApiTags('인증')
@@ -68,17 +68,12 @@ export class AuthController {
 
       // res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}; HttpOnly; Secure`);
       // res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}; HttpOnly; Secure`);
-      // res.cookie('ACCESS_TOKEN', tokenResponse.data.accessToken, { httpOnly: true, secure: true })
-      res.cookie('ACCESS_TOKEN', 'whyrano', {
-        httpOnly: true,
-        domain:'.checkuree.com',
-        maxAge: 1000 * 60 * 60 * 24 * 7})
+      res.cookie('ACCESS_TOKEN', tokenResponse.data.accessToken, { httpOnly: true, secure: true });
       res.cookie('REFRESH_TOKEN', tokenResponse.data.refreshToken, {
         httpOnly: true,
-        sameSite: 'none',
         secure: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7})
-      res.redirect(`https://checkuree.com/attendances`);
+      });
+      res.redirect(process.env.KAKAO_REDIRECT_URL);
     } catch (error) {
       const errorMessage = encodeURIComponent(error.message || 'unknown_error');
       const errorCode = encodeURIComponent(error.code || 'unknown_error');
@@ -125,9 +120,7 @@ export class AuthController {
     description: '회원 전화번호 중복 확인',
     type: CommonResponseDto<AvailabilityResult>,
   })
-  async checkMobileNumberAvailability(
-    @Query('mobileNumber') mobileNumber: string,
-  ): Promise<CommonResponseDto<AvailabilityResult>> {
+  async checkMobileNumberAvailability(@Query('mobileNumber') mobileNumber: string): Promise<CommonResponseDto<AvailabilityResult>> {
     if (!mobileNumber) {
       throw new BadRequestException('Mobile number is required');
     }
