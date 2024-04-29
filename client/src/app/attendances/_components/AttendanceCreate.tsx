@@ -1,7 +1,6 @@
 'use client';
 
 import {
-    Avatar,
     Box,
     Container,
     FormControlLabel,
@@ -24,7 +23,11 @@ import CommonApiClient from '@/api/CommonApiClient';
 interface AttendanceData {
     title: string;
     description: string;
-    type: string;
+    availableFrom: string;
+    availableTo: string;
+    allowLateness: string;
+    attendanceDays: string;
+    image: File;
 }
 interface IProps {
     setIsCreate: React.Dispatch<SetStateAction<boolean>>;
@@ -38,12 +41,15 @@ const AttendanceCreateForm = (props: IProps) => {
 
     // for
     //State
+    const [formData, setFormData] = useState<FormData | null>();
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [fileImage, setFileImage] = useState<File | undefined>();
-    const [tempSelected, setTempSelected] = useState<string | undefined>();
     const [attendanceCreate, setAttendanceCreate] = useState<
         AttendanceData | undefined
     >();
+
+    console.log(fileImage);
+    // console.log(tempSelected);
 
     // 시간 선택
     const [startTimeValue, setStartTimeValue] = useState<string>('');
@@ -61,10 +67,14 @@ const AttendanceCreateForm = (props: IProps) => {
     // 출석부 지각 사용 여부
     const [isTardy, setIsTardy] = useState<string>('N');
 
+    console.log(formData);
     // 이미지 업로드
     const { mutate: imageMutation } = useMutation({
         mutationKey: [''],
-        mutationFn: async () => await CommonApiClient.getInstance().uploadImage,
+        mutationFn: async () =>
+            await CommonApiClient.getInstance()
+                .uploadImage(formData!)
+                .then((res) => console.log(res)),
     });
 
     // 출석부 생성
@@ -86,12 +96,14 @@ const AttendanceCreateForm = (props: IProps) => {
         reader.onload = (e) => {
             if (e.target && e.target.result) {
                 setImageSrc(e.target.result as string);
-                setTempSelected(e.target.result as string);
             }
         };
 
         if (selectedFile) {
             reader.readAsDataURL(selectedFile);
+            const newFormData = new FormData();
+            newFormData.append('image', selectedFile);
+            setFormData(newFormData);
         }
     };
 
@@ -277,7 +289,7 @@ const AttendanceCreateForm = (props: IProps) => {
                 </Grid>
             </BoxSTTitle>
 
-            <BoxSTSave>저장하기</BoxSTSave>
+            <BoxSTSave onClick={() => imageMutation()}>저장하기</BoxSTSave>
         </ContainerSTForm>
     );
 };

@@ -22,6 +22,8 @@ async function bootstrap() {
 
   app.enableCors();
 
+  app.setGlobalPrefix('api/v1')
+
   const config = new DocumentBuilder()
     .setTitle('Attendance')
     .setDescription('Attendance API 서버 설명')
@@ -39,7 +41,7 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document, {
+  SwaggerModule.setup('api/v1/swagger', app, document, {
     swaggerOptions: {
       persistAuthorization: true, // Swagger에서 저장된 Bearer Token이 날아가지 않게 해줌(편의성)
     },
