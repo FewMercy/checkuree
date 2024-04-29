@@ -22,6 +22,8 @@ async function bootstrap() {
 
   app.enableCors();
 
+  app.setGlobalPrefix('api/v1')
+
   const config = new DocumentBuilder()
     .setTitle('Attendance')
     .setDescription('Attendance API 서버 설명')
