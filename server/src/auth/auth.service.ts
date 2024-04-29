@@ -40,11 +40,7 @@ export class AuthService {
     throw new BadRequestException('ID 또는 비밀번호가 정확하지 않습니다.');
   }
 
-  public async signIn(
-    signInDto: SignInDto,
-    ip: string,
-    loginAt: Date = new Date(),
-  ): Promise<CommonResponseDto<TokenResponseDto>> {
+  public async signIn(signInDto: SignInDto, ip: string, loginAt: Date = new Date()): Promise<CommonResponseDto<TokenResponseDto>> {
     const user = await this.validateUser(signInDto.username, signInDto.password);
 
     const payload: JwtPayload = {
@@ -66,11 +62,7 @@ export class AuthService {
     return new CommonResponseDto('SUCCESS SIGN IN', new TokenResponseDto(accessToken, refreshToken));
   }
 
-  public async oauthSignIn(
-    oauthUser: OAuth,
-    ip: string,
-    loginAt: Date = new Date(),
-  ): Promise<CommonResponseDto<TokenResponseDto>> {
+  public async oauthSignIn(oauthUser: OAuth, ip: string, loginAt: Date = new Date()): Promise<CommonResponseDto<TokenResponseDto>> {
     let user = await this.userRepository.findOne({
       relations: {
         userAttendance: true,
@@ -172,7 +164,7 @@ export class AuthService {
 
     return new CommonResponseDto('Email Valid check success', new AvailabilityResult(!!!found));
   }
-  
+
   public async isAvailableMobileNumber(mobileNumber: string): Promise<CommonResponseDto<AvailabilityResult>> {
     const found = await this.userRepository.findOneBy({ mobileNumber });
     return new CommonResponseDto('', new AvailabilityResult(!!!found));
@@ -185,15 +177,15 @@ export class AuthService {
 
   private generateAccessToken(payload: JwtPayload) {
     return this.jwtService.sign(payload, {
-      secret: jwtConstants.accessTokenSecret,
-      expiresIn: jwtConstants.accessTokenExpiresIn,
+      secret: jwtConstants().accessTokenSecret,
+      expiresIn: jwtConstants().accessTokenExpiresIn,
     });
   }
 
   private generateRefreshToken(payload: JwtPayload, isAutoLogin: boolean) {
     return this.jwtService.sign(payload, {
-      secret: jwtConstants.refreshTokenSecret,
-      expiresIn: isAutoLogin ? jwtConstants.autoLoginRefreshTokenExpiresIn : jwtConstants.refreshTokenExpiresIn,
+      secret: jwtConstants().refreshTokenSecret,
+      expiresIn: isAutoLogin ? jwtConstants().autoLoginRefreshTokenExpiresIn : jwtConstants().refreshTokenExpiresIn,
     });
   }
 
@@ -203,7 +195,7 @@ export class AuthService {
 
   private verifyRefreshToken(oldRefreshToken: string) {
     try {
-      return this.jwtService.verify(oldRefreshToken, { secret: jwtConstants.refreshTokenSecret });
+      return this.jwtService.verify(oldRefreshToken, { secret: jwtConstants().refreshTokenSecret });
     } catch (err) {
       throw new UnauthorizedException('토큰이 만료되었습니다.');
     }
