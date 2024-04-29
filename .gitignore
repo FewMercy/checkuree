@@ -2,4 +2,6 @@
 /server/.env.production
 /server/.env.local
 ./node_modules
+/server/node_modules
+/server/dist
 
