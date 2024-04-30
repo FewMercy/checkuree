@@ -1,7 +1,7 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-kakao';
-import { OAuth } from './const/oauth.interface';
-import { LoginType } from './const/login-type.enum';
+import { OAuth } from '../const/oauth.interface';
+import { LoginType } from '../const/login-type.enum';
 import * as process from 'node:process';
 
 export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {

@@ -13,7 +13,7 @@ import { ResponseWithoutPaginationDto } from '../common/response/responseWithout
 import { PageResponseDto } from '../common/response/pageResponse.dto';
 
 @Controller('schedules')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('strategies'))
 @ApiTags('출석 스케쥴')
 @ApiBearerAuth('token')
 export class SchedulesController {
@@ -30,10 +30,7 @@ export class SchedulesController {
     type: CreateScheduleDto,
     description: '출석 스케쥴 생성 DTO',
   })
-  create(
-    @Body() createScheduleDto: CreateScheduleDto,
-    @GetUser() user: User,
-  ): Promise<CommonResponseDto<{ ids: number[] }>> {
+  create(@Body() createScheduleDto: CreateScheduleDto, @GetUser() user: User): Promise<CommonResponseDto<{ ids: number[] }>> {
     return this.schedulesService.create(createScheduleDto, user);
   }
 

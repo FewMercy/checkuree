@@ -18,7 +18,7 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
 import { AttendeeRecordSummaryDto } from './dto/attendee-record-summary.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('strategies'))
 @Controller('records')
 @ApiTags('출석기록')
 @ApiBearerAuth('token')
@@ -61,10 +61,7 @@ export class RecordsController {
   })
   @UseGuards(RoleGuard)
   @Roles(RoleType.MASTER, RoleType.MANAGER, RoleType.GENERAL)
-  async createAllRecord(
-    @Body() createAllRecordDto: CreateAllRecordDto,
-    @GetUser() user: User,
-  ): Promise<CommonResponseDto<any>> {
+  async createAllRecord(@Body() createAllRecordDto: CreateAllRecordDto, @GetUser() user: User): Promise<CommonResponseDto<any>> {
     return this.recordsService.createAll(createAllRecordDto, user);
   }
 
@@ -128,10 +125,7 @@ export class RecordsController {
   })
   @UseGuards(RoleGuard)
   @Roles(RoleType.MASTER, RoleType.MANAGER, RoleType.GENERAL)
-  async getRecordSummaryByAttendanceId(
-    @Param('attendanceId') attendanceId: string,
-    @Param('date') date: string,
-  ): Promise<any> {
+  async getRecordSummaryByAttendanceId(@Param('attendanceId') attendanceId: string, @Param('date') date: string): Promise<any> {
     return this.recordsService.getRecordSummaryByAttendanceId(attendanceId, date);
   }
 
