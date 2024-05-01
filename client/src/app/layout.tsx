@@ -3,10 +3,10 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 // Provider
-import QueryClientProviders from './components/providers/QueryClientProvider';
 import { ThemeProvider } from '@mui/material';
 import theme from '@/styles/theme';
-import { NextAuthProvider } from './components/providers/NextAuthProvider';
+import { NextAuthProvider } from './providers/NextAuthProvider';
+import QueryClientProviders from './providers/QueryClientProvider';
 
 const notoSans = Noto_Sans({ subsets: ['latin'] });
 
