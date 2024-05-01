@@ -67,3 +67,13 @@ export interface CreateSchedules {
     attendeeId: string;
     singleSchedules: SingleSchedulesType;
 }
+
+export interface CreateAttendance {
+    title: string;
+    description: string;
+    availableFrom: string;
+    availableTo: string;
+    allowLateness: string;
+    attendanceDays: string;
+    image: File;
+}
