@@ -2,6 +2,7 @@ import BaseApiClient, { Tokens } from '../BaseApiClient';
 import {
     AttendanceData,
     AttendanceDetail,
+    AttendeeData,
     AttendeeDetail,
     CreateAttendance,
     CreateAttendee,
@@ -91,11 +92,12 @@ class AttendanceApiClient extends BaseApiClient {
         });
 
     /** 출석대상의 스케쥴조회 */
-    public getAttendeeSchedule = (attendeeId: string) =>
-        this.axios.request<AttendanceData[]>({
+    public getAttendeeDetail = (attendeeId: string) =>
+        this.axios.request<AttendeeDetail>({
             method: 'GET',
-            url: `/schedules/attendee/${attendeeId}`,
+            url: `/attendees/${attendeeId}`,
         });
+
     /** 출석부 생성 */
     public createAttandance = (request: CreateAttendance) =>
         this.axios.request({
@@ -112,6 +114,14 @@ class AttendanceApiClient extends BaseApiClient {
         this.axios.request({
             method: 'POST',
             url: `/attendees`,
+            data: parameters,
+        });
+
+    /** 명단관리 > 출석대상 정보 수정 */
+    public updateAttendee = (attendeeId: string, parameters: CreateAttendee) =>
+        this.axios.request({
+            method: 'PATCH',
+            url: `/attendees/${attendeeId}`,
             data: parameters,
         });
 

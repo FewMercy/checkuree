@@ -28,6 +28,7 @@ const ListManagement = () => {
 
     const [attendeeList, setAttendeeList] = useState<AttendeeData[]>([]);
     const [isAddOpen, setIsAddOpen] = useState<boolean>(false);
+    const [isUpdateOpen, setIsUpdateOpen] = useState<string>('');
 
     // 출석대상 명단 조회
     const { data = [], isSuccess } = useQuery({
@@ -90,25 +91,6 @@ const ListManagement = () => {
         enabled: data && isSuccess,
     });
 
-    console.log('attendanceSummary', attendanceSummary);
-
-    /**
-     * @description 출석/지각/결석 선택 및 상세사유 입력 등 출석대상 목록의 값을 변경하는 함수
-     */
-    const handleListItem = (
-        index: number,
-        field: string,
-        value: string | boolean
-    ) => {
-        setAttendeeList((prevState) => {
-            return prevState.map((item, idx) => {
-                if (idx === index)
-                    return Object.assign(item, { [field]: value });
-                else return item;
-            });
-        });
-    };
-
     useEffect(() => {
         if (data && Array.isArray(data) && data?.length > 0) {
             setAttendeeList(data);
@@ -132,6 +114,7 @@ const ListManagement = () => {
                     attendeeList.map((item, index) => (
                         <AttendanceItem
                             item={{ ...item, ...attendanceSummary[index] }}
+                            setIsUpdateOpen={setIsUpdateOpen}
                         />
                     ))}
             </section>
@@ -147,11 +130,18 @@ const ListManagement = () => {
 
             {/* 등록/변경 모달 */}
             <BottomDrawer
-                open={isAddOpen}
-                onClose={() => setIsAddOpen(false)}
+                open={isAddOpen || isUpdateOpen.length > 0}
+                onClose={() => {
+                    if (isAddOpen) {
+                        setIsAddOpen(false);
+                        return;
+                    }
+                    setIsUpdateOpen('');
+                }}
                 children={
                     <FormContents
                         data={attendanceDetail}
+                        attendeeId={isUpdateOpen}
                         attendanceId={attendanceId}
                         onClose={() => setIsAddOpen(false)}
                     />

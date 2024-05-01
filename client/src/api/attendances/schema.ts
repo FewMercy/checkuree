@@ -49,7 +49,8 @@ export interface AttendeeData {
 }
 
 export interface AttendeeDetail {
-    items: AttendeeData[];
+    data?: AttendeeData[];
+    items?: AttendeeData[];
     success: boolean;
     count: number;
 }

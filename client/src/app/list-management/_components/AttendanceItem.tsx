@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import _ from 'lodash';
 
@@ -23,10 +23,11 @@ interface ItemType extends AttendeeData {
 
 interface PropsType {
     item: ItemType;
+    setIsUpdateOpen: Dispatch<SetStateAction<string>>;
 }
 
 const AttendanceItem = (props: PropsType) => {
-    const { item } = props;
+    const { item, setIsUpdateOpen } = props;
 
     const statusIcons: { icon: string; count: number }[] = [
         { icon: 'sentiment_satisfied_alt', count: item.presentCount },
@@ -64,7 +65,12 @@ const AttendanceItem = (props: PropsType) => {
 
     return (
         <AttendanceItemContainer key={`attendance-item__${item.id}`}>
-            <div className={'attendance-item__container'}>
+            <div
+                className={'attendance-item__container'}
+                onClick={() => {
+                    setIsUpdateOpen(item.id);
+                }}
+            >
                 <div className="name">{item.name}</div>
 
                 <div className={'bottom-container'}>
