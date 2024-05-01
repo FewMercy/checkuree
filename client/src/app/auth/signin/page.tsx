@@ -1,4 +1,5 @@
 'use client';
+
 //Api
 import AuthApiClient, { LoginData } from '@/api/AuthApiClient';
 import {
@@ -11,36 +12,44 @@ import {
     styled,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+
 import Image from 'next/image';
 import axios from 'axios';
 import { setTokens } from '@/libs/auth';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+
 const Index = () => {
     const router = useRouter();
+
     const [mounted, setMounted] = useState<boolean>(false);
     const [login, setLogin] = useState<LoginData>({
         username: '',
         password: '',
         isAutoLogin: false,
     });
+
     const fetchLogin = async (params: LoginData) => {
         try {
             const response =
                 await AuthApiClient.getInstance().userLogin(params);
+
             const token = response.data.data!.accessToken;
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setTokens({
-                accessToken: token,
-                refreshToken: token,
+                accessToken: response.data.data!.accessToken,
+                refreshToken: response.data.data!.refreshToken,
             });
+
             return response;
         } catch (error) {
+            //
             // 오류 처리
             console.error('Error occurred during login:', error);
             throw error;
         }
     };
+
     const { mutate: loginMutation } = useMutation({
         mutationKey: ['user'],
         mutationFn: fetchLogin,
@@ -52,6 +61,7 @@ const Index = () => {
             alert('아이디 및 비밀번호가 일치하지 않습니다.');
         },
     });
+
     // Hook
     const onChange = (field: keyof LoginData, value: string | boolean) => {
         setLogin((prevState) => ({
@@ -59,9 +69,11 @@ const Index = () => {
             [field]: value,
         }));
     };
+
     useEffect(() => {
         setMounted(true);
     }, []);
+
     return (
         <ContainerST>
             <StyledBoxST>
@@ -106,6 +118,7 @@ const Index = () => {
                             로그인 유지
                         </StyledLoginMaintainTypography>
                     </BoxSTLoginMaintain>
+
                     <BoxSTLoginCommon gap={'10px'}>
                         <BoxSTLogin
                             onClick={() => {
@@ -132,14 +145,15 @@ const Index = () => {
                         </Box>
                     </BoxSTLoginCommon>
                 </BoxSTLoginCommon>
-                <Box display={'flex'} justifyContent={'space-between'}>
-                    <StyledKakaoLoginButton
-                        onClick={() => {
-                            alert('준비중인 기능입니다.');
-                        }}
-                    >
-                        카카오 로그인
-                    </StyledKakaoLoginButton>
+                <StyledKakaoLoginButton
+                    onClick={() => {
+                        router.push('https://checkuree.com/api/v1/auth/kakao');
+                    }}
+                >
+                    카카오 로그인
+                </StyledKakaoLoginButton>
+                {/* <Box display={'flex'} justifyContent={'space-between'}>
+                 
                     <StyledNaverLoginButton
                         onClick={() => {
                             alert('준비중인 기능입니다.');
@@ -147,7 +161,7 @@ const Index = () => {
                     >
                         네이버 로그인
                     </StyledNaverLoginButton>
-                </Box>
+                </Box> */}
             </BoxSTLoginCommon>
 
             <Image
@@ -163,7 +177,9 @@ const Index = () => {
         </ContainerST>
     );
 };
+
 export default Index;
+
 const TextFiledInputProps = {
     style: {
         backgroundColor: 'white',
@@ -175,6 +191,7 @@ const TextFiledInputProps = {
         paddingLeft: '12px',
     },
 };
+
 // Container에 대한 스타일
 const ContainerST = styled(Container)(() => {
     return {
@@ -182,8 +199,8 @@ const ContainerST = styled(Container)(() => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
-        gap: '20px',
+        height: '100%',
+        gap: '32px',
     };
 });
 
@@ -196,6 +213,7 @@ const StyledBoxST = styled(Box)(() => {
         gap: '28px',
     };
 });
+
 // Typography에 대한 스타일
 const LoginTypographyST = styled(Typography)(() => {
     return {
@@ -204,6 +222,7 @@ const LoginTypographyST = styled(Typography)(() => {
         lineHeight: '43.58px',
     };
 });
+
 // Checkbox에 대한 스타일
 const StyledCheckbox = styled(Checkbox)(() => {
     return {
@@ -214,6 +233,7 @@ const StyledCheckbox = styled(Checkbox)(() => {
         color: '#D9D9D9',
     };
 });
+
 // 회원가입 및 아이디/비밀번호 찾기 텍스트 스타일
 const StyledLinkTypography = styled(Typography)(() => {
     return {
@@ -224,6 +244,7 @@ const StyledLinkTypography = styled(Typography)(() => {
         fontWeight: 500,
     };
 });
+
 // 회원가입 및 아이디/비밀번호 찾기 텍스트 스타일
 const StyledLoginMaintainTypography = styled(Typography)(() => {
     return {
@@ -234,12 +255,14 @@ const StyledLoginMaintainTypography = styled(Typography)(() => {
         verticalAlign: 'middle',
     };
 });
+
 const BoxSTLoginCommon = styled(Box)(() => {
     return {
         display: 'flex',
         flexDirection: 'column',
     };
 });
+
 const BoxSTLogin = styled(Box)(() => {
     return {
         width: '318px',
@@ -252,6 +275,7 @@ const BoxSTLogin = styled(Box)(() => {
         alignItems: 'center',
     };
 });
+
 const BoxSTLoginMaintain = styled(Box)(() => {
     return {
         marginTop: '10px',
@@ -261,11 +285,12 @@ const BoxSTLoginMaintain = styled(Box)(() => {
         paddingLeft: '5px',
     };
 });
+
 // 카카오 및 네이버 로그인 버튼 스타일
 const StyledLoginButton = styled(Box)(() => {
     return {
-        width: '152px',
-        height: '40px',
+        width: '313px',
+        height: '39px',
         borderRadius: '20px',
         fontSize: '14px',
         lineHeight: '19.07px',
@@ -276,6 +301,7 @@ const StyledLoginButton = styled(Box)(() => {
         justifyContent: 'center',
     };
 });
+
 // 카카오 로그인 버튼의 색상
 const StyledKakaoLoginButton = styled(StyledLoginButton)(() => {
     return {
@@ -283,6 +309,7 @@ const StyledKakaoLoginButton = styled(StyledLoginButton)(() => {
         backgroundColor: '#fddc3f',
     };
 });
+
 // 네이버 로그인 버튼의 색상
 const StyledNaverLoginButton = styled(StyledLoginButton)(() => {
     return {
