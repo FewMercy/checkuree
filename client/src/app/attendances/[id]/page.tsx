@@ -123,10 +123,8 @@ const Index = () => {
         setAttendeeList((prevState) => {
             const updatedState = { ...prevState }; // 이전 상태를 복사하여 새로운 상태를 만듭니다.
 
-            // 주어진 time과 일치하는 시간대의 항목만 수정하고 나머지는 변경하지 않습니다.
             if (updatedState[time]) {
                 updatedState[time] = updatedState[time].map((item, idx) => {
-                    console.log('???', index);
                     if (index === idx) {
                         return { ...item, [field]: value };
                     }
@@ -135,28 +133,6 @@ const Index = () => {
             }
 
             return updatedState;
-
-            // return Object.fromEntries(
-            //     Object.entries(prevState).map(([timeKey, items]) => {
-            //         if (time === timeKey) {
-            //             return [
-            //                 time,
-            //                 items.map((item, idx) => {
-            //                     if (index === idx) {
-            //                         return {
-            //                             ...item,
-            //                             [field]: value,
-            //                         };
-            //                     } else {
-            //                         return item;
-            //                     }
-            //                 }),
-            //             ];
-            //         } else {
-            //             return [time, items];
-            //         }
-            //     })
-            // );
         });
     };
 
@@ -166,7 +142,7 @@ const Index = () => {
         }
     }, [attendance]);
 
-    console.log('attendeeList', attendeeList);
+    // console.log('attendeeList', attendeeList);
 
     return (
         <AttendanceIdContainer>
