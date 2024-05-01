@@ -2,6 +2,7 @@ import BaseApiClient, { Tokens } from '../BaseApiClient';
 import {
     AttendanceData,
     AttendanceDetail,
+    AttendeeDetail,
     CreateAttendee,
     CreateSchedules,
 } from '@/api/attendances/schema';
@@ -47,6 +48,13 @@ class AttendanceApiClient extends BaseApiClient {
             url: '/attendances',
         });
 
+    /** 특정 출석부 상세 조회 */
+    public getAttendanceDetail = (attendanceId: string) =>
+        this.axios.request<AttendanceDetail>({
+            method: 'GET',
+            url: `/attendances/${attendanceId}`,
+        });
+
     /** 날짜에 따른 출석부 명단 */
     public getAttendanceById = (attendanceId: string, date: string) =>
         this.axios.request({
@@ -62,8 +70,8 @@ class AttendanceApiClient extends BaseApiClient {
         });
 
     /** 특정 출석부의 출석대상 명단 */
-    public getAttendanceDetail = (attendanceId: string) =>
-        this.axios.request<AttendanceDetail>({
+    public getAttendeeList = (attendanceId: string) =>
+        this.axios.request<AttendeeDetail>({
             method: 'GET',
             url: `/attendees/attendanceId/${attendanceId}`,
         });

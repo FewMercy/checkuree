@@ -52,7 +52,7 @@ const ListManagement = () => {
         queryKey: ['attendance'],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceDetail(
+                await AttendanceApiClient.getInstance().getAttendeeList(
                     attendanceId
                 );
             return response.data;

@@ -111,6 +111,9 @@ export const AttendanceItemContainer = styled.div<{
 `;
 
 export const FormContentsContainer = styled.section<{ gender: string }>`
+    height: 786px;
+    overflow: auto;
+
     & > form {
         width: 100%;
         display: flex;

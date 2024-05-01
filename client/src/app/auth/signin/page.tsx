@@ -31,12 +31,11 @@ const Index = () => {
             const token = response.data.data!.accessToken;
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setTokens({
-                accessToken: response.data.data!.accessToken,
-                refreshToken: response.data.data!.refreshToken,
+                accessToken: token,
+                refreshToken: token,
             });
             return response;
         } catch (error) {
-            //
             // 오류 처리
             console.error('Error occurred during login:', error);
             throw error;

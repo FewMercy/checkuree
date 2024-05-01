@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
+import _ from 'lodash';
+
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
 import { ListManagementContainer } from '@/styles/app/listManagement.styles';
@@ -19,36 +21,52 @@ import AttendanceItem from '@/app/list-management/_components/AttendanceItem';
 import FormContents from '@/app/list-management/_components/FormContents';
 
 // Types
-import { AttendanceData } from '@/api/attendances/schema';
-
-interface AttendanceItem extends AttendanceData {
-    status: string;
-    isDetailOpen: boolean;
-}
+import { AttendanceData, AttendeeData } from '@/api/attendances/schema';
 
 const ListManagement = () => {
     const attendanceId = usePathname().split('/')[2];
 
-    const [attendeeList, setAttendeeList] = useState<AttendanceItem[]>([]);
+    const [attendeeList, setAttendeeList] = useState<AttendeeData[]>([]);
     const [isAddOpen, setIsAddOpen] = useState<boolean>(false);
 
-    // fetching API
-    const { data, isLoading } = useQuery({
+    // 출석대상 명단 조회
+    const { data = [], isLoading } = useQuery({
         queryKey: ['attendee-list'],
-        queryFn: async () => {
+        queryFn: async (): Promise<AttendeeData[]> => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceDetail(
+                await AttendanceApiClient.getInstance().getAttendeeList(
                     attendanceId
                 );
 
-            if (response.status === 200) {
+            if (response.status === 200 && _.has(response.data, 'items')) {
                 return response.data.items.map((item) => ({
                     ...item,
                     status: '',
                     isDetailOpen: false,
                 }));
             }
-            return response.data;
+            return response.data.items;
+        },
+    });
+
+    // 출석부 상세 조회
+    const { data: attendanceDetail = {} as AttendanceData } = useQuery({
+        queryKey: ['attendance-detail'],
+        queryFn: async (): Promise<AttendanceData> => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceDetail(
+                    attendanceId
+                );
+
+            if (
+                response.status === 200 &&
+                _.has(response, 'data') &&
+                _.has(response.data, 'data')
+            ) {
+                return response.data.data;
+            }
+
+            return {} as AttendanceData;
         },
     });
 
@@ -113,7 +131,7 @@ const ListManagement = () => {
                 onClose={() => setIsAddOpen(false)}
                 children={
                     <FormContents
-                        data={{ ...attendeeList, days: ['MONDAY'] }}
+                        data={attendanceDetail}
                         attendanceId={attendanceId}
                         onClose={() => setIsAddOpen(false)}
                     />

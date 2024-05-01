@@ -32,6 +32,7 @@ import {
     AttendanceDetail,
     CreateAttendee,
     CreateSchedules,
+    SingleSchedulesType,
 } from '@/api/attendances/schema';
 import Icon from '@/components/Icon';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -104,16 +105,20 @@ const FormContents = ({
             return response.data;
         },
         onSuccess: async (data) => {
-            // TODO: 출석부 정보 api 수정되면 선택 가능 시간 내에서 선택한 수업 시간으로 파라미터 수정 필요
+            const selectedSchedules = watch('times');
+            const singleSchedulesList: SingleSchedulesType = [];
+
+            Object.keys(selectedSchedules).forEach((day) => {
+                const times = selectedSchedules[day];
+
+                times.forEach((time) => {
+                    singleSchedulesList.push({ day, time });
+                });
+            });
             mutateSchedules({
                 attendanceId,
                 attendeeId: data.data.id,
-                singleSchedules: [
-                    {
-                        day: 'SUNDAY',
-                        time: '0930',
-                    },
-                ],
+                singleSchedules: singleSchedulesList,
             });
         },
     });
@@ -183,6 +188,7 @@ const FormContents = ({
 
     const handleSelectTime = (day: string, time: string) => {
         const updatedTimes = watch('times');
+
         const index = updatedTimes[day].indexOf(time);
         if (index !== -1) {
             updatedTimes[day].splice(index, 1);

@@ -1,6 +1,6 @@
 export interface AttendanceData {
     allowLateness: boolean;
-    attendanceDays: string[];
+    attendanceDays: { attendanceId: string; day: string; id: number }[];
     days: string[];
     availableFrom: string;
     availableTo: string;
@@ -15,7 +15,35 @@ export interface AttendanceData {
     updatedAt: string;
 }
 export interface AttendanceDetail {
-    items: AttendanceData[];
+    data: AttendanceData;
+    success: boolean;
+    count: number;
+}
+
+export interface AttendeeData {
+    attendanceId: string;
+    birth: string;
+    course: string | null;
+    createId: string;
+    createdAt: string;
+    deletedAt: string | null;
+    description: string | null;
+    gender: string;
+    grade: string | null;
+    id: string;
+    mobileNumber: string;
+    name: string;
+    schedules: { id: number; day: string; time: string }[];
+    school: string | null;
+    status?: string;
+    isDetailOpen?: boolean;
+    subMobileNumber: string | null;
+    updateId: string | null;
+    updatedAt: string;
+}
+
+export interface AttendeeDetail {
+    items: AttendeeData[];
     success: boolean;
     count: number;
 }
@@ -33,8 +61,9 @@ export interface CreateAttendee {
     description?: string;
 }
 
+export type SingleSchedulesType = { day: string; time: string }[];
 export interface CreateSchedules {
     attendanceId: string;
     attendeeId: string;
-    singleSchedules: { day: string; time: string }[];
+    singleSchedules: SingleSchedulesType;
 }
