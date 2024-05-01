@@ -9,15 +9,23 @@ import { TextField } from '@mui/material';
 import { DetailButton } from '@/styles/app/attendancesId.styles';
 
 // Types
-import { AttendanceItemType } from '@/app/attendances/[id]/page';
+import { AttendanceSchedulesByDateItem } from '@/api/attendances/schema';
+import { HandleListItemType } from '@/app/attendances/[id]/page';
+
+interface ItemType extends AttendanceSchedulesByDateItem {
+    lateTime: string;
+    lateReason: string;
+    absentType: string;
+}
 
 interface PropsType {
     index: number;
-    item: AttendanceItemType;
-    handleListItem: (index: number, field: string, value: string) => void;
+    time: string;
+    item: ItemType;
+    handleListItem: HandleListItemType;
 }
 
-const DetailInputBox = ({ item, index, handleListItem }: PropsType) => {
+const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
     const detailOptions = {
         // TODO: api 연동 이후 영어로 변경 필요
         지각: [
@@ -42,7 +50,12 @@ const DetailInputBox = ({ item, index, handleListItem }: PropsType) => {
                         <DetailButton
                             isSelected={option.value === item.lateTime}
                             onClick={() =>
-                                handleListItem(index, 'lateTime', option.value)
+                                handleListItem(
+                                    index,
+                                    time,
+                                    'lateTime',
+                                    option.value
+                                )
                             }
                         >
                             {option.label}
@@ -57,6 +70,7 @@ const DetailInputBox = ({ item, index, handleListItem }: PropsType) => {
                             onClick={() =>
                                 handleListItem(
                                     index,
+                                    time,
                                     'absentType',
                                     option.value
                                 )
@@ -72,7 +86,7 @@ const DetailInputBox = ({ item, index, handleListItem }: PropsType) => {
                 value={item.lateReason}
                 rows={item.status === '출석' ? 4 : 3}
                 onChange={(e) =>
-                    handleListItem(index, 'lateReason', e.target.value)
+                    handleListItem(index, time, 'lateReason', e.target.value)
                 }
                 multiline
             />

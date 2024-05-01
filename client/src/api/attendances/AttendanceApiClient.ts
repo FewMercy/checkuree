@@ -2,6 +2,7 @@ import BaseApiClient, { Tokens } from '../BaseApiClient';
 import {
     AttendanceData,
     AttendanceDetail,
+    AttendanceSchedulesByDate,
     AttendeeData,
     AttendeeDetail,
     CreateAttendance,
@@ -58,8 +59,11 @@ class AttendanceApiClient extends BaseApiClient {
         });
 
     /** 날짜에 따른 출석부 명단 */
-    public getAttendanceById = (attendanceId: string, date: string) =>
-        this.axios.request({
+    public getAttendanceSchedulesByDate = (
+        attendanceId: string,
+        date: string
+    ) =>
+        this.axios.request<AttendanceSchedulesByDate>({
             method: 'GET',
             url: `/schedules/attendanceId/${attendanceId}/${date}`,
         });
