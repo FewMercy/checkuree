@@ -61,7 +61,7 @@ const Index = () => {
         queryKey: ['attendanceSummary'],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceSummary(
+                await AttendanceApiClient.getInstance().getAttendanceSummaryByDate(
                     attendanceId,
                     today
                 );

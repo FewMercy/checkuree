@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+import _ from 'lodash';
 
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
@@ -10,43 +12,63 @@ import { AttendanceItemContainer } from '@/styles/app/listManagement.styles';
 import Icon from '@/components/Icon';
 
 // Types
-import { AttendanceData } from '@/api/attendances/schema';
+import { AttendeeData, ScheduleType } from '@/api/attendances/schema';
 
-interface ItemType extends AttendanceData {
-    status: string;
-    isDetailOpen: boolean;
+interface ItemType extends AttendeeData {
+    absenceCount: number;
+    date: string;
+    lateCount: number;
+    presentCount: number;
 }
 
 interface PropsType {
-    index: number;
-    item: any;
-    handleListItem: (
-        index: number,
-        field: string,
-        value: string | boolean
-    ) => void;
+    item: ItemType;
 }
 
 const AttendanceItem = (props: PropsType) => {
-    const { item, index, handleListItem } = props;
+    const { item } = props;
 
     const statusIcons: { icon: string; count: number }[] = [
-        { icon: 'sentiment_satisfied_alt', count: 10 },
-        { icon: 'watch_later', count: 1 },
-        { icon: 'highlight_off', count: 1 },
+        { icon: 'sentiment_satisfied_alt', count: item.presentCount },
+        { icon: 'watch_later', count: item.lateCount },
+        { icon: 'highlight_off', count: item.absenceCount },
     ];
 
+    const days: Record<string, string> = {
+        MONDAY: '월',
+        TUESDAY: '화',
+        WEDNESDAY: '수',
+        THURSDAY: '목',
+        FRIDAY: '금',
+        SATURDAY: '토',
+        SUNDAY: '일',
+    };
+
+    const [attendanceDay, setAttendanceDay] = useState<string>('');
+
+    useEffect(() => {
+        if (!_.isEmpty(item.schedules)) {
+            const attendanceDays: string[] = [];
+
+            item.schedules.forEach((schedule: ScheduleType) => {
+                const day = days[schedule.day];
+
+                if (!attendanceDays.includes(day)) {
+                    attendanceDays.push(day);
+                }
+            });
+
+            setAttendanceDay(attendanceDays.join(', '));
+        }
+    }, [item.schedules]);
+
     return (
-        <AttendanceItemContainer
-            status={item.status}
-            isDetailOpen={item.isDetailOpen}
-            key={`attendance-item__${item.id}`}
-        >
+        <AttendanceItemContainer key={`attendance-item__${item.id}`}>
             <div className={'attendance-item__container'}>
                 <div className="name">{item.name}</div>
 
                 <div className={'bottom-container'}>
-                    <div className={'days'}>월, 금</div>
+                    <div className={'days'}>{attendanceDay}</div>
                     <div className={'status-container'}>
                         {statusIcons.map((item) => (
                             <div className="status">

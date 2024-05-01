@@ -63,11 +63,24 @@ class AttendanceApiClient extends BaseApiClient {
             url: `/schedules/attendanceId/${attendanceId}/${date}`,
         });
 
-    /** 오늘 출석 요약 */
-    public getAttendanceSummary = (attendanceId: string, date: string) =>
+    /** 출석 요약 */
+    public getAttendanceSummary = (
+        attendanceId: string,
+        attendeeIds: string[]
+    ) =>
         this.axios.request({
             method: 'GET',
-            url: `/records/attendance/${attendanceId}/${date}/summary `,
+            url: `/records/attendance/${attendanceId}/summary`,
+            params: {
+                attendeeIds,
+            },
+        });
+
+    /** 날짜별 출석 요약 */
+    public getAttendanceSummaryByDate = (attendanceId: string, date: string) =>
+        this.axios.request({
+            method: 'GET',
+            url: `/records/attendance/${attendanceId}/${date}/summary`,
         });
 
     /** 특정 출석부의 출석대상 명단 */

@@ -30,7 +30,7 @@ const ListManagement = () => {
     const [isAddOpen, setIsAddOpen] = useState<boolean>(false);
 
     // 출석대상 명단 조회
-    const { data = [], isLoading } = useQuery({
+    const { data = [], isSuccess } = useQuery({
         queryKey: ['attendee-list'],
         queryFn: async (): Promise<AttendeeData[]> => {
             const response =
@@ -70,6 +70,28 @@ const ListManagement = () => {
         },
     });
 
+    // 출석 기록 summary 조회
+    const { data: attendanceSummary } = useQuery({
+        queryKey: ['attendance-summary'],
+        queryFn: async () => {
+            const attendeeIds = data.map((item) => item.id);
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceSummary(
+                    attendanceId,
+                    attendeeIds
+                );
+
+            if (response.status === 200 && _.has(response, 'data')) {
+                return response.data;
+            }
+
+            return [];
+        },
+        enabled: data && isSuccess,
+    });
+
+    console.log('attendanceSummary', attendanceSummary);
+
     /**
      * @description 출석/지각/결석 선택 및 상세사유 입력 등 출석대상 목록의 값을 변경하는 함수
      */
@@ -99,19 +121,17 @@ const ListManagement = () => {
                 <div className="attendance-img"></div>
 
                 <section className="attendance-info">
-                    {/* TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
-                    <div className="name">출석부 이름</div>
+                    <div className="name">{attendanceDetail.title}</div>
                 </section>
             </section>
 
             {/* 출석부 명단 */}
             <section className="attendance-list">
                 {attendeeList &&
+                    attendanceSummary &&
                     attendeeList.map((item, index) => (
                         <AttendanceItem
-                            item={item}
-                            index={index}
-                            handleListItem={handleListItem}
+                            item={{ ...item, ...attendanceSummary[index] }}
                         />
                     ))}
             </section>
