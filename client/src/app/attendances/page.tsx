@@ -153,17 +153,6 @@ const Page: React.FC = () => {
                                 alt=""
                                 width={48}
                                 height={48}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-around',
-                                    position: 'fixed',
-                                    zIndex: '9999',
-                                    marginLeft: '30px',
-                                    right: 0,
-                                    top: '90%',
-                                    transform: 'translateX(-50%)',
-                                }}
                                 onClick={() => setIsCreate(true)}
                             />
                         </BoxSTAttendanceWrapper>
