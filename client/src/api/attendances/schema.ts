@@ -20,6 +20,12 @@ export interface AttendanceDetail {
     count: number;
 }
 
+export interface ScheduleType {
+    id: number;
+    day: string;
+    time: string;
+}
+
 export interface AttendeeData {
     attendanceId: string;
     birth: string;
@@ -33,7 +39,7 @@ export interface AttendeeData {
     id: string;
     mobileNumber: string;
     name: string;
-    schedules: { id: number; day: string; time: string }[];
+    schedules: ScheduleType[];
     school: string | null;
     status?: string;
     isDetailOpen?: boolean;
@@ -61,7 +67,7 @@ export interface CreateAttendee {
     description?: string;
 }
 
-export type SingleSchedulesType = { day: string; time: string }[];
+export type SingleSchedulesType = { id?: number; day: string; time: string }[];
 export interface CreateSchedules {
     attendanceId: string;
     attendeeId: string;

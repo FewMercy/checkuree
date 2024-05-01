@@ -61,10 +61,7 @@ export const ListManagementContainer = styled.section`
     }
 `;
 
-export const AttendanceItemContainer = styled.div<{
-    status: string;
-    isDetailOpen: boolean;
-}>`
+export const AttendanceItemContainer = styled.div`
     & > .attendance-item__container {
         width: 100%;
         height: 58px;
