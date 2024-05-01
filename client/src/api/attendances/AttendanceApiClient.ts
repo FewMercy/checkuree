@@ -3,6 +3,7 @@ import {
     AttendanceData,
     AttendanceDetail,
     AttendeeDetail,
+    CreateAttendance,
     CreateAttendee,
     CreateSchedules,
 } from '@/api/attendances/schema';
@@ -82,12 +83,15 @@ class AttendanceApiClient extends BaseApiClient {
             method: 'GET',
             url: `/schedules/attendee/${attendeeId}`,
         });
-
-    public createAttandance = (id: string) =>
+    /** 출석부 생성 */
+    public createAttandance = (request: CreateAttendance) =>
         this.axios.request({
             method: 'POST',
-            url: `/schedules/attendanceId/${id}?days=TUESDAY&days=MONDAY&timeFrom=0900&timeTo=1830`,
-            data: '',
+            url: `/attendances`,
+            data: request,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
         });
 
     /** 명단관리 > 출석대상 등록 */
