@@ -19,6 +19,12 @@ export class SchedulesService {
   ) {}
 
   async create(createScheduleDto: CreateScheduleDto, user: User): Promise<CommonResponseDto<{ ids: number[] }>> {
+    // 이전 schedule 삭제
+    await this.scheduleRepository.softDelete({
+      attendeeId: createScheduleDto.attendeeId,
+    });
+
+    // 신규 schedule 저장
     const schedules = createScheduleDto.toEntities(user.id);
 
     if (!schedules.some((schedule) => this.verifyAttendTime(schedule.time))) {
@@ -37,10 +43,7 @@ export class SchedulesService {
     return new ResponseWithoutPaginationDto(count, items);
   }
 
-  async findAllByAttendanceId(
-    attendanceId: string,
-    scheduleFilterDto: ScheduleFilterDto,
-  ): Promise<PageResponseDto<Schedule>> {
+  async findAllByAttendanceId(attendanceId: string, scheduleFilterDto: ScheduleFilterDto): Promise<PageResponseDto<Schedule>> {
     const [items, count] = await this.scheduleRepository.findAndCount({
       relations: {
         attendee: true,

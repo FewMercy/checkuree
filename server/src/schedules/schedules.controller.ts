@@ -20,7 +20,7 @@ export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
   @Post()
-  @ApiOperation({ summary: '출석 스케쥴 생성' })
+  @ApiOperation({ summary: '출석 스케쥴 생성 / 수정 (이전 스케쥴 삭제)' })
   @ApiResponse({
     status: 200,
     description: '출석 스케쥴 생성',
