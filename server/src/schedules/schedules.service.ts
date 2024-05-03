@@ -74,24 +74,12 @@ export class SchedulesService {
     dateString: string,
     scheduleFilterDto: ScheduleFilterDto,
   ): Promise<PageResponseDto<TimeGroupedScheduleResDto>> {
-    const date = new Date(`${dateString.substring(0, 4)}-${dateString.substring(4, 6)}-${dateString.substring(6, 8)}`);
-    const dayNumber = date.getDay();
+    if (!this.isValideDateFormat(dateString)) {
+      throw new BadRequestException('날짜 형식이 올바르지 않습니다.');
+    }
 
-    const convertNumberToDay = (dayNumber) => {
-      const days = [
-        DayType.SUNDAY,
-        DayType.MONDAY,
-        DayType.TUESDAY,
-        DayType.WEDNESDAY,
-        DayType.THURSDAY,
-        DayType.FRIDAY,
-        DayType.SATURDAY,
-      ];
-
-      return days[dayNumber % 7];
-    };
-
-    const dayType = convertNumberToDay(dayNumber);
+    const date = new Date(dateString);
+    const dayType = this.convertDayToDayType(date.getDay());
 
     const queryBuilder = this.scheduleRepository
       .createQueryBuilder('schedule')
@@ -127,4 +115,38 @@ export class SchedulesService {
 
     return !(parseInt(hour) >= 24 || parseInt(minute) >= 60);
   }
+
+  private convertDayToDayType = (dayNumber) => {
+    const days = [
+      DayType.SUNDAY,
+      DayType.MONDAY,
+      DayType.TUESDAY,
+      DayType.WEDNESDAY,
+      DayType.THURSDAY,
+      DayType.FRIDAY,
+      DayType.SATURDAY,
+    ];
+
+    return days[dayNumber % 7];
+  };
+
+  private isValideDateFormat = (dateString) => {
+    // YYYY-MM-DD 형식의 정규 표현식
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+    // 정규 표현식에 따라 형식 검사
+    if (!regex.test(dateString)) {
+      return false; // 형식이 맞지 않으면 false 반환
+    }
+
+    // Date 객체를 생성하여 유효한 날짜인지 추가로 확인
+    const date = new Date(dateString);
+
+    // 날짜 객체가 유효한지, 변환된 날짜가 입력 문자열과 동일한지 확인
+    if (!date) {
+      return false;
+    }
+
+    return true;
+  };
 }
