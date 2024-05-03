@@ -19,13 +19,13 @@ import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response
 import { AttendeeRecordSummaryDto } from './dto/attendee-record-summary.dto';
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('records')
+@Controller()
 @ApiTags('출석기록')
 @ApiBearerAuth('token')
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Post()
+  @Post('/records')
   @ApiOperation({
     description: '출석기록 생성 및 수정',
     summary: '출석기록 생성 및 수정',
@@ -45,7 +45,7 @@ export class RecordsController {
     return this.recordsService.create(createRecordDto, user);
   }
 
-  @Post('create')
+  @Post('records/date')
   @ApiOperation({
     description: '선택한 날짜의 출석기록 일괄 생성',
     summary: '선택한 날짜의 출석기록 일괄 생성',
@@ -65,7 +65,7 @@ export class RecordsController {
     return this.recordsService.createAll(createAllRecordDto, user);
   }
 
-  @Get(':id')
+  @Get('records/:id')
   @ApiOperation({
     description: '출석기록 ID로 조회',
     summary: '출석기록 ID로 조회',
@@ -79,7 +79,7 @@ export class RecordsController {
     return this.recordsService.findOneById(+id);
   }
 
-  @Get('attendee/:attendeeId')
+  @Get('attendee/:attendeeId/records')
   @ApiOperation({
     description: '출석대상에 속한 출석기록 조회',
     summary: '출석대상에 속한 출석기록 조회',
@@ -96,7 +96,7 @@ export class RecordsController {
     return this.recordsService.findByAttendeeId(attendeeId, recordFilterDto);
   }
 
-  @Get('attendance/:attendanceId/summary')
+  @Get('attendance/:attendanceId/records/summary')
   @ApiOperation({
     description: '출석부에 속한 출석대상의 출석기록 요약',
     summary: '출석부에 속한 출석기록 조회',
@@ -113,7 +113,7 @@ export class RecordsController {
     return this.recordsService.getRecordSummaryByAttendeeId(attendanceId, attendeeRecordSummaryDto);
   }
 
-  @Get('attendance/:attendanceId/:date/summary')
+  @Get('attendance/:attendanceId/records/:date/summary')
   @ApiOperation({
     description: '출석부에 속한 출석기록 요약 조회',
     summary: '출석부에 속한 출석기록 요약 조회',
@@ -129,7 +129,7 @@ export class RecordsController {
     return this.recordsService.getRecordSummaryByAttendanceId(attendanceId, date);
   }
 
-  @Get('attendance/:attendanceId')
+  @Get('attendance/:attendanceId/records')
   @ApiOperation({
     description: '출석부에 속한 출석기록 조회',
     summary: '출석부에 속한 출석기록 조회',
@@ -146,7 +146,7 @@ export class RecordsController {
     return this.recordsService.findByAttendanceId(attendanceId, recordFilterDto);
   }
 
-  @Get('attendance/:attendanceId/excel')
+  @Get('attendance/:attendanceId/records/excel')
   @ApiOperation({
     description: '출석부에 속한 출석기록 엑셀 다운로드',
     summary: '출석부에 속한 출석기록 엑셀 다운로드',
@@ -168,7 +168,7 @@ export class RecordsController {
     res.end(buffer);
   }
 
-  @Get('attendee/:attendeeId/excel')
+  @Get('attendee/:attendeeId/records/excel')
   @ApiOperation({
     description: '출석대상에 속한 출석기록 엑셀 다운로드',
     summary: '출석대상에 속한 출석기록 엑셀 다운로드',
@@ -190,7 +190,7 @@ export class RecordsController {
     res.end(buffer);
   }
 
-  @Delete()
+  @Delete('/records')
   @ApiOperation({ summary: '출석기록 일괄 삭제' })
   @ApiBody({
     type: DeleteRecordDto,
