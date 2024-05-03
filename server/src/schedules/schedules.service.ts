@@ -10,6 +10,7 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { ScheduleFilterDto } from './dto/schedule-filter.dto';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
+import { TimeGroupedScheduleResDto } from './const/time-grouped-schedule-res.dto';
 
 @Injectable()
 export class SchedulesService {
@@ -72,8 +73,8 @@ export class SchedulesService {
     attendanceId: string,
     dateString: string,
     scheduleFilterDto: ScheduleFilterDto,
-  ): Promise<PageResponseDto<Schedule>> {
-    const date = new Date(dateString);
+  ): Promise<PageResponseDto<TimeGroupedScheduleResDto>> {
+    const date = new Date(`${dateString.substring(0, 4)}-${dateString.substring(4, 6)}-${dateString.substring(6, 8)}`);
     const dayNumber = date.getDay();
 
     const convertNumberToDay = (dayNumber) => {
@@ -104,7 +105,9 @@ export class SchedulesService {
 
     const [items, count] = await queryBuilder.getManyAndCount();
 
-    return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
+    const groupedByTimeResult = new TimeGroupedScheduleResDto(items);
+
+    return new PageResponseDto(scheduleFilterDto.pageSize, count, [groupedByTimeResult]);
   }
 
   async deleteAll(deleteScheduleDto: DeleteScheduleDto): Promise<CommonResponseDto<any>> {
