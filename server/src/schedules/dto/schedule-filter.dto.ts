@@ -11,7 +11,6 @@ export class ScheduleFilterDto extends Pagination {
     description: '(미구현)출석부 요일 배열',
     type: 'Array',
     nullable: true,
-    example: [DayType.MONDAY, DayType.TUESDAY],
   })
   days?: DayType[];
 
@@ -21,7 +20,6 @@ export class ScheduleFilterDto extends Pagination {
     description: '(미구현)검색 시작기준 시간 (format:hhmm)',
     type: 'string',
     nullable: true,
-    example: '1200',
   })
   timeFrom?: string;
 
@@ -31,7 +29,6 @@ export class ScheduleFilterDto extends Pagination {
     description: '(미구현)검색 종료기준 시간 (format:hhmm)',
     type: 'string',
     nullable: true,
-    example: '1815',
   })
   timeTo?: string;
 }
