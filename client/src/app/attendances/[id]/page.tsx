@@ -96,6 +96,23 @@ const Index = () => {
         },
     });
 
+    // 출석부 이름 조회용
+    const { data: detailData } = useQuery({
+        queryKey: ['attendanceDetail'],
+        queryFn: async () => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceDetail(
+                    attendanceId
+                );
+
+            if ((_.has(response, 'data'), _.has(response.data, 'data'))) {
+                return response.data.data;
+            }
+
+            return {};
+        },
+    });
+
     const shouldShowNavigation = Object.keys(attendeeList).some((key) => {
         attendeeList[key].some((el) => el.status !== '');
     });
@@ -142,16 +159,13 @@ const Index = () => {
         }
     }, [attendance]);
 
-    // console.log('attendeeList', attendeeList);
-
     return (
         <AttendanceIdContainer>
             <section className="attendance-header">
                 <div className="attendance-img"></div>
 
                 <section className="attendance-info">
-                    {/* // TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
-                    <div className="name">출석부 이름</div>
+                    <div className="name">{detailData.title}</div>
                     <div className="date-container">
                         <div className="date">{today.split('-')[1]}</div>
                         <div className="date">{today.split('-')[2]}</div>
