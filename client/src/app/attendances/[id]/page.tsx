@@ -165,7 +165,10 @@ const Index = () => {
                 <div className="attendance-img"></div>
 
                 <section className="attendance-info">
-                    <div className="name">{detailData.title}</div>
+                    <div className="name">
+                        {/* @ts-ignore */}
+                        {detailData?.title || '출석부 이름'}
+                    </div>
                     <div className="date-container">
                         <div className="date">{today.split('-')[1]}</div>
                         <div className="date">{today.split('-')[2]}</div>
