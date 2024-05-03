@@ -18,7 +18,7 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
 import { AttendeeRecordSummaryDto } from './dto/attendee-record-summary.dto';
 
-@UseGuards(AuthGuard('strategies'))
+@UseGuards(AuthGuard('jwt'))
 @Controller('records')
 @ApiTags('출석기록')
 @ApiBearerAuth('token')

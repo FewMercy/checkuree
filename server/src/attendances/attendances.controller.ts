@@ -17,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageValidatorPipe } from '../file-manager/const/image-validator.pipe';
 import { PROFILE_IMAGE_MAX_SIZE_IN_MB } from '../file-manager/const/file.const';
 
-@UseGuards(AuthGuard('strategies'))
+@UseGuards(AuthGuard('jwt'))
 @Controller('attendances')
 @ApiTags('출석부')
 @ApiBearerAuth('token')

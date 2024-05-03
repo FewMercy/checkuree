@@ -11,7 +11,7 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 
 @Controller('users')
 @ApiTags('회원')
-@UseGuards(AuthGuard('strategies'))
+@UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('token')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

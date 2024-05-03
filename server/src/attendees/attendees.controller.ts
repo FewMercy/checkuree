@@ -15,7 +15,7 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 
 @Controller('attendees')
-@UseGuards(AuthGuard('strategies'))
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('출석 대상')
 @ApiBearerAuth('token')
 export class AttendeesController {

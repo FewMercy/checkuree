@@ -13,7 +13,7 @@ import { ResponseWithoutPaginationDto } from '../common/response/responseWithout
 import { PageResponseDto } from '../common/response/pageResponse.dto';
 
 @Controller('schedules')
-@UseGuards(AuthGuard('strategies'))
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('출석 스케쥴')
 @ApiBearerAuth('token')
 export class SchedulesController {
