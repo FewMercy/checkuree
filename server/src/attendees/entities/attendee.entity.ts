@@ -4,8 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Attendance } from '../../attendances/entities/attendance.entity';
 import { Schedule } from '../../schedules/entities/schedule.entity';
 import { Record } from '../../records/entities/record.entity';
-import { AttendeeGrade } from '../grade.enum';
-import { Gender } from '../gender.enum';
+import { AttendeeGrade } from '../const/grade.enum';
+import { Gender } from '../const/gender.enum';
 
 @Entity()
 export class Attendee extends BaseTimeEntity {

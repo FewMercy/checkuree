@@ -3,8 +3,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Attendee } from '../entities/attendee.entity';
 import { INVALID_MOBILENUMBER_MESSAGE } from '../../auth/const/error-message';
 import { MobileNumberTransform } from '../../common/decorator/phoneNumber.decorator';
-import { AttendeeGrade } from '../grade.enum';
-import { Gender } from '../gender.enum';
+import { AttendeeGrade } from '../const/grade.enum';
+import { Gender } from '../const/gender.enum';
 
 export class CreateAttendeeDto {
   @IsString()

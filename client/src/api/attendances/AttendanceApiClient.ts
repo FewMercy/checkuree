@@ -2,6 +2,10 @@ import BaseApiClient, { Tokens } from '../BaseApiClient';
 import {
     AttendanceData,
     AttendanceDetail,
+    AttendanceSchedulesByDate,
+    AttendeeData,
+    AttendeeDetail,
+    CreateAttendance,
     CreateAttendee,
     CreateSchedules,
 } from '@/api/attendances/schema';
@@ -47,39 +51,66 @@ class AttendanceApiClient extends BaseApiClient {
             url: '/attendances',
         });
 
+    /** 특정 출석부 상세 조회 */
+    public getAttendanceDetail = (attendanceId: string) =>
+        this.axios.request<AttendanceDetail>({
+            method: 'GET',
+            url: `/attendances/${attendanceId}`,
+        });
+
     /** 날짜에 따른 출석부 명단 */
-    public getAttendanceById = (attendanceId: string, date: string) =>
-        this.axios.request({
+    public getAttendanceSchedulesByDate = (
+        attendanceId: string,
+        date: string
+    ) =>
+        this.axios.request<AttendanceSchedulesByDate>({
             method: 'GET',
             url: `/schedules/attendanceId/${attendanceId}/${date}`,
         });
 
-    /** 오늘 출석 요약 */
-    public getAttendanceSummary = (attendanceId: string, date: string) =>
+    /** 출석 요약 */
+    public getAttendanceSummary = (
+        attendanceId: string,
+        attendeeIds: string[]
+    ) =>
         this.axios.request({
             method: 'GET',
-            url: `/records/attendance/${attendanceId}/${date}/summary `,
+            url: `/records/attendance/${attendanceId}/summary`,
+            params: {
+                attendeeIds,
+            },
+        });
+
+    /** 날짜별 출석 요약 */
+    public getAttendanceSummaryByDate = (attendanceId: string, date: string) =>
+        this.axios.request({
+            method: 'GET',
+            url: `/records/attendance/${attendanceId}/${date}/summary`,
         });
 
     /** 특정 출석부의 출석대상 명단 */
-    public getAttendanceDetail = (attendanceId: string) =>
-        this.axios.request<AttendanceDetail>({
+    public getAttendeeList = (attendanceId: string) =>
+        this.axios.request<AttendeeDetail>({
             method: 'GET',
             url: `/attendees/attendanceId/${attendanceId}`,
         });
 
     /** 출석대상의 스케쥴조회 */
-    public getAttendeeSchedule = (attendeeId: string) =>
-        this.axios.request<AttendanceData[]>({
+    public getAttendeeDetail = (attendeeId: string) =>
+        this.axios.request<AttendeeDetail>({
             method: 'GET',
-            url: `/schedules/attendee/${attendeeId}`,
+            url: `/attendees/${attendeeId}`,
         });
 
-    public createAttandance = (id: string) =>
+    /** 출석부 생성 */
+    public createAttandance = (request: CreateAttendance) =>
         this.axios.request({
             method: 'POST',
-            url: `/schedules/attendanceId/${id}?days=TUESDAY&days=MONDAY&timeFrom=0900&timeTo=1830`,
-            data: '',
+            url: `/attendances`,
+            data: request,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
         });
 
     /** 명단관리 > 출석대상 등록 */
@@ -87,6 +118,14 @@ class AttendanceApiClient extends BaseApiClient {
         this.axios.request({
             method: 'POST',
             url: `/attendees`,
+            data: parameters,
+        });
+
+    /** 명단관리 > 출석대상 정보 수정 */
+    public updateAttendee = (attendeeId: string, parameters: CreateAttendee) =>
+        this.axios.request({
+            method: 'PATCH',
+            url: `/attendees/${attendeeId}`,
             data: parameters,
         });
 

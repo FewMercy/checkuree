@@ -16,20 +16,18 @@ import {
 import DetailInputBox from '@/app/attendances/_components/DetailInputBox';
 
 // Types
-import { AttendanceItemType } from '@/app/attendances/[id]/page';
+import { AttendanceSchedulesByDateItem } from '@/api/attendances/schema';
+import { HandleListItemType } from '@/app/attendances/[id]/page';
 
 interface PropsType {
     index: number;
-    item: AttendanceItemType;
-    handleListItem: (
-        index: number,
-        field: string,
-        value: string | boolean
-    ) => void;
+    time: string;
+    item: AttendanceSchedulesByDateItem;
+    handleListItem: HandleListItemType;
 }
 
 const AttendanceItem = (props: PropsType) => {
-    const { item, index, handleListItem } = props;
+    const { item, time, index, handleListItem } = props;
 
     const statusButtons: { label: string; value: string }[] = [
         { label: '출석', value: '출석' },
@@ -39,19 +37,20 @@ const AttendanceItem = (props: PropsType) => {
 
     return (
         <AttendanceItemContainer
-            status={item.status}
-            isDetailOpen={item.isDetailOpen}
+            status={item.status || ''}
+            isDetailOpen={item.isDetailOpen || false}
             key={`attendance-item__${item.id}`}
         >
             <div className={'attendance-item__container'}>
                 <div className="name">
-                    {item.name}
+                    {item.attendee.name}
                     <Image
                         src={Images.DetailOpen}
-                        alt={`open-detail__${item.name}`}
+                        alt={`open-detail__${item.attendee.name}`}
                         onClick={() =>
                             handleListItem(
                                 index,
+                                time,
                                 'isDetailOpen',
                                 !item.isDetailOpen
                             )
@@ -64,7 +63,12 @@ const AttendanceItem = (props: PropsType) => {
                         <StatusButton
                             isSelected={item.status === button.value}
                             onClick={() =>
-                                handleListItem(index, 'status', button.value)
+                                handleListItem(
+                                    index,
+                                    time,
+                                    'status',
+                                    button.value
+                                )
                             }
                         >
                             {button.label}
@@ -76,6 +80,7 @@ const AttendanceItem = (props: PropsType) => {
             {/* 출석/지각/상세 사유 입력 박스 */}
             <DetailInputBox
                 item={item}
+                time={time}
                 index={index}
                 handleListItem={handleListItem}
             />

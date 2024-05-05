@@ -11,16 +11,17 @@ import { DeleteScheduleDto } from './dto/delete-schedule.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
+import { TimeGroupedScheduleResDto } from './const/time-grouped-schedule-res.dto';
 
-@Controller('schedules')
+@Controller()
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('출석 스케쥴')
 @ApiBearerAuth('token')
 export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
-  @Post()
-  @ApiOperation({ summary: '출석 스케쥴 생성' })
+  @Post('/schedules')
+  @ApiOperation({ summary: '출석 스케쥴 생성 / 수정 (이전 스케쥴 삭제)' })
   @ApiResponse({
     status: 200,
     description: '출석 스케쥴 생성',
@@ -30,14 +31,11 @@ export class SchedulesController {
     type: CreateScheduleDto,
     description: '출석 스케쥴 생성 DTO',
   })
-  create(
-    @Body() createScheduleDto: CreateScheduleDto,
-    @GetUser() user: User,
-  ): Promise<CommonResponseDto<{ ids: number[] }>> {
+  create(@Body() createScheduleDto: CreateScheduleDto, @GetUser() user: User): Promise<CommonResponseDto<{ ids: number[] }>> {
     return this.schedulesService.create(createScheduleDto, user);
   }
 
-  @Get('/attendee/:attendeeId')
+  @Get('/attendee/:attendeeId/schedules')
   @ApiOperation({ summary: '출석대상의 스케쥴 조회' })
   @ApiResponse({
     status: 200,
@@ -48,7 +46,7 @@ export class SchedulesController {
     return this.schedulesService.findByAttendeeId(attendeeId);
   }
 
-  @Get('/attendanceId/:attendanceId')
+  @Get('/attendanceId/:attendanceId/schedules')
   @ApiOperation({ summary: '출석부에 속한 모든 스케쥴 조회' })
   @ApiResponse({
     status: 200,
@@ -62,7 +60,7 @@ export class SchedulesController {
     return this.schedulesService.findAllByAttendanceId(attendanceId, scheduleFilterDto);
   }
 
-  @Get('/attendanceId/:attendanceId/:date')
+  @Get('/attendanceId/:attendanceId/schedules/:date')
   @ApiOperation({ summary: '해당 출석부의 오늘의 스케쥴과 출석내역 조회' })
   @ApiResponse({
     status: 200,
@@ -71,14 +69,15 @@ export class SchedulesController {
   })
   findScheduleByAttendanceIdAndDate(
     @Param('attendanceId') attendanceId: string,
-    @Param('date') dateString: string,
+    @Param('date')
+    dateString: string,
     @Query()
     scheduleFilterDto: ScheduleFilterDto,
-  ): Promise<PageResponseDto<Schedule>> {
+  ): Promise<PageResponseDto<TimeGroupedScheduleResDto>> {
     return this.schedulesService.findScheduleByAttendanceIdAndDate(attendanceId, dateString, scheduleFilterDto);
   }
 
-  @Delete()
+  @Delete('/schedules')
   @ApiOperation({ summary: '스케쥴 일괄 삭제' })
   @ApiResponse({
     status: 200,

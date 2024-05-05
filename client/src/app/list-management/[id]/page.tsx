@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
+import _ from 'lodash';
+
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
 import { ListManagementContainer } from '@/styles/app/listManagement.styles';
@@ -19,55 +21,75 @@ import AttendanceItem from '@/app/list-management/_components/AttendanceItem';
 import FormContents from '@/app/list-management/_components/FormContents';
 
 // Types
-import { AttendanceData } from '@/api/attendances/schema';
-
-interface AttendanceItem extends AttendanceData {
-    status: string;
-    isDetailOpen: boolean;
-}
+import { AttendanceData, AttendeeData } from '@/api/attendances/schema';
 
 const ListManagement = () => {
     const attendanceId = usePathname().split('/')[2];
 
-    const [attendeeList, setAttendeeList] = useState<AttendanceItem[]>([]);
+    const [attendeeList, setAttendeeList] = useState<AttendeeData[]>([]);
     const [isAddOpen, setIsAddOpen] = useState<boolean>(false);
+    const [isUpdateOpen, setIsUpdateOpen] = useState<string>('');
 
-    // fetching API
-    const { data, isLoading } = useQuery({
+    // 출석대상 명단 조회
+    const { data = [], isSuccess } = useQuery({
         queryKey: ['attendee-list'],
-        queryFn: async () => {
+        queryFn: async (): Promise<AttendeeData[]> => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceDetail(
+                await AttendanceApiClient.getInstance().getAttendeeList(
                     attendanceId
                 );
 
-            if (response.status === 200) {
+            if (response.status === 200 && _.has(response.data, 'items')) {
                 return response.data.items.map((item) => ({
                     ...item,
                     status: '',
                     isDetailOpen: false,
                 }));
             }
-            return response.data;
+            return response.data.items;
         },
     });
 
-    /**
-     * @description 출석/지각/결석 선택 및 상세사유 입력 등 출석대상 목록의 값을 변경하는 함수
-     */
-    const handleListItem = (
-        index: number,
-        field: string,
-        value: string | boolean
-    ) => {
-        setAttendeeList((prevState) => {
-            return prevState.map((item, idx) => {
-                if (idx === index)
-                    return Object.assign(item, { [field]: value });
-                else return item;
-            });
-        });
-    };
+    // 출석부 상세 조회
+    const { data: attendanceDetail = {} as AttendanceData } = useQuery({
+        queryKey: ['attendance-detail'],
+        queryFn: async (): Promise<AttendanceData> => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceDetail(
+                    attendanceId
+                );
+
+            if (
+                response.status === 200 &&
+                _.has(response, 'data') &&
+                _.has(response.data, 'data')
+            ) {
+                return response.data.data;
+            }
+
+            return {} as AttendanceData;
+        },
+    });
+
+    // 출석 기록 summary 조회
+    const { data: attendanceSummary } = useQuery({
+        queryKey: ['attendance-summary'],
+        queryFn: async () => {
+            const attendeeIds = data.map((item) => item.id);
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceSummary(
+                    attendanceId,
+                    attendeeIds
+                );
+
+            if (response.status === 200 && _.has(response, 'data')) {
+                return response.data;
+            }
+
+            return [];
+        },
+        enabled: data && isSuccess,
+    });
 
     useEffect(() => {
         if (data && Array.isArray(data) && data?.length > 0) {
@@ -81,19 +103,18 @@ const ListManagement = () => {
                 <div className="attendance-img"></div>
 
                 <section className="attendance-info">
-                    {/* TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
-                    <div className="name">출석부 이름</div>
+                    <div className="name">{attendanceDetail.title}</div>
                 </section>
             </section>
 
             {/* 출석부 명단 */}
             <section className="attendance-list">
                 {attendeeList &&
+                    attendanceSummary &&
                     attendeeList.map((item, index) => (
                         <AttendanceItem
-                            item={item}
-                            index={index}
-                            handleListItem={handleListItem}
+                            item={{ ...item, ...attendanceSummary[index] }}
+                            setIsUpdateOpen={setIsUpdateOpen}
                         />
                     ))}
             </section>
@@ -109,11 +130,18 @@ const ListManagement = () => {
 
             {/* 등록/변경 모달 */}
             <BottomDrawer
-                open={isAddOpen}
-                onClose={() => setIsAddOpen(false)}
+                open={isAddOpen || isUpdateOpen.length > 0}
+                onClose={() => {
+                    if (isAddOpen) {
+                        setIsAddOpen(false);
+                        return;
+                    }
+                    setIsUpdateOpen('');
+                }}
                 children={
                     <FormContents
-                        data={{ ...attendeeList, days: ['MONDAY'] }}
+                        data={attendanceDetail}
+                        attendeeId={isUpdateOpen}
                         attendanceId={attendanceId}
                         onClose={() => setIsAddOpen(false)}
                     />

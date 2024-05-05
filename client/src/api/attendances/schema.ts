@@ -1,6 +1,6 @@
 export interface AttendanceData {
     allowLateness: boolean;
-    attendanceDays: string[];
+    attendanceDays: { attendanceId: string; day: string; id: number }[];
     days: string[];
     availableFrom: string;
     availableTo: string;
@@ -15,9 +15,67 @@ export interface AttendanceData {
     updatedAt: string;
 }
 export interface AttendanceDetail {
-    items: AttendanceData[];
+    data: AttendanceData;
     success: boolean;
     count: number;
+}
+
+export interface ScheduleType {
+    id: number;
+    day: string;
+    time: string;
+}
+
+export interface AttendeeData {
+    attendanceId: string;
+    birth: string;
+    course: string | null;
+    createId: string;
+    createdAt: string;
+    deletedAt: string | null;
+    description: string | null;
+    gender: string;
+    grade: string | null;
+    id: string;
+    mobileNumber: string;
+    name: string;
+    schedules: ScheduleType[];
+    school: string | null;
+    status?: string;
+    isDetailOpen?: boolean;
+    subMobileNumber: string | null;
+    updateId: string | null;
+    updatedAt: string;
+}
+
+export interface AttendeeDetail {
+    data?: AttendeeData[];
+    items?: AttendeeData[];
+    success: boolean;
+    count: number;
+}
+
+export interface AttendanceSchedulesByDateItem {
+    attendee: AttendeeData;
+    attendeeId: string;
+    createId: string;
+    createdAt: string;
+    day: string;
+    deletedAt: string | null;
+    id: number;
+    time: string;
+    updateId: string | null;
+    updatedAt: string;
+    status?: string;
+    isDetailOpen?: boolean;
+}
+
+export interface AttendanceSchedulesByDate {
+    items: AttendanceSchedulesByDateItem[];
+    count: number;
+    pageSize: number;
+    success: boolean;
+    totalPage: number;
 }
 
 export interface CreateAttendee {
@@ -33,8 +91,19 @@ export interface CreateAttendee {
     description?: string;
 }
 
+export type SingleSchedulesType = { id?: number; day: string; time: string }[];
 export interface CreateSchedules {
     attendanceId: string;
     attendeeId: string;
-    singleSchedules: { day: string; time: string }[];
+    singleSchedules: SingleSchedulesType;
+}
+
+export interface CreateAttendance {
+    title: string;
+    description: string;
+    availableFrom: string;
+    availableTo: string;
+    allowLateness: string;
+    attendanceDays: string;
+    image: File;
 }

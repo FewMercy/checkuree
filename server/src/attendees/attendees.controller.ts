@@ -47,9 +47,7 @@ export class AttendeesController {
   })
   @UseGuards(RoleGuard)
   @Roles(RoleType.MASTER, RoleType.GENERAL, RoleType.MANAGER, RoleType.READER)
-  async findAllByAttendanceId(
-    @Param('attendanceId') attendanceId: string,
-  ): Promise<ResponseWithoutPaginationDto<Attendee>> {
+  async findAllByAttendanceId(@Param('attendanceId') attendanceId: string): Promise<ResponseWithoutPaginationDto<Attendee>> {
     return this.attendeesService.findAllByAttendanceId(attendanceId);
   }
 

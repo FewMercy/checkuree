@@ -76,10 +76,23 @@ export const AttendanceIdContainer = styled.section`
 
     & > .attendance-list {
         display: flex;
-        gap: 12px;
+        gap: 24px;
         flex-direction: column;
         padding: 12px 0 120px;
         margin-top: 157px;
+
+        & > .attendance-list-by-time {
+            & > .attendance-time {
+                font-size: 15px;
+                font-weight: 600;
+                margin-bottom: 4px;
+            }
+            & > .attendee-list {
+                display: flex;
+                gap: 12px;
+                flex-direction: column;
+            }
+        }
     }
 `;
 
@@ -147,6 +160,7 @@ export const AttendanceItemContainer = styled.div<{
 
         & > .MuiTextField-root {
             width: 100%;
+            height: 100%;
 
             & > .MuiInputBase-root {
                 width: 100%;

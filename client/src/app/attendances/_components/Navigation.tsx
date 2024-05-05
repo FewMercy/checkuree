@@ -2,7 +2,7 @@
 import { Box, styled, Typography } from '@mui/material';
 import React, { SetStateAction, useState } from 'react';
 
-import { AttendanceItemType } from '../[id]/page';
+import { ParsedAttendeeListType } from '../[id]/page';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -16,7 +16,7 @@ interface Menu {
 
 interface Iprops {
     status: boolean;
-    setDummyList: React.Dispatch<SetStateAction<AttendanceItemType[]>>;
+    setAttendeeList: React.Dispatch<SetStateAction<ParsedAttendeeListType>>;
 }
 
 const menuList = (attendanceId: string): Menu[] => {
@@ -53,7 +53,7 @@ const menuList = (attendanceId: string): Menu[] => {
 };
 
 const Navigation = (props: Iprops) => {
-    const { status, setDummyList } = props;
+    const { status, setAttendeeList } = props;
 
     const router = useRouter();
     const attendanceId = usePathname().split('/')[2];
@@ -66,12 +66,17 @@ const Navigation = (props: Iprops) => {
     };
 
     const resetAllStatus = () => {
-        setDummyList((prevState) =>
-            prevState.map((item) => ({
-                ...item,
-                status: '', // 모든 요소의 status 값을 ''로 설정
-            }))
-        );
+        setAttendeeList((prevState) => {
+            return Object.fromEntries(
+                Object.entries(prevState).map(([time, items]) => [
+                    time,
+                    items.map((item) => ({
+                        ...item,
+                        status: '', // 모든 요소의 status 값을 ''로 설정
+                    })),
+                ])
+            );
+        });
     };
 
     return (

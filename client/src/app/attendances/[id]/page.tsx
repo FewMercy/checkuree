@@ -1,72 +1,120 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
+
+// Next
+import { usePathname } from 'next/navigation';
+
+// Utils
+import _ from 'lodash';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
+import { dateFormat } from '@/utils';
+
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
+import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
+
 // Api
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
-
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
-import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
-import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
+
 // Components
 import Icon from '@/components/Icon';
 import Navigation from '@/app/attendances/_components/Navigation';
-// Next
-import { usePathname } from 'next/navigation';
-import { dateFormat } from '@/utils';
+import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
+import { AttendanceSchedulesByDateItem } from '@/api/attendances/schema';
 
 // Types
-export interface AttendanceItemType {
-    id: number;
-    name: string;
-    status: string;
-    isDetailOpen: boolean;
-    lateTime?: string;
-    absentType?: string;
-    lateReason?: string;
-}
+export type HandleListItemType = (
+    index: number,
+    time: string,
+    field: string,
+    value: string | boolean
+) => void;
+export type ParsedAttendeeListType = Record<
+    string,
+    AttendanceSchedulesByDateItem[]
+>;
 
 const Index = () => {
     const attendanceId = usePathname().split('/')[2];
 
+    dayjs.locale('ko');
     const today = dateFormat(new Date(), 'dash');
 
-    // TODO: api 데이터 제대로 내려오면 하단의 attendance로 대체될 예정.
-    const [dummyList, setDummyList] = useState<AttendanceItemType[]>([
-        { id: 1, name: '김차력', status: '', isDetailOpen: false },
-        { id: 2, name: '김차린', status: '', isDetailOpen: false },
-        { id: 3, name: '김하력', status: '', isDetailOpen: false },
-        { id: 4, name: '계창선', status: '', isDetailOpen: false },
-        { id: 5, name: '계창선', status: '', isDetailOpen: false },
-        { id: 6, name: '계창선', status: '', isDetailOpen: false },
-        { id: 7, name: '계창선', status: '', isDetailOpen: false },
-        { id: 8, name: '계창선', status: '', isDetailOpen: false },
-    ]);
+    const [attendeeList, setAttendeeList] = useState<ParsedAttendeeListType>(
+        {}
+    );
 
-    const shouldShowNavigation = dummyList.some((item) => item.status !== '');
-    // fetching API
-    const { data: attendance, isLoading } = useQuery({
+    // 출석대상 명단 조회
+    const { data: attendance, isSuccess } = useQuery({
         queryKey: ['attendanceToday'],
+        queryFn: async (): Promise<ParsedAttendeeListType> => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
+                    attendanceId,
+                    today
+                );
+
+            if (
+                response.status === 200 &&
+                _.has(response, 'data') &&
+                _.has(response.data, 'items')
+            ) {
+                const parsedAttendeeList: ParsedAttendeeListType = {};
+
+                response.data.items.forEach((item) => {
+                    const { time } = item;
+                    if (!_.has(parsedAttendeeList, time)) {
+                        parsedAttendeeList[time] = [];
+                    }
+                    parsedAttendeeList[time].push({
+                        ...item,
+                        status: '',
+                        isDetailOpen: false,
+                    });
+                });
+
+                return parsedAttendeeList;
+            }
+
+            return {};
+        },
+    });
+
+    // 출석, 지각, 결석 수 조회
+    const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
+        queryKey: ['attendanceSummary'],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceById(
+                await AttendanceApiClient.getInstance().getAttendanceSummaryByDate(
                     attendanceId,
                     today
                 );
             return response.data;
         },
     });
-    const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
-        queryKey: ['attendanceSummary'],
+
+    // 출석부 이름 조회용
+    const { data: detailData } = useQuery({
+        queryKey: ['attendanceDetail'],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceSummary(
-                    attendanceId,
-                    today
+                await AttendanceApiClient.getInstance().getAttendanceDetail(
+                    attendanceId
                 );
-            return response.data;
+
+            if ((_.has(response, 'data'), _.has(response.data, 'data'))) {
+                return response.data.data;
+            }
+
+            return {};
         },
+    });
+
+    const shouldShowNavigation = Object.keys(attendeeList).some((key) => {
+        attendeeList[key].some((el) => el.status !== '');
     });
 
     const statusIcons: { icon: string; count: number }[] = [
@@ -88,23 +136,28 @@ const Index = () => {
     /**
      * @description 출석/지각/결석 선택 및 상세사유 입력 등 출석대상 목록의 값을 변경하는 함수
      */
-    const handleListItem = (
-        index: number,
-        field: string,
-        value: string | boolean
-    ) => {
-        setDummyList((prevState) => {
-            return prevState.map((item, idx) => {
-                if (idx === index)
-                    return Object.assign(item, { [field]: value });
-                else return item;
-            });
+    const handleListItem: HandleListItemType = (index, time, field, value) => {
+        setAttendeeList((prevState) => {
+            const updatedState = { ...prevState }; // 이전 상태를 복사하여 새로운 상태를 만듭니다.
+
+            if (updatedState[time]) {
+                updatedState[time] = updatedState[time].map((item, idx) => {
+                    if (index === idx) {
+                        return { ...item, [field]: value };
+                    }
+                    return item;
+                });
+            }
+
+            return updatedState;
         });
     };
 
-    console.log('attendance', attendance);
-
-    // if (isLoading) return <div>loading..</div>; // TODO: 스피너 이미지 생기면 교체하기
+    useEffect(() => {
+        if (isSuccess && attendance) {
+            setAttendeeList(attendance);
+        }
+    }, [attendance]);
 
     return (
         <AttendanceIdContainer>
@@ -112,12 +165,14 @@ const Index = () => {
                 <div className="attendance-img"></div>
 
                 <section className="attendance-info">
-                    {/* // TODO: 추후 데이터 제대로 내려오면 api 값으로 변경 필요 */}
-                    <div className="name">출석부 이름</div>
+                    <div className="name">
+                        {/* @ts-ignore */}
+                        {detailData?.title || '출석부 이름'}
+                    </div>
                     <div className="date-container">
-                        <div className="date">03</div>
-                        <div className="date">20</div>
-                        <div className="date">수</div>
+                        <div className="date">{today.split('-')[1]}</div>
+                        <div className="date">{today.split('-')[2]}</div>
+                        <div className="date">{dayjs().format('ddd')}</div>
                     </div>
                 </section>
 
@@ -137,17 +192,27 @@ const Index = () => {
 
             {/* 출석부 명단 */}
             <section className="attendance-list">
-                {dummyList.map((item, index) => (
-                    <AttendanceItem
-                        item={item}
-                        index={index}
-                        handleListItem={handleListItem}
-                    />
-                ))}
+                {Object.keys(attendeeList).map((time) => {
+                    return (
+                        <section className="attendance-list-by-time">
+                            <div className="attendance-time">{`${time.slice(0, 2)}:${time.slice(2, 4)}`}</div>
+                            <div className="attendee-list">
+                                {attendeeList[time].map((item, index) => (
+                                    <AttendanceItem
+                                        item={item}
+                                        time={time}
+                                        index={index}
+                                        handleListItem={handleListItem}
+                                    />
+                                ))}
+                            </div>
+                        </section>
+                    );
+                })}
             </section>
             <Navigation
                 status={shouldShowNavigation}
-                setDummyList={setDummyList}
+                setAttendeeList={setAttendeeList}
             />
         </AttendanceIdContainer>
     );
@@ -165,7 +230,7 @@ Index.GetServerSideProps = async (context: any) => {
         queryKey: ['attendance', id],
         queryFn: async () => {
             const response =
-                await AttendanceApiClient.getInstance().getAttendanceById(
+                await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
                     id,
                     today
                 );

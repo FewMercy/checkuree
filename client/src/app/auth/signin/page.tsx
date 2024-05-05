@@ -145,14 +145,15 @@ const Index = () => {
                         </Box>
                     </BoxSTLoginCommon>
                 </BoxSTLoginCommon>
-                <Box display={'flex'} justifyContent={'space-between'}>
-                    <StyledKakaoLoginButton
-                        onClick={() => {
-                            alert('준비중인 기능입니다.');
-                        }}
-                    >
-                        카카오 로그인
-                    </StyledKakaoLoginButton>
+                <StyledKakaoLoginButton
+                    onClick={() => {
+                        router.push('https://checkuree.com/api/v1/auth/kakao');
+                    }}
+                >
+                    카카오 로그인
+                </StyledKakaoLoginButton>
+                {/* <Box display={'flex'} justifyContent={'space-between'}>
+                 
                     <StyledNaverLoginButton
                         onClick={() => {
                             alert('준비중인 기능입니다.');
@@ -160,7 +161,7 @@ const Index = () => {
                     >
                         네이버 로그인
                     </StyledNaverLoginButton>
-                </Box>
+                </Box> */}
             </BoxSTLoginCommon>
 
             <Image
@@ -199,7 +200,7 @@ const ContainerST = styled(Container)(() => {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100%',
-        gap: '20px',
+        gap: '32px',
     };
 });
 
@@ -288,8 +289,8 @@ const BoxSTLoginMaintain = styled(Box)(() => {
 // 카카오 및 네이버 로그인 버튼 스타일
 const StyledLoginButton = styled(Box)(() => {
     return {
-        width: '152px',
-        height: '40px',
+        width: '313px',
+        height: '39px',
         borderRadius: '20px',
         fontSize: '14px',
         lineHeight: '19.07px',

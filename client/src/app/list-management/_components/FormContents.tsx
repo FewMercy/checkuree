@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 
 // Libraries
-import { format } from 'date-fns';
+import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -30,12 +30,16 @@ import {
 import {
     AttendanceData,
     AttendanceDetail,
+    AttendeeData,
+    AttendeeDetail,
     CreateAttendee,
     CreateSchedules,
+    SingleSchedulesType,
 } from '@/api/attendances/schema';
 import Icon from '@/components/Icon';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
+import useFormContents from '@/app/list-management/_hooks/useFormContents';
 
 // Types
 interface Inputs {
@@ -49,10 +53,12 @@ interface Inputs {
 
 const FormContents = ({
     data,
+    attendeeId,
     attendanceId,
     onClose,
 }: {
     data: AttendanceData;
+    attendeeId?: string;
     attendanceId: string;
     onClose: () => void;
 }) => {
@@ -64,11 +70,35 @@ const FormContents = ({
     >([]);
     const [showCalendar, setShowCalendar] = useState(false);
 
+    const { generateTimeOptions } = useFormContents();
+
+    const { data: attendeeDetail, isSuccess } = useQuery({
+        queryKey: ['attendee-detail', attendeeId],
+        queryFn: async () => {
+            const response =
+                await AttendanceApiClient.getInstance().getAttendeeDetail(
+                    attendeeId || ''
+                );
+
+            if (
+                response.status === 200 &&
+                _.has(response, 'data') &&
+                _.has(response.data, 'data')
+            ) {
+                return response.data.data;
+            }
+
+            return {};
+        },
+        enabled: attendeeId ? attendeeId.length > 0 : false,
+    });
+
     const {
         watch,
         register,
         handleSubmit,
         setValue,
+        reset,
         formState: { errors },
     } = useForm<Inputs>({
         defaultValues: { gender: 'MALE' },
@@ -81,7 +111,14 @@ const FormContents = ({
         const { times, subMobileNumber, ...rest } = data;
 
         if (attendanceId) {
-            mutateAttendee({ ...rest, attendanceId });
+            if (attendeeId) {
+                updateAttendee({
+                    attendeeId: attendeeId,
+                    parameters: { ...rest, attendanceId },
+                });
+            } else {
+                createAttendee({ ...rest, attendanceId });
+            }
         }
     });
 
@@ -95,7 +132,8 @@ const FormContents = ({
         SUNDAY: '일',
     };
 
-    const { mutate: mutateAttendee } = useMutation({
+    /** 출석대상 생성 */
+    const { mutate: createAttendee } = useMutation({
         mutationFn: async (parameters: CreateAttendee) => {
             const response =
                 await AttendanceApiClient.getInstance().createAttendee(
@@ -104,20 +142,60 @@ const FormContents = ({
             return response.data;
         },
         onSuccess: async (data) => {
-            // TODO: 출석부 정보 api 수정되면 선택 가능 시간 내에서 선택한 수업 시간으로 파라미터 수정 필요
+            const selectedSchedules = watch('times');
+            const singleSchedulesList: SingleSchedulesType = [];
+
+            Object.keys(selectedSchedules).forEach((day) => {
+                const times = selectedSchedules[day];
+
+                times.forEach((time) => {
+                    singleSchedulesList.push({ day, time });
+                });
+            });
             mutateSchedules({
                 attendanceId,
                 attendeeId: data.data.id,
-                singleSchedules: [
-                    {
-                        day: 'SUNDAY',
-                        time: '0930',
-                    },
-                ],
+                singleSchedules: singleSchedulesList,
             });
         },
     });
 
+    /** 출석대상 정보 수정 */
+    const { mutate: updateAttendee } = useMutation({
+        mutationFn: async (props: {
+            attendeeId: string;
+            parameters: CreateAttendee;
+        }) => {
+            const { attendeeId, parameters } = props;
+
+            const response =
+                await AttendanceApiClient.getInstance().updateAttendee(
+                    attendeeId,
+                    parameters
+                );
+            return response.data;
+        },
+        onSuccess: async (data) => {
+            // TODO: 스케쥴 수정 api 연동
+            const selectedSchedules = watch('times');
+            const singleSchedulesList: SingleSchedulesType = [];
+
+            Object.keys(selectedSchedules).forEach((day) => {
+                const times = selectedSchedules[day];
+
+                times.forEach((time) => {
+                    singleSchedulesList.push({ day, time });
+                });
+            });
+            mutateSchedules({
+                attendanceId,
+                attendeeId: data.data.id,
+                singleSchedules: singleSchedulesList,
+            });
+        },
+    });
+
+    /** 출석대상의 스케쥴 생성 */
     const { mutate: mutateSchedules } = useMutation({
         mutationFn: async (parameters: CreateSchedules) => {
             const response =
@@ -134,20 +212,23 @@ const FormContents = ({
         },
     });
 
-    // 30분 간격으로 시간을 생성하는 함수
-    function generateTimeOptions() {
-        const options = [];
-        for (let hour = 0; hour < 24; hour++) {
-            for (let minute = 0; minute < 60; minute += 30) {
-                const timeLabel = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                const timeValue = (hour * 100 + minute)
-                    .toString()
-                    .padStart(4, '0');
-                options.push({ label: timeLabel, value: timeValue });
-            }
+    const handleSelectTime = (day: string, time: string) => {
+        const updatedTimes = watch('times');
+
+        const index = updatedTimes[day].indexOf(time);
+        if (index !== -1) {
+            updatedTimes[day].splice(index, 1);
+        } else {
+            updatedTimes[day].push(time);
         }
-        return options;
-    }
+        setValue('times', updatedTimes);
+    };
+
+    useEffect(() => {
+        if (isSuccess && attendeeDetail) {
+            reset(attendeeDetail);
+        }
+    }, [isSuccess, attendeeDetail]);
 
     useEffect(() => {
         if (data && data?.availableFrom && data?.availableTo) {
@@ -181,17 +262,6 @@ const FormContents = ({
         }
     }, [data]);
 
-    const handleSelectTime = (day: string, time: string) => {
-        const updatedTimes = watch('times');
-        const index = updatedTimes[day].indexOf(time);
-        if (index !== -1) {
-            updatedTimes[day].splice(index, 1);
-        } else {
-            updatedTimes[day].push(time);
-        }
-        setValue('times', updatedTimes);
-    };
-
     return (
         <FormContentsContainer gender={watch('gender')}>
             <form id="create-attendees" onSubmit={onSubmit}>
@@ -216,6 +286,7 @@ const FormContents = ({
                                     control={
                                         <Radio
                                             {...register('gender')}
+                                            checked={watch('gender') === 'MALE'}
                                             sx={{
                                                 color:
                                                     watch('gender') === 'MALE'
@@ -241,6 +312,9 @@ const FormContents = ({
                                     control={
                                         <Radio
                                             {...register('gender')}
+                                            checked={
+                                                watch('gender') === 'FEMALE'
+                                            }
                                             sx={{
                                                 color:
                                                     watch('gender') === 'FEMALE'
@@ -315,6 +389,7 @@ const FormContents = ({
                     </div>
                 </div>
 
+                {/* TODO: 수정하는 경우 -> 기존 스케쥴 값 연동 필요 */}
                 <div className="days-times-container">
                     <div className="days-container">
                         {data?.days.map((day) => (

@@ -61,10 +61,7 @@ export const ListManagementContainer = styled.section`
     }
 `;
 
-export const AttendanceItemContainer = styled.div<{
-    status: string;
-    isDetailOpen: boolean;
-}>`
+export const AttendanceItemContainer = styled.div`
     & > .attendance-item__container {
         width: 100%;
         height: 58px;
@@ -111,6 +108,9 @@ export const AttendanceItemContainer = styled.div<{
 `;
 
 export const FormContentsContainer = styled.section<{ gender: string }>`
+    height: 786px;
+    overflow: auto;
+
     & > form {
         width: 100%;
         display: flex;

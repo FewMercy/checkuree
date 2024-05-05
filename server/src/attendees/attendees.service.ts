@@ -8,8 +8,8 @@ import { In, Repository } from 'typeorm';
 import { DeleteAttendeeDto } from './dto/delete-attendee.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
-import { AttendeeGrade } from './grade.enum';
-import { Gender } from './gender.enum';
+import { AttendeeGrade } from './const/grade.enum';
+import { Gender } from './const/gender.enum';
 
 @Injectable()
 export class AttendeesService {

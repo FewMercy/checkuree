@@ -10,6 +10,7 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { ScheduleFilterDto } from './dto/schedule-filter.dto';
 import { PageResponseDto } from '../common/response/pageResponse.dto';
+import { TimeGroupedScheduleResDto } from './const/time-grouped-schedule-res.dto';
 
 @Injectable()
 export class SchedulesService {
@@ -19,6 +20,12 @@ export class SchedulesService {
   ) {}
 
   async create(createScheduleDto: CreateScheduleDto, user: User): Promise<CommonResponseDto<{ ids: number[] }>> {
+    // 이전 schedule 삭제
+    await this.scheduleRepository.softDelete({
+      attendeeId: createScheduleDto.attendeeId,
+    });
+
+    // 신규 schedule 저장
     const schedules = createScheduleDto.toEntities(user.id);
 
     if (!schedules.some((schedule) => this.verifyAttendTime(schedule.time))) {
@@ -37,10 +44,7 @@ export class SchedulesService {
     return new ResponseWithoutPaginationDto(count, items);
   }
 
-  async findAllByAttendanceId(
-    attendanceId: string,
-    scheduleFilterDto: ScheduleFilterDto,
-  ): Promise<PageResponseDto<Schedule>> {
+  async findAllByAttendanceId(attendanceId: string, scheduleFilterDto: ScheduleFilterDto): Promise<PageResponseDto<Schedule>> {
     const [items, count] = await this.scheduleRepository.findAndCount({
       relations: {
         attendee: true,
@@ -69,25 +73,13 @@ export class SchedulesService {
     attendanceId: string,
     dateString: string,
     scheduleFilterDto: ScheduleFilterDto,
-  ): Promise<PageResponseDto<Schedule>> {
+  ): Promise<PageResponseDto<TimeGroupedScheduleResDto>> {
+    if (!this.isValideDateFormat(dateString)) {
+      throw new BadRequestException('날짜 형식이 올바르지 않습니다.');
+    }
+
     const date = new Date(dateString);
-    const dayNumber = date.getDay();
-
-    const convertNumberToDay = (dayNumber) => {
-      const days = [
-        DayType.SUNDAY,
-        DayType.MONDAY,
-        DayType.TUESDAY,
-        DayType.WEDNESDAY,
-        DayType.THURSDAY,
-        DayType.FRIDAY,
-        DayType.SATURDAY,
-      ];
-
-      return days[dayNumber % 7];
-    };
-
-    const dayType = convertNumberToDay(dayNumber);
+    const dayType = this.convertDayToDayType(date.getDay());
 
     const queryBuilder = this.scheduleRepository
       .createQueryBuilder('schedule')
@@ -101,7 +93,9 @@ export class SchedulesService {
 
     const [items, count] = await queryBuilder.getManyAndCount();
 
-    return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
+    const groupedByTimeResult = new TimeGroupedScheduleResDto(items);
+
+    return new PageResponseDto(scheduleFilterDto.pageSize, count, [groupedByTimeResult]);
   }
 
   async deleteAll(deleteScheduleDto: DeleteScheduleDto): Promise<CommonResponseDto<any>> {
@@ -121,4 +115,38 @@ export class SchedulesService {
 
     return !(parseInt(hour) >= 24 || parseInt(minute) >= 60);
   }
+
+  private convertDayToDayType = (dayNumber) => {
+    const days = [
+      DayType.SUNDAY,
+      DayType.MONDAY,
+      DayType.TUESDAY,
+      DayType.WEDNESDAY,
+      DayType.THURSDAY,
+      DayType.FRIDAY,
+      DayType.SATURDAY,
+    ];
+
+    return days[dayNumber % 7];
+  };
+
+  private isValideDateFormat = (dateString) => {
+    // YYYY-MM-DD 형식의 정규 표현식
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+    // 정규 표현식에 따라 형식 검사
+    if (!regex.test(dateString)) {
+      return false; // 형식이 맞지 않으면 false 반환
+    }
+
+    // Date 객체를 생성하여 유효한 날짜인지 추가로 확인
+    const date = new Date(dateString);
+
+    // 날짜 객체가 유효한지, 변환된 날짜가 입력 문자열과 동일한지 확인
+    if (!date) {
+      return false;
+    }
+
+    return true;
+  };
 }
