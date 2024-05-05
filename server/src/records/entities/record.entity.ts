@@ -8,9 +8,7 @@ import { LateTimeType } from '../const/late-time-type.enum';
 import { AbsenceType } from '../const/absence-type.enum';
 
 // 출석 체크 방법
-//
 @Entity()
-@Unique(['attendeeId', 'date'])
 export class Record extends BaseTimeEntity {
   @PrimaryGeneratedColumn('increment', { comment: '출석 기록 PK', type: 'int' })
   @ApiProperty({ description: '출석 기록 PK', type: 'int' })
