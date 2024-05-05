@@ -65,7 +65,7 @@ class AttendanceApiClient extends BaseApiClient {
     ) =>
         this.axios.request<AttendanceSchedulesByDate>({
             method: 'GET',
-            url: `/schedules/attendanceId/${attendanceId}/${date}`,
+            url: `/attendanceId/${attendanceId}/schedules/${date}`,
         });
 
     /** 출석 요약 */
@@ -75,7 +75,7 @@ class AttendanceApiClient extends BaseApiClient {
     ) =>
         this.axios.request({
             method: 'GET',
-            url: `/records/attendance/${attendanceId}/summary`,
+            url: `/attendance/${attendanceId}/records/summary`,
             params: {
                 attendeeIds,
             },
@@ -85,7 +85,7 @@ class AttendanceApiClient extends BaseApiClient {
     public getAttendanceSummaryByDate = (attendanceId: string, date: string) =>
         this.axios.request({
             method: 'GET',
-            url: `/records/attendance/${attendanceId}/${date}/summary`,
+            url: `/attendance/${attendanceId}/records/${date}/summary`,
         });
 
     /** 특정 출석부의 출석대상 명단 */
