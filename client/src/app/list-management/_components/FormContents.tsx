@@ -213,12 +213,17 @@ const FormContents = ({
     });
 
     const handleSelectTime = (day: string, time: string) => {
-        const updatedTimes = watch('times');
+        const updatedTimes = watch('times') || {};
 
-        const index = updatedTimes[day].indexOf(time);
+        const index = _.has(updatedTimes, day)
+            ? updatedTimes[day].indexOf(time)
+            : -1;
         if (index !== -1) {
             updatedTimes[day].splice(index, 1);
         } else {
+            if (!_.has(updatedTimes, day)) {
+                Object.assign(updatedTimes, { [day]: [] });
+            }
             updatedTimes[day].push(time);
         }
         setValue('times', updatedTimes);
@@ -404,6 +409,7 @@ const FormContents = ({
                     <div className="time-container">
                         <div className="selected-times">
                             {watch('times') &&
+                                _.has(watch('times'), selectedDay) &&
                                 watch('times')[selectedDay].map((item) => (
                                     <div className="selected-time">
                                         {`${item.slice(0, 2)}:${item.slice(2)}`}
@@ -425,6 +431,7 @@ const FormContents = ({
                             {timeOptions.map((item) => {
                                 const isSelected =
                                     watch('times') &&
+                                    _.has(watch('times'), selectedDay) &&
                                     watch('times')[selectedDay].includes(
                                         item.value
                                     );
