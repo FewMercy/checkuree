@@ -62,21 +62,20 @@ const Index = () => {
                 _.has(response, 'data') &&
                 _.has(response.data, 'items')
             ) {
-                const parsedAttendeeList: ParsedAttendeeListType = {};
+                const result: AttendanceSchedulesByDateItem =
+                    response.data.items[0];
+                const parseList: ParsedAttendeeListType = {};
 
-                response.data.items.forEach((item) => {
-                    const { time } = item;
-                    if (!_.has(parsedAttendeeList, time)) {
-                        parsedAttendeeList[time] = [];
+                for (const key in result) {
+                    if (result.hasOwnProperty(key)) {
+                        result[key].forEach((item) => {
+                            item.status = '';
+                            item.isDetailOpen = false;
+                        });
                     }
-                    parsedAttendeeList[time].push({
-                        ...item,
-                        status: '',
-                        isDetailOpen: false,
-                    });
-                });
+                }
 
-                return parsedAttendeeList;
+                return result;
             }
 
             return {};
@@ -84,7 +83,7 @@ const Index = () => {
     });
 
     // 출석, 지각, 결석 수 조회
-    const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
+    const { data: summaryData } = useQuery({
         queryKey: ['attendanceSummary'],
         queryFn: async () => {
             const response =
@@ -114,8 +113,11 @@ const Index = () => {
     });
 
     const shouldShowNavigation = Object.keys(attendeeList).some((key) => {
-        attendeeList[key].some((el) => el.status !== '');
+        console.log('attendeeList[key]', attendeeList[key]);
+        return attendeeList[key].some((item) => item.status !== '');
     });
+
+    console.log('shouldShowNavigation', shouldShowNavigation);
 
     const statusIcons: { icon: string; count: number }[] = [
         {
@@ -178,13 +180,16 @@ const Index = () => {
 
                 <section className="attendance-status-container">
                     {statusIcons.map((item) => (
-                        <div className="status">
+                        <div
+                            className="status"
+                            key={`attendance-status__${item.icon}`}
+                        >
                             <Icon
                                 icon={Icons[item.icon]}
                                 color={Colors.Gray80}
                                 size={16}
                             />
-                            <div className="count">{item.count}</div>
+                            <div className="count">{item.count || 0}</div>
                         </div>
                     ))}
                 </section>
@@ -194,7 +199,10 @@ const Index = () => {
             <section className="attendance-list">
                 {Object.keys(attendeeList).map((time) => {
                     return (
-                        <section className="attendance-list-by-time">
+                        <section
+                            className="attendance-list-by-time"
+                            key={`time__${time}`}
+                        >
                             <div className="attendance-time">{`${time.slice(0, 2)}:${time.slice(2, 4)}`}</div>
                             <div className="attendee-list">
                                 {attendeeList[time].map((item, index) => (
@@ -203,6 +211,7 @@ const Index = () => {
                                         time={time}
                                         index={index}
                                         handleListItem={handleListItem}
+                                        key={`attendee__${item.id}`}
                                     />
                                 ))}
                             </div>
