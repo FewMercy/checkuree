@@ -70,6 +70,7 @@ const AttendanceItem = (props: PropsType) => {
                                     button.value
                                 )
                             }
+                            key={`status-button__${button.label}`}
                         >
                             {button.label}
                         </StatusButton>

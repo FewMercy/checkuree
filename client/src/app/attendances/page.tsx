@@ -95,6 +95,7 @@ const Page: React.FC = () => {
                                                         `/attendances/${item.attendanceId}`
                                                     )
                                                 }
+                                                key={`attendance-item__${item.attendanceId}`}
                                             >
                                                 <Image
                                                     src={

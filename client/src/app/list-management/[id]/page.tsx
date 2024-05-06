@@ -91,6 +91,15 @@ const ListManagement = () => {
         enabled: data && isSuccess,
     });
 
+    const onCloseModal = () => {
+        if (isAddOpen) {
+            setIsAddOpen(false);
+            return;
+        }
+
+        setIsUpdateOpen('');
+    };
+
     useEffect(() => {
         if (data && Array.isArray(data) && data?.length > 0) {
             setAttendeeList(data);
@@ -131,19 +140,13 @@ const ListManagement = () => {
             {/* 등록/변경 모달 */}
             <BottomDrawer
                 open={isAddOpen || isUpdateOpen.length > 0}
-                onClose={() => {
-                    if (isAddOpen) {
-                        setIsAddOpen(false);
-                        return;
-                    }
-                    setIsUpdateOpen('');
-                }}
+                onClose={onCloseModal}
                 children={
                     <FormContents
                         data={attendanceDetail}
                         attendeeId={isUpdateOpen}
                         attendanceId={attendanceId}
-                        onClose={() => setIsAddOpen(false)}
+                        onClose={onCloseModal}
                     />
                 }
             />

@@ -13,9 +13,9 @@ import { AttendanceSchedulesByDateItem } from '@/api/attendances/schema';
 import { HandleListItemType } from '@/app/attendances/[id]/page';
 
 interface ItemType extends AttendanceSchedulesByDateItem {
-    lateTime: string;
-    lateReason: string;
-    absentType: string;
+    lateTime?: string;
+    lateReason?: string;
+    absentType?: string;
 }
 
 interface PropsType {
