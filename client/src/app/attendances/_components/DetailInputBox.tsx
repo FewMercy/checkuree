@@ -14,8 +14,8 @@ import { HandleListItemType } from '@/app/attendances/[id]/page';
 
 interface ItemType extends AttendanceSchedulesByDateItem {
     lateTime?: string;
-    lateReason?: string;
-    absentType?: string;
+    etc?: string;
+    absenceType?: string;
 }
 
 interface PropsType {
@@ -27,26 +27,25 @@ interface PropsType {
 
 const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
     const detailOptions = {
-        // TODO: api 연동 이후 영어로 변경 필요
-        지각: [
+        Late: [
             { label: '5분', value: '5' },
             { label: '10분', value: '10' },
             { label: '15분', value: '15' },
             { label: '20분 이상', value: '20' },
         ],
-        결석: [
-            { label: '공결', value: '공결' },
-            { label: '병결', value: '병결' },
-            { label: '무단', value: '무단' },
-            { label: '기타', value: '기타' },
+        Absent: [
+            { label: '공결', value: 'OFFICIAL' },
+            { label: '병결', value: 'SICK' },
+            { label: '무단', value: 'GENERAL' },
+            { label: '기타', value: 'ETC' },
         ],
     };
 
     return (
         <div className="detail-box">
-            {item.status === '지각' ? (
+            {item.status === 'Late' ? (
                 <div className="detail-buttons">
-                    {detailOptions.지각.map((option) => (
+                    {detailOptions.Late.map((option) => (
                         <DetailButton
                             isSelected={option.value === item.lateTime}
                             onClick={() =>
@@ -62,16 +61,16 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
                         </DetailButton>
                     ))}
                 </div>
-            ) : item.status === '결석' ? (
+            ) : item.status === 'Absent' ? (
                 <div className="detail-buttons">
-                    {detailOptions.결석.map((option) => (
+                    {detailOptions.Absent.map((option) => (
                         <DetailButton
-                            isSelected={option.value === item.absentType}
+                            isSelected={option.value === item.absenceType}
                             onClick={() =>
                                 handleListItem(
                                     index,
                                     time,
-                                    'absentType',
+                                    'absenceType',
                                     option.value
                                 )
                             }
@@ -83,10 +82,10 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
             ) : null}
 
             <TextField
-                value={item.lateReason}
-                rows={item.status === '출석' ? 4 : 3}
+                value={item.etc}
+                rows={item.status === 'Present' ? 4 : 3}
                 onChange={(e) =>
-                    handleListItem(index, time, 'lateReason', e.target.value)
+                    handleListItem(index, time, 'etc', e.target.value)
                 }
                 multiline
             />

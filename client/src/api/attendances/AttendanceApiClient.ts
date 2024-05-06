@@ -7,7 +7,9 @@ import {
     AttendeeDetail,
     CreateAttendance,
     CreateAttendee,
+    CreateRecords,
     CreateSchedules,
+    DeleteAttendees,
 } from '@/api/attendances/schema';
 
 export interface ICommonResponse<T> {
@@ -136,6 +138,23 @@ class AttendanceApiClient extends BaseApiClient {
             url: `/schedules`,
             data: parameters,
         });
+
+    /** 출석기록 생성 및 수정 */
+    public createRecords = (parameters: CreateRecords) =>
+        this.axios.request({
+            method: 'POST',
+            url: `/records`,
+            data: parameters,
+        });
+
+    /** 출석대상 삭제 */
+    public deleteAttendees = (parameters: DeleteAttendees) =>
+        this.axios.request({
+            method: 'DELETE',
+            url: `/attendees`,
+            data: parameters,
+        });
+    동;
 }
 
 export default AttendanceApiClient;

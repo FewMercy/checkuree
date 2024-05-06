@@ -114,9 +114,9 @@ export const AttendanceItemContainer = styled.div<{
         border-radius: 8px;
         box-sizing: border-box;
         background-color: ${(props) => {
-            if (props.status === '출석') return Colors.LightGreen;
-            if (props.status === '지각') return Colors.Orange;
-            if (props.status === '결석') return Colors.Red;
+            if (props.status === 'Present') return Colors.LightGreen;
+            if (props.status === 'Late') return Colors.Orange;
+            if (props.status === 'Absent') return Colors.Red;
             return Colors.White;
         }};
         margin-bottom: ${(props) => (props.isDetailOpen ? '4px' : 0)};
@@ -144,9 +144,9 @@ export const AttendanceItemContainer = styled.div<{
         padding: ${(props) => (props.isDetailOpen ? '4px' : 0)};
         border-radius: 8px;
         background-color: ${(props) =>
-            props.status === '지각'
+            props.status === 'Late'
                 ? Colors.Orange
-                : props.status === '결석'
+                : props.status === 'Absent'
                   ? Colors.Red
                   : Colors.LightGreen};
         transition: height 0.2s ease-in;
@@ -166,7 +166,7 @@ export const AttendanceItemContainer = styled.div<{
                 width: 100%;
                 height: ${(props) =>
                     props.isDetailOpen
-                        ? props.status === '지각' || props.status === '결석'
+                        ? props.status === 'Late' || props.status === 'Absent'
                             ? '68px'
                             : '96px'
                         : 0};
@@ -179,7 +179,8 @@ export const AttendanceItemContainer = styled.div<{
                 & > textarea {
                     height: ${(props) =>
                         props.isDetailOpen
-                            ? props.status === '지각' || props.status === '결석'
+                            ? props.status === 'Late' ||
+                              props.status === 'Absent'
                                 ? '68px'
                                 : '96px'
                             : 0} !important;

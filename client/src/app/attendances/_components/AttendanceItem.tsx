@@ -30,9 +30,9 @@ const AttendanceItem = (props: PropsType) => {
     const { item, time, index, handleListItem } = props;
 
     const statusButtons: { label: string; value: string }[] = [
-        { label: '출석', value: '출석' },
-        { label: '지각', value: '지각' },
-        { label: '결석', value: '결석' },
+        { label: '출석', value: 'Present' },
+        { label: '지각', value: 'Late' },
+        { label: '결석', value: 'Absent' },
     ];
 
     return (
