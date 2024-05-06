@@ -34,6 +34,7 @@ import {
     AttendeeDetail,
     CreateAttendee,
     CreateSchedules,
+    DeleteAttendees,
     SingleSchedulesType,
 } from '@/api/attendances/schema';
 import Icon from '@/components/Icon';
@@ -228,6 +229,18 @@ const FormContents = ({
         }
         setValue('times', updatedTimes);
     };
+
+    const { mutate: deleteAttendees } = useMutation({
+        mutationKey: ['deleteAttendees'],
+        mutationFn: async (parameters: DeleteAttendees) =>
+            AttendanceApiClient.getInstance().deleteAttendees(parameters),
+        onSuccess: async () => {
+            onClose();
+            await queryClient.invalidateQueries({
+                queryKey: ['attendee-list'],
+            });
+        },
+    });
 
     useEffect(() => {
         if (isSuccess && attendeeDetail) {
@@ -475,7 +488,18 @@ const FormContents = ({
                 <div className="additional-button">출석 히스토리</div>
             </section>
 
-            <div className="disabled-button">비활성화</div>
+            <div
+                className="disabled-button"
+                onClick={() => {
+                    if (confirm('출석대상을 삭제하시겠습니까?'))
+                        deleteAttendees({
+                            ids: attendeeId ? [attendeeId] : [''],
+                            attendanceId: attendanceId,
+                        });
+                }}
+            >
+                비활성화
+            </div>
 
             <section className="button-container">
                 <div className="button cancel" onClick={onClose}>
