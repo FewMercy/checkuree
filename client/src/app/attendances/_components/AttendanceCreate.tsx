@@ -2,8 +2,8 @@
 
 import {
     Box,
+    Button,
     FormControlLabel,
-    Grid,
     MenuItem,
     Radio,
     RadioGroup,
@@ -15,7 +15,7 @@ import {
 import { SetStateAction, useRef, useState } from 'react';
 
 import Image from 'next/image';
-import { QueryClient, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { CreateAttendance } from '@/api/attendances/schema';
 
@@ -23,7 +23,15 @@ interface IProps {
     setIsCreate: React.Dispatch<SetStateAction<boolean>>;
     attendancesRefetch: () => void;
 }
-const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
+const daysOfWeek = [
+    { 월: 'MONDAY' },
+    { 화: 'TUESDAY' },
+    { 수: 'WEDNESDAY' },
+    { 목: 'THURSDAY' },
+    { 금: 'FRIDAY' },
+    { 토: 'SATURDAY' },
+    { 일: 'SUNDAY' },
+];
 
 const AttendanceCreateForm = (props: IProps) => {
     const { setIsCreate, attendancesRefetch } = props;
@@ -131,6 +139,7 @@ const AttendanceCreateForm = (props: IProps) => {
         const selectedDaysString = getSelectedDaysString(updatedSelectedDays);
         onChange('attendanceDays', selectedDaysString);
     };
+
     return (
         <ContainerSTForm>
             <Image
@@ -258,24 +267,27 @@ const AttendanceCreateForm = (props: IProps) => {
             {/*  요일 선택 */}
             <BoxSTTitle>
                 <TypoST>요일 선택</TypoST>
-                <Grid container spacing={0} justifyContent="space-between">
+                <BoxSTday>
                     {daysOfWeek.map((day, index) => (
-                        <Grid key={index} item>
-                            <TypoSTDay
-                                align="center"
-                                sx={{
-                                    border: `1px solid ${selectedDays.has(day) ? '#59996B' : '#D5D5D5'}`,
-                                    color: selectedDays.has(day)
-                                        ? '#59996B'
-                                        : '#C9C9C9',
-                                }}
-                                onClick={() => handleSelectDay(day)}
-                            >
-                                {day}
-                            </TypoSTDay>
-                        </Grid>
+                        <Button
+                            tabIndex={index}
+                            key={index}
+                            sx={{
+                                border: `1px solid ${selectedDays.has(Object.values(day)[0]) ? '#59996B' : '#D5D5D5'}`,
+                                color: selectedDays.has(Object.values(day)[0])
+                                    ? '#59996B'
+                                    : '#C9C9C9',
+                                minWidth: '44px',
+                            }}
+                            value={Object.values(day)[0]}
+                            onClick={(e) => {
+                                handleSelectDay(e.currentTarget.value);
+                            }}
+                        >
+                            {Object.keys(day)[0]}
+                        </Button>
                     ))}
-                </Grid>
+                </BoxSTday>
             </BoxSTTitle>
 
             {/*  시간 선택 */}
@@ -286,6 +298,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         labelId="start-time-label"
                         id="start-time-select"
                         displayEmpty
+                        value={''}
                         onChange={(e) => {
                             onChange('availableFrom', e.target.value as string);
                         }}
@@ -307,6 +320,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         labelId="end-time-label"
                         id="end-time-select"
                         displayEmpty
+                        value={''}
                         disabled={attendanceCreate?.availableFrom === ''}
                         onChange={(e) => {
                             onChange('availableTo', e.target.value as string);
@@ -406,12 +420,11 @@ const SelectSTTime = styled(Select)(() => {
     };
 });
 
-const TypoSTDay = styled(Typography)(() => {
+const BoxSTday = styled(Box)(() => {
     return {
-        width: 40,
-        height: 40,
-        lineHeight: '40px',
-        borderRadius: '8px',
-        cursor: 'pointer',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(7,1fr)',
+        gap: '5px',
+        width: '340px',
     };
 });
