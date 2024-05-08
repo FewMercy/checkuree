@@ -50,10 +50,12 @@ export class SingleRecord {
   etc: string;
 
   @IsEnum(LateTimeType, { message: '지각타입이 정확하지 않습니다.' })
+  @IsOptional()
   @ApiPropertyOptional({ description: '지각 시간', type: 'enum', enum: LateTimeType })
   lateTime: LateTimeType;
 
   @IsEnum(AbsenceType, { message: '결석타입이 정확하지 않습니다.' })
+  @IsOptional()
   @ApiPropertyOptional({ description: '결석 종류', type: 'enum', enum: AbsenceType })
   absenceType: AbsenceType;
 }
