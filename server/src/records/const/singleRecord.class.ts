@@ -6,15 +6,6 @@ import { LateTimeType } from './late-time-type.enum';
 import { AbsenceType } from './absence-type.enum';
 
 export class SingleRecord {
-  @IsEnum(AttendanceStatus)
-  @ApiProperty({
-    description: '출석 기록 상태',
-    type: 'enum',
-    enum: AttendanceStatus,
-    example: AttendanceStatus.PRESENT,
-  })
-  status: AttendanceStatus;
-
   @IsString()
   @ApiProperty({
     description: '출석 대상 PK',
@@ -49,14 +40,14 @@ export class SingleRecord {
   })
   day: DayType;
 
-  @IsOptional()
-  @IsString()
+  @IsEnum(AttendanceStatus)
   @ApiProperty({
-    description: '비고',
-    type: 'text',
-    example: '출석체크의 특이사항 입니다.',
+    description: '출석 기록 상태',
+    type: 'enum',
+    enum: AttendanceStatus,
+    example: AttendanceStatus.PRESENT,
   })
-  etc: string;
+  status: AttendanceStatus;
 
   @IsEnum(LateTimeType, { message: '지각타입이 정확하지 않습니다.' })
   @IsOptional()
@@ -67,4 +58,13 @@ export class SingleRecord {
   @IsOptional()
   @ApiPropertyOptional({ description: '결석 종류', type: 'enum', enum: AbsenceType })
   absenceType: AbsenceType;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: '비고',
+    type: 'text',
+    example: '출석체크의 특이사항 입니다.',
+  })
+  etc: string;
 }
