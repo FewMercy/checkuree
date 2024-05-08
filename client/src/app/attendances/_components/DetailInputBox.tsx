@@ -51,14 +51,20 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
                     {detailOptions.Late.map((option) => (
                         <DetailButton
                             isSelected={option.value === item.lateTime}
-                            onClick={() =>
+                            onClick={() => {
                                 handleListItem(
                                     index,
                                     time,
                                     'lateTime',
                                     option.value
-                                )
-                            }
+                                );
+                                handleListItem(
+                                    index,
+                                    time,
+                                    'newStatus',
+                                    'Late'
+                                );
+                            }}
                             key={option.value}
                         >
                             {option.label}
@@ -70,14 +76,20 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
                     {detailOptions.Absent.map((option) => (
                         <DetailButton
                             isSelected={option.value === item.absenceType}
-                            onClick={() =>
+                            onClick={() => {
                                 handleListItem(
                                     index,
                                     time,
                                     'absenceType',
                                     option.value
-                                )
-                            }
+                                );
+                                handleListItem(
+                                    index,
+                                    time,
+                                    'newStatus',
+                                    'Absent'
+                                );
+                            }}
                             key={option.value}
                         >
                             {option.label}
@@ -89,9 +101,18 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
             <TextField
                 value={item.etc}
                 rows={(item.status || item.newStatus) === 'Present' ? 4 : 3}
-                onChange={(e) =>
-                    handleListItem(index, time, 'etc', e.target.value)
-                }
+                onChange={(e) => {
+                    handleListItem(index, time, 'etc', e.target.value);
+
+                    if (item.newStatus === '') {
+                        handleListItem(
+                            index,
+                            time,
+                            'newStatus',
+                            item.status || ''
+                        );
+                    }
+                }}
                 multiline
             />
         </div>
