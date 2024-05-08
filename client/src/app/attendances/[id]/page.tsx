@@ -29,14 +29,15 @@ import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import Icon from '@/components/Icon';
 import Navigation from '@/app/attendances/_components/Navigation';
 import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
+
+// Types
 import {
     AttendanceData,
-    AttendanceDetail,
     AttendanceSchedulesByDateItem,
+    AttendanceSchedulesByDateItemObj,
     CreateRecords,
 } from '@/api/attendances/schema';
 
-// Types
 export type HandleListItemType = (
     index: number,
     time: string,
@@ -64,7 +65,7 @@ const Index = () => {
     // 출석대상 명단 조회
     const { data: attendance, isSuccess } = useQuery({
         queryKey: ['attendanceToday'],
-        queryFn: async (): Promise<AttendanceSchedulesByDateItem> => {
+        queryFn: async (): Promise<AttendanceSchedulesByDateItemObj> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
                     attendanceId,
@@ -76,9 +77,8 @@ const Index = () => {
                 _.has(response, 'data') &&
                 _.has(response.data, 'items')
             ) {
-                const result: AttendanceSchedulesByDateItem =
+                const result: AttendanceSchedulesByDateItemObj =
                     response.data.items[0];
-                const parseList: ParsedAttendeeListType = {};
 
                 for (const key in result) {
                     if (result.hasOwnProperty(key)) {
@@ -92,7 +92,7 @@ const Index = () => {
                 return result;
             }
 
-            return {} as AttendanceSchedulesByDateItem;
+            return {} as AttendanceSchedulesByDateItemObj;
         },
     });
 

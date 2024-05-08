@@ -79,7 +79,7 @@ export const AttendanceIdContainer = styled.section`
         gap: 24px;
         flex-direction: column;
         padding: 12px 0 120px;
-        margin-top: 157px;
+        margin-top: 134px;
 
         & > .attendance-list-by-time {
             & > .attendance-time {

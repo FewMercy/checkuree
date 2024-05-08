@@ -154,7 +154,6 @@ class AttendanceApiClient extends BaseApiClient {
             url: `/attendees`,
             data: parameters,
         });
-    동;
 }
 
 export default AttendanceApiClient;

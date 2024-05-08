@@ -58,23 +58,27 @@ export interface AttendeeDetail {
 export interface AttendanceSchedulesByDateItem {
     attendee: AttendeeData;
     attendeeId: string;
-    createId: string;
     createdAt: string;
     day: string;
-    deletedAt: string | null;
     id: number;
     time: string;
-    updateId: string | null;
-    updatedAt: string;
     status?: string;
     isDetailOpen?: boolean;
     etc?: string;
     lateTime?: string;
     absenceType?: string;
+    // createId: string;
+    // deletedAt: string | null;
+    // updateId: string | null;
+    // updatedAt: string;
+}
+
+export interface AttendanceSchedulesByDateItemObj {
+    [key: string]: AttendanceSchedulesByDateItem[];
 }
 
 export interface AttendanceSchedulesByDate {
-    items: AttendanceSchedulesByDateItem[];
+    items: AttendanceSchedulesByDateItemObj[];
     count: number;
     pageSize: number;
     success: boolean;
