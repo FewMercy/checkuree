@@ -131,6 +131,10 @@ export const AttendanceItemContainer = styled.div<{
             & > img {
                 cursor: pointer;
             }
+
+            & .detail-open {
+                transform: rotate(180deg);
+            }
         }
 
         & > .status-buttons {

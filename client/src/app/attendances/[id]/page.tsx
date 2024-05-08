@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 // Next
 import { usePathname } from 'next/navigation';
@@ -37,7 +38,6 @@ import {
     AttendanceSchedulesByDateItemObj,
     CreateRecords,
 } from '@/api/attendances/schema';
-import Image from 'next/image';
 
 export type HandleListItemType = (
     index: number,
@@ -87,6 +87,7 @@ const Index = () => {
                             const records = item.attendee.records[0];
 
                             item.status = records?.status ?? '';
+                            item.newStatus = '';
                             item.lateTime = records?.lateTime ?? '';
                             item.absenceType = records?.absenceType ?? '';
                             item.etc = records?.etc ?? '';
@@ -149,7 +150,8 @@ const Index = () => {
     });
 
     const shouldShowNavigation = Object.keys(attendeeList).some((key) => {
-        return attendeeList[key].some((item) => item.status !== '');
+        console.log('attendeeList[key]', attendeeList[key]);
+        return attendeeList[key].some((item) => item.newStatus !== '');
     });
 
     const statusIcons: { icon: string; count: number }[] = [
@@ -196,9 +198,9 @@ const Index = () => {
 
         Object.values(attendeeList).forEach((value) =>
             value.forEach((item) => {
-                if (item.status === 'Present') {
+                if (item.newStatus === 'Present') {
                     parameters.singleRecords.push({
-                        status: item.status,
+                        status: item.newStatus,
                         attendeeId: item.attendeeId,
                         date: today,
                         time: item.time,
@@ -206,9 +208,9 @@ const Index = () => {
                         etc: item.etc || '',
                     });
                 }
-                if (item.status === 'Late') {
+                if (item.newStatus === 'Late') {
                     parameters.singleRecords.push({
-                        status: item.status,
+                        status: item.newStatus,
                         attendeeId: item.attendeeId,
                         date: today,
                         time: item.time,
@@ -217,9 +219,9 @@ const Index = () => {
                         lateTime: item.lateTime || '',
                     });
                 }
-                if (item.status === 'Absent') {
+                if (item.newStatus === 'Absent') {
                     parameters.singleRecords.push({
-                        status: item.status,
+                        status: item.newStatus,
                         attendeeId: item.attendeeId,
                         date: today,
                         time: item.time,

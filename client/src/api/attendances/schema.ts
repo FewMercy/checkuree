@@ -86,6 +86,7 @@ export interface AttendanceSchedulesByDateItem {
     id: number;
     time: string;
     status?: string;
+    newStatus?: string; // api에서 내려온 status가 아닌 사용자가 생성/수정을 위해 선택한 status
     isDetailOpen?: boolean;
     etc?: string;
     lateTime?: string;

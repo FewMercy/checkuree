@@ -37,7 +37,7 @@ const AttendanceItem = (props: PropsType) => {
 
     return (
         <AttendanceItemContainer
-            status={item.status || ''}
+            status={item.status || item.newStatus || ''}
             isDetailOpen={item.isDetailOpen || false}
             key={`attendance-item__${item.id}`}
         >
@@ -45,6 +45,7 @@ const AttendanceItem = (props: PropsType) => {
                 <div className="name">
                     {item.attendee.name}
                     <Image
+                        className={item.isDetailOpen ? 'detail-open' : ''}
                         src={Images.DetailOpen}
                         alt={`open-detail__${item.attendee.name}`}
                         onClick={() =>
@@ -61,15 +62,23 @@ const AttendanceItem = (props: PropsType) => {
                 <div className="status-buttons">
                     {statusButtons.map((button) => (
                         <StatusButton
-                            isSelected={item.status === button.value}
-                            onClick={() =>
+                            isSelected={
+                                item.status === button.value ||
+                                item.newStatus === button.value
+                            }
+                            onClick={() => {
                                 handleListItem(
                                     index,
                                     time,
-                                    'status',
+                                    'newStatus',
                                     button.value
-                                )
-                            }
+                                );
+                                handleListItem(index, time, 'status', '');
+
+                                if (button.value === 'Present') {
+                                    handleListItem(index, time, 'etc', '');
+                                }
+                            }}
                             key={`status-button__${button.label}`}
                         >
                             {button.label}
