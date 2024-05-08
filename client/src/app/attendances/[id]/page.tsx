@@ -83,7 +83,12 @@ const Index = () => {
                 for (const key in result) {
                     if (result.hasOwnProperty(key)) {
                         result[key].forEach((item) => {
-                            item.status = '';
+                            const records = item.attendee.records[0];
+
+                            item.status = records?.status ?? '';
+                            item.lateTime = records?.lateTime ?? '';
+                            item.absenceType = records?.absenceType ?? '';
+                            item.etc = records?.etc ?? '';
                             item.isDetailOpen = false;
                         });
                     }
@@ -195,6 +200,7 @@ const Index = () => {
                         status: item.status,
                         attendeeId: item.attendeeId,
                         date: today,
+                        time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
                     });
@@ -204,9 +210,10 @@ const Index = () => {
                         status: item.status,
                         attendeeId: item.attendeeId,
                         date: today,
+                        time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
-                        lateTime: item.lateTime ? `${item.lateTime}m` : '',
+                        lateTime: item.lateTime || '',
                     });
                 }
                 if (item.status === 'Absent') {
@@ -214,6 +221,7 @@ const Index = () => {
                         status: item.status,
                         attendeeId: item.attendeeId,
                         date: today,
+                        time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
                         absenceType: item.absenceType ?? '',

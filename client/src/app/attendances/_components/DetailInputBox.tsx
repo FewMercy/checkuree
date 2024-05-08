@@ -9,7 +9,10 @@ import { TextField } from '@mui/material';
 import { DetailButton } from '@/styles/app/attendancesId.styles';
 
 // Types
-import { AttendanceSchedulesByDateItem } from '@/api/attendances/schema';
+import {
+    AttendanceSchedulesByDateItem,
+    Record,
+} from '@/api/attendances/schema';
 import { HandleListItemType } from '@/app/attendances/[id]/page';
 
 interface ItemType extends AttendanceSchedulesByDateItem {
@@ -28,10 +31,10 @@ interface PropsType {
 const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
     const detailOptions = {
         Late: [
-            { label: '5분', value: '5' },
-            { label: '10분', value: '10' },
-            { label: '15분', value: '15' },
-            { label: '20분 이상', value: '20' },
+            { label: '5분', value: '5m' },
+            { label: '10분', value: '10m' },
+            { label: '15분', value: '15m' },
+            { label: '20분 이상', value: '20m' },
         ],
         Absent: [
             { label: '공결', value: 'OFFICIAL' },
@@ -56,6 +59,7 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
                                     option.value
                                 )
                             }
+                            key={option.value}
                         >
                             {option.label}
                         </DetailButton>
@@ -74,6 +78,7 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
                                     option.value
                                 )
                             }
+                            key={option.value}
                         >
                             {option.label}
                         </DetailButton>

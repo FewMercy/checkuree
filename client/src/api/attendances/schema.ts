@@ -26,26 +26,60 @@ export interface ScheduleType {
     time: string;
 }
 
+export interface Attendance {
+    id: string;
+    title: string;
+    description: string;
+    availableFrom: string;
+    availableTo: string;
+    allowLateness: boolean;
+    imageUrl: string;
+    userAttendance: {
+        userAttendanceId: number;
+        userId: string;
+        attendanceId: string;
+        role: 'MASTER' | 'MANAGER' | 'GENERAL' | 'READER';
+        // user*	User{...}
+    };
+    attendees: {};
+    attendanceDays: {};
+}
+
+export interface Record {
+    id: number;
+    attendeeId: string;
+    status: 'Present' | 'Late' | 'Absent';
+    date: string;
+    day:
+        | 'SUNDAY'
+        | 'MONDAY'
+        | 'TUESDAY'
+        | 'WEDNESDAY'
+        | 'THURSDAY'
+        | 'FRIDAY'
+        | 'SATURDAY';
+    etc: string | null;
+    lateTime: string | null;
+    absenceType: string | null;
+}
+
 export interface AttendeeData {
+    id: string;
     attendanceId: string;
+    name: string;
+    gender: string;
+    mobileNumber: string;
+    subMobileNumber: string | null;
     birth: string;
     course: string | null;
-    createId: string;
-    createdAt: string;
-    deletedAt: string | null;
-    description: string | null;
-    gender: string;
-    grade: string | null;
-    id: string;
-    mobileNumber: string;
-    name: string;
-    schedules: ScheduleType[];
     school: string | null;
+    grade: string | null;
+    description: string | null;
+    attendance: Attendance[];
+    schedules: ScheduleType[];
+    records: Record[];
     status?: string;
     isDetailOpen?: boolean;
-    subMobileNumber: string | null;
-    updateId: string | null;
-    updatedAt: string;
 }
 
 export interface AttendeeList {
@@ -73,10 +107,6 @@ export interface AttendanceSchedulesByDateItem {
     etc?: string;
     lateTime?: string;
     absenceType?: string;
-    // createId: string;
-    // deletedAt: string | null;
-    // updateId: string | null;
-    // updatedAt: string;
 }
 
 export interface AttendanceSchedulesByDateItemObj {
@@ -125,6 +155,7 @@ export interface SingleRecords {
     status: string;
     attendeeId: string;
     date: string;
+    time: string;
     day: string;
     etc: string;
     lateTime?: string;
