@@ -32,11 +32,12 @@ import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
 
 // Types
 import {
-    AttendanceData,
+    Attendance,
     AttendanceSchedulesByDateItem,
     AttendanceSchedulesByDateItemObj,
     CreateRecords,
 } from '@/api/attendances/schema';
+import Image from 'next/image';
 
 export type HandleListItemType = (
     index: number,
@@ -64,7 +65,7 @@ const Index = () => {
 
     // 출석대상 명단 조회
     const { data: attendance, isSuccess } = useQuery({
-        queryKey: ['attendanceToday'],
+        queryKey: ['attendanceToday', attendanceId],
         queryFn: async (): Promise<AttendanceSchedulesByDateItemObj> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
@@ -103,7 +104,7 @@ const Index = () => {
 
     // 출석, 지각, 결석 수 조회
     const { data: summaryData } = useQuery({
-        queryKey: ['attendanceSummary'],
+        queryKey: ['attendanceSummary', attendanceId],
         queryFn: async () => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceSummaryByDate(
@@ -116,8 +117,8 @@ const Index = () => {
 
     // 출석부 이름 조회용
     const { data: detailData } = useQuery({
-        queryKey: ['attendanceDetail'],
-        queryFn: async (): Promise<AttendanceData> => {
+        queryKey: ['attendanceDetail', attendanceId],
+        queryFn: async (): Promise<Attendance> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceDetail(
                     attendanceId
@@ -127,7 +128,7 @@ const Index = () => {
                 return response.data.data;
             }
 
-            return {} as AttendanceData;
+            return {} as Attendance;
         },
     });
 
@@ -242,7 +243,16 @@ const Index = () => {
     return (
         <AttendanceIdContainer>
             <section className="attendance-header">
-                <div className="attendance-img"></div>
+                <div className="attendance-img">
+                    {detailData?.imageUrl && (
+                        <Image
+                            src={detailData.imageUrl}
+                            alt="attendance-img"
+                            width={32}
+                            height={32}
+                        />
+                    )}
+                </div>
 
                 <section className="attendance-info">
                     <div className="name">

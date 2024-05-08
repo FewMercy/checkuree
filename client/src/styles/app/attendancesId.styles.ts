@@ -19,6 +19,7 @@ export const AttendanceIdContainer = styled.section`
             border-radius: 8px;
             background-color: ${Colors.Gray40};
             margin-bottom: 12px;
+            overflow: hidden;
         }
 
         & > .attendance-info {
@@ -79,7 +80,7 @@ export const AttendanceIdContainer = styled.section`
         gap: 24px;
         flex-direction: column;
         padding: 12px 0 120px;
-        margin-top: 134px;
+        margin-top: 146px;
 
         & > .attendance-list-by-time {
             & > .attendance-time {

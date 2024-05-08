@@ -1,31 +1,3 @@
-export interface AttendanceData {
-    allowLateness: boolean;
-    attendanceDays: { attendanceId: string; day: string; id: number }[];
-    days: string[];
-    availableFrom: string;
-    availableTo: string;
-    createId: string;
-    createdAt: string;
-    deletedAt: string | null;
-    description: '범수교회';
-    id: string;
-    name: string;
-    title: string;
-    updateId: string | null;
-    updatedAt: string;
-}
-export interface AttendanceDetail {
-    data: AttendanceData;
-    success: boolean;
-    count: number;
-}
-
-export interface ScheduleType {
-    id: number;
-    day: string;
-    time: string;
-}
-
 export interface Attendance {
     id: string;
     title: string;
@@ -42,7 +14,18 @@ export interface Attendance {
         // user*	User{...}
     };
     attendees: {};
-    attendanceDays: {};
+    attendanceDays: { attendanceId: string; day: string; id: number }[];
+}
+export interface AttendanceDetail {
+    data: Attendance;
+    success: boolean;
+    count: number;
+}
+
+export interface ScheduleType {
+    id: number;
+    day: string;
+    time: string;
 }
 
 export interface Record {
