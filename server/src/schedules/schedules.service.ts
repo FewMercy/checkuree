@@ -84,7 +84,7 @@ export class SchedulesService {
     const queryBuilder = this.scheduleRepository
       .createQueryBuilder('schedule')
       .leftJoinAndSelect('schedule.attendee', 'attendee')
-      .leftJoinAndSelect('attendee.records', 'records', 'records.date = :date', { date: dateString })
+      .leftJoinAndSelect('attendee.records', 'records', 'records.date = :date AND schedule.time = records.time', { date: dateString })
       .where('attendee.attendanceId = :attendanceId', { attendanceId })
       .andWhere('schedule.day = :day', { day: dayType })
       .skip(scheduleFilterDto.getOffset())
