@@ -63,7 +63,7 @@ export class AttendancesController {
   @ApiOperation({ summary: '출석부 상세 조회' })
   @ApiOkResponse({
     status: 200,
-    description: '출석부 정보 수정',
+    description: '출석부 상세 조회',
     type: CommonResponseDto<Attendance>,
   })
   findOneById(@Param('attendanceId') attendanceId: string): Promise<CommonResponseDto<Attendance>> {

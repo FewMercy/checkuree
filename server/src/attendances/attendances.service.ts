@@ -24,11 +24,7 @@ export class AttendancesService {
     private attendanceDayRepository: Repository<AttendanceDay>,
     private fileManagerService: FileManagerService,
   ) {}
-  async create(
-    createAttendanceDto: CreateAttendanceDto,
-    user: User,
-    image?: Express.Multer.File,
-  ): Promise<CommonResponseDto<any>> {
+  async create(createAttendanceDto: CreateAttendanceDto, user: User, image?: Express.Multer.File): Promise<CommonResponseDto<any>> {
     const attendanceDays = this.convertToAttendanceDays(createAttendanceDto.attendanceDays);
 
     if (!this.isValidDays(attendanceDays)) {
@@ -97,11 +93,7 @@ export class AttendancesService {
     return new CommonResponseDto('SUCCESS FIND ATTENDANCE', attendance);
   }
 
-  async update(
-    id: string,
-    updateAttendanceDto: UpdateAttendanceDto,
-    image?: Express.Multer.File,
-  ): Promise<CommonResponseDto<any>> {
+  async update(id: string, updateAttendanceDto: UpdateAttendanceDto, image?: Express.Multer.File): Promise<CommonResponseDto<any>> {
     const attendance = await this.attendanceRepository.findOneBy({ id });
 
     if (!attendance) {
