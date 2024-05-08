@@ -201,10 +201,7 @@ export class RecordsService {
     return new PageResponseDto<Record>(recordFilterDto.pageSize, count, items);
   }
 
-  async findByAttendeeId(
-    attendeeId: string,
-    recordFilterDto: RecordFilterDto,
-  ): Promise<ResponseWithoutPaginationDto<Record>> {
+  async findByAttendeeId(attendeeId: string, recordFilterDto: RecordFilterDto): Promise<ResponseWithoutPaginationDto<Record>> {
     const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.id=:attendeeId', {
@@ -242,9 +239,7 @@ export class RecordsService {
     });
 
     if (filteredRecord.length !== deleteRecordDto.ids.length) {
-      throw new BadRequestException(
-        `AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`,
-      );
+      throw new BadRequestException(`AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`);
     }
 
     await this.recordRepository.softDelete({
@@ -284,8 +279,7 @@ export class RecordsService {
   }
 
   private async findByAttendeeIdForExcel(attendeeId: string, recordFilterDto: RecordFilterDto): Promise<Record[]> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.id=:attendeeId', {
         attendeeId: attendeeId,
@@ -310,8 +304,7 @@ export class RecordsService {
   }
 
   private async findByAttendanceIdForExcel(attendanceId: string, recordFilterDto: RecordFilterDto): Promise<Record[]> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
         attendanceId: attendanceId,
