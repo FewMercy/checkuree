@@ -48,11 +48,17 @@ export interface AttendeeData {
     updatedAt: string;
 }
 
-export interface AttendeeDetail {
+export interface AttendeeList {
     data?: AttendeeData[];
     items?: AttendeeData[];
     success: boolean;
     count: number;
+}
+
+export interface AttendeeDetail {
+    data: AttendeeData;
+    success: boolean;
+    message: string;
 }
 
 export interface AttendanceSchedulesByDateItem {

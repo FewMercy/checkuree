@@ -1,10 +1,9 @@
 import BaseApiClient, { Tokens } from '../BaseApiClient';
 import {
-    AttendanceData,
     AttendanceDetail,
     AttendanceSchedulesByDate,
-    AttendeeData,
     AttendeeDetail,
+    AttendeeList,
     CreateAttendance,
     CreateAttendee,
     CreateRecords,
@@ -92,7 +91,7 @@ class AttendanceApiClient extends BaseApiClient {
 
     /** 특정 출석부의 출석대상 명단 */
     public getAttendeeList = (attendanceId: string) =>
-        this.axios.request<AttendeeDetail>({
+        this.axios.request<AttendeeList>({
             method: 'GET',
             url: `/attendees/attendanceId/${attendanceId}`,
         });

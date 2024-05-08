@@ -125,6 +125,7 @@ const ListManagement = () => {
                         <AttendanceItem
                             item={{ ...item, ...attendanceSummary[index] }}
                             setIsUpdateOpen={setIsUpdateOpen}
+                            key={`attendance-item__${item.id}`}
                         />
                     ))}
             </section>

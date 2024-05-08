@@ -266,7 +266,8 @@ const Index = () => {
                     ))}
                 </section>
             </section>
-            용{/* 출석부 명단 */}
+
+            {/* 출석부 명단 */}
             <section className="attendance-list">
                 {Object.keys(attendeeList).map((time) => {
                     return (

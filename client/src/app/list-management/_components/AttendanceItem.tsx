@@ -77,7 +77,7 @@ const AttendanceItem = (props: PropsType) => {
                     <div className={'days'}>{attendanceDay}</div>
                     <div className={'status-container'}>
                         {statusIcons.map((item) => (
-                            <div className="status">
+                            <div className="status" key={item.icon}>
                                 <Icon
                                     icon={Icons[item.icon]}
                                     color={Colors.Gray80}

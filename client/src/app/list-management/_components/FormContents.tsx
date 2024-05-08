@@ -10,16 +10,19 @@ import 'react-calendar/dist/Calendar.css';
 
 // Components
 import {
-    FormControl,
     TextField,
     Radio,
     RadioGroup,
     FormControlLabel,
     Modal,
+    FormControl,
 } from '@mui/material';
+import Icon from '@/components/Icon';
 
 // Utils
 import { dateFormat } from '@/utils';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import useFormContents from '@/app/list-management/_hooks/useFormContents';
 
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
@@ -29,18 +32,13 @@ import {
 } from '@/styles/app/listManagement.styles';
 import {
     AttendanceData,
-    AttendanceDetail,
     AttendeeData,
-    AttendeeDetail,
     CreateAttendee,
     CreateSchedules,
     DeleteAttendees,
     SingleSchedulesType,
 } from '@/api/attendances/schema';
-import Icon from '@/components/Icon';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
-import useFormContents from '@/app/list-management/_hooks/useFormContents';
 
 // Types
 interface Inputs {
@@ -50,6 +48,7 @@ interface Inputs {
     mobileNumber: string;
     subMobileNumber: string;
     times: Record<string, string[]>;
+    schedules: SingleSchedulesType;
 }
 
 const FormContents = ({
@@ -75,7 +74,7 @@ const FormContents = ({
 
     const { data: attendeeDetail, isSuccess } = useQuery({
         queryKey: ['attendee-detail', attendeeId],
-        queryFn: async () => {
+        queryFn: async (): Promise<AttendeeData> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendeeDetail(
                     attendeeId || ''
@@ -89,7 +88,7 @@ const FormContents = ({
                 return response.data.data;
             }
 
-            return {};
+            return {} as AttendeeData;
         },
         enabled: attendeeId ? attendeeId.length > 0 : false,
     });
@@ -109,7 +108,7 @@ const FormContents = ({
 
     const onSubmit = handleSubmit((data) => {
         // TODO: times 정보는 schedule로 보내야 함.
-        const { times, subMobileNumber, ...rest } = data;
+        const { times, schedules, ...rest } = data;
 
         if (attendanceId) {
             if (attendeeId) {
@@ -177,17 +176,31 @@ const FormContents = ({
             return response.data;
         },
         onSuccess: async (data) => {
-            // TODO: 스케쥴 수정 api 연동
             const selectedSchedules = watch('times');
             const singleSchedulesList: SingleSchedulesType = [];
 
-            Object.keys(selectedSchedules).forEach((day) => {
+            Object.keys(selectedSchedules || {}).forEach((day) => {
                 const times = selectedSchedules[day];
 
                 times.forEach((time) => {
                     singleSchedulesList.push({ day, time });
                 });
             });
+
+            if (
+                selectedSchedules === undefined ||
+                !singleSchedulesList.length
+            ) {
+                await queryClient.invalidateQueries({
+                    queryKey: ['attendee-list'],
+                });
+                await queryClient.invalidateQueries({
+                    queryKey: ['attendee-detail'],
+                });
+                onClose();
+                return;
+            }
+
             mutateSchedules({
                 attendanceId,
                 attendeeId: data.data.id,
@@ -205,10 +218,15 @@ const FormContents = ({
                 );
             return response.data;
         },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: ['attendee-list'],
-            });
+        onSuccess: () => {
+            Promise.all([
+                queryClient.invalidateQueries({
+                    queryKey: ['attendee-list'],
+                }),
+                queryClient.invalidateQueries({
+                    queryKey: ['attendee-detail'],
+                }),
+            ]);
             onClose();
         },
     });
@@ -244,7 +262,13 @@ const FormContents = ({
 
     useEffect(() => {
         if (isSuccess && attendeeDetail) {
-            reset(attendeeDetail);
+            const initialTimes: Record<string, string[]> = {};
+            attendeeDetail.schedules.forEach(({ day, time }) => {
+                initialTimes[day] = Array.isArray(initialTimes[day])
+                    ? initialTimes[day].concat(time)
+                    : [time];
+            });
+            reset({ ...attendeeDetail, times: initialTimes } as Inputs);
         }
     }, [isSuccess, attendeeDetail]);
 
@@ -271,7 +295,7 @@ const FormContents = ({
             setTimeOptions(timeOptions);
         }
 
-        if (data && data.days) {
+        if (data && data.days && !attendeeDetail) {
             let initialDays = {};
             data.days.forEach((day) => {
                 Object.assign(initialDays, { [day]: [] });
@@ -407,7 +431,6 @@ const FormContents = ({
                     </div>
                 </div>
 
-                {/* TODO: 수정하는 경우 -> 기존 스케쥴 값 연동 필요 */}
                 <div className="days-times-container">
                     <div className="days-container">
                         {data?.days.map((day) => (
