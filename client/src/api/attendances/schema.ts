@@ -68,6 +68,9 @@ export interface AttendanceSchedulesByDateItem {
     updatedAt: string;
     status?: string;
     isDetailOpen?: boolean;
+    etc?: string;
+    lateTime?: string;
+    absenceType?: string;
 }
 
 export interface AttendanceSchedulesByDate {
@@ -106,4 +109,23 @@ export interface CreateAttendance {
     allowLateness: string;
     attendanceDays: string;
     image: File;
+}
+
+export interface SingleRecords {
+    status: string;
+    attendeeId: string;
+    date: string;
+    day: string;
+    etc: string;
+    lateTime?: string;
+    absenceType?: string;
+}
+export interface CreateRecords {
+    attendanceId: string;
+    singleRecords: SingleRecords[];
+}
+
+export interface DeleteAttendees {
+    ids: string[];
+    attendanceId: string;
 }

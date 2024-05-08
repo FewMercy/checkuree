@@ -1,10 +1,10 @@
-// JavaScript
-import { Box, styled, Typography } from '@mui/material';
 import React, { SetStateAction, useState } from 'react';
-
-import { ParsedAttendeeListType } from '../[id]/page';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+
+// Components
+import { Box, styled, Typography } from '@mui/material';
+import { ParsedAttendeeListType } from '../[id]/page';
 
 interface Menu {
     name: string;
@@ -17,6 +17,7 @@ interface Menu {
 interface Iprops {
     status: boolean;
     setAttendeeList: React.Dispatch<SetStateAction<ParsedAttendeeListType>>;
+    onSaveAction: () => void;
 }
 
 const menuList = (attendanceId: string): Menu[] => {
@@ -53,7 +54,7 @@ const menuList = (attendanceId: string): Menu[] => {
 };
 
 const Navigation = (props: Iprops) => {
-    const { status, setAttendeeList } = props;
+    const { status, setAttendeeList, onSaveAction } = props;
 
     const router = useRouter();
     const attendanceId = usePathname().split('/')[2];
@@ -72,7 +73,9 @@ const Navigation = (props: Iprops) => {
                     time,
                     items.map((item) => ({
                         ...item,
-                        status: '', // 모든 요소의 status 값을 ''로 설정
+                        status: '',
+                        isDetailOpen: false,
+                        etc: '',
                     })),
                 ])
             );
@@ -86,7 +89,7 @@ const Navigation = (props: Iprops) => {
                     <BoxSTCancel onClick={() => resetAllStatus()}>
                         취소
                     </BoxSTCancel>
-                    <BoxSTConfirm sx={{}}>저장</BoxSTConfirm>
+                    <BoxSTConfirm onClick={onSaveAction}>저장</BoxSTConfirm>
                 </BoxSTNavigationActivate>
             ) : (
                 <BoxSTNavigation>

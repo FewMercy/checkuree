@@ -16,14 +16,25 @@ import { Colors, Icons } from '@/styles/globalStyles';
 import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
 
 // Api
-import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import {
+    QueryClient,
+    dehydrate,
+    useQuery,
+    useMutation,
+    useQueryClient,
+} from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
 // Components
 import Icon from '@/components/Icon';
 import Navigation from '@/app/attendances/_components/Navigation';
 import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
-import { AttendanceSchedulesByDateItem } from '@/api/attendances/schema';
+import {
+    AttendanceData,
+    AttendanceDetail,
+    AttendanceSchedulesByDateItem,
+    CreateRecords,
+} from '@/api/attendances/schema';
 
 // Types
 export type HandleListItemType = (
@@ -32,6 +43,7 @@ export type HandleListItemType = (
     field: string,
     value: string | boolean
 ) => void;
+
 export type ParsedAttendeeListType = Record<
     string,
     AttendanceSchedulesByDateItem[]
@@ -40,17 +52,19 @@ export type ParsedAttendeeListType = Record<
 const Index = () => {
     const attendanceId = usePathname().split('/')[2];
 
-    dayjs.locale('ko');
     const today = dateFormat(new Date(), 'dash');
+    const day = dayjs(new Date()).locale('en').format('dddd');
 
     const [attendeeList, setAttendeeList] = useState<ParsedAttendeeListType>(
         {}
     );
 
+    const queryClient = useQueryClient();
+
     // 출석대상 명단 조회
     const { data: attendance, isSuccess } = useQuery({
         queryKey: ['attendanceToday'],
-        queryFn: async (): Promise<ParsedAttendeeListType> => {
+        queryFn: async (): Promise<AttendanceSchedulesByDateItem> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
                     attendanceId,
@@ -62,29 +76,28 @@ const Index = () => {
                 _.has(response, 'data') &&
                 _.has(response.data, 'items')
             ) {
-                const parsedAttendeeList: ParsedAttendeeListType = {};
+                const result: AttendanceSchedulesByDateItem =
+                    response.data.items[0];
+                const parseList: ParsedAttendeeListType = {};
 
-                response.data.items.forEach((item) => {
-                    const { time } = item;
-                    if (!_.has(parsedAttendeeList, time)) {
-                        parsedAttendeeList[time] = [];
+                for (const key in result) {
+                    if (result.hasOwnProperty(key)) {
+                        result[key].forEach((item) => {
+                            item.status = '';
+                            item.isDetailOpen = false;
+                        });
                     }
-                    parsedAttendeeList[time].push({
-                        ...item,
-                        status: '',
-                        isDetailOpen: false,
-                    });
-                });
+                }
 
-                return parsedAttendeeList;
+                return result;
             }
 
-            return {};
+            return {} as AttendanceSchedulesByDateItem;
         },
     });
 
     // 출석, 지각, 결석 수 조회
-    const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
+    const { data: summaryData } = useQuery({
         queryKey: ['attendanceSummary'],
         queryFn: async () => {
             const response =
@@ -99,7 +112,7 @@ const Index = () => {
     // 출석부 이름 조회용
     const { data: detailData } = useQuery({
         queryKey: ['attendanceDetail'],
-        queryFn: async () => {
+        queryFn: async (): Promise<AttendanceData> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceDetail(
                     attendanceId
@@ -109,12 +122,28 @@ const Index = () => {
                 return response.data.data;
             }
 
-            return {};
+            return {} as AttendanceData;
+        },
+    });
+
+    // 출석기록 생성 및 수정
+    const {
+        mutate: createRecords,
+        isPending: isCreateRecordsPending,
+        isSuccess: isCreateRecordsSuccess,
+    } = useMutation({
+        mutationKey: ['records'],
+        mutationFn: async (parameters: CreateRecords) =>
+            AttendanceApiClient.getInstance().createRecords(parameters),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['attendanceToday'],
+            });
         },
     });
 
     const shouldShowNavigation = Object.keys(attendeeList).some((key) => {
-        attendeeList[key].some((el) => el.status !== '');
+        return attendeeList[key].some((item) => item.status !== '');
     });
 
     const statusIcons: { icon: string; count: number }[] = [
@@ -153,6 +182,49 @@ const Index = () => {
         });
     };
 
+    const onSaveAction = () => {
+        const parameters: CreateRecords = {
+            attendanceId: !_.isEmpty(detailData) ? detailData.id : '',
+            singleRecords: [],
+        };
+
+        Object.values(attendeeList).forEach((value) =>
+            value.forEach((item) => {
+                if (item.status === 'Present') {
+                    parameters.singleRecords.push({
+                        status: item.status,
+                        attendeeId: item.attendeeId,
+                        date: today,
+                        day: day.toUpperCase(),
+                        etc: item.etc || '',
+                    });
+                }
+                if (item.status === 'Late') {
+                    parameters.singleRecords.push({
+                        status: item.status,
+                        attendeeId: item.attendeeId,
+                        date: today,
+                        day: day.toUpperCase(),
+                        etc: item.etc || '',
+                        lateTime: item.lateTime ? `${item.lateTime}m` : '',
+                    });
+                }
+                if (item.status === 'Absent') {
+                    parameters.singleRecords.push({
+                        status: item.status,
+                        attendeeId: item.attendeeId,
+                        date: today,
+                        day: day.toUpperCase(),
+                        etc: item.etc || '',
+                        absenceType: item.absenceType ?? '',
+                    });
+                }
+            })
+        );
+
+        createRecords(parameters);
+    };
+
     useEffect(() => {
         if (isSuccess && attendance) {
             setAttendeeList(attendance);
@@ -172,29 +244,36 @@ const Index = () => {
                     <div className="date-container">
                         <div className="date">{today.split('-')[1]}</div>
                         <div className="date">{today.split('-')[2]}</div>
-                        <div className="date">{dayjs().format('ddd')}</div>
+                        <div className="date">
+                            {dayjs().locale('ko').format('ddd')}
+                        </div>
                     </div>
                 </section>
 
                 <section className="attendance-status-container">
                     {statusIcons.map((item) => (
-                        <div className="status">
+                        <div
+                            className="status"
+                            key={`attendance-status__${item.icon}`}
+                        >
                             <Icon
                                 icon={Icons[item.icon]}
                                 color={Colors.Gray80}
                                 size={16}
                             />
-                            <div className="count">{item.count}</div>
+                            <div className="count">{item.count || 0}</div>
                         </div>
                     ))}
                 </section>
             </section>
-
-            {/* 출석부 명단 */}
+            용{/* 출석부 명단 */}
             <section className="attendance-list">
                 {Object.keys(attendeeList).map((time) => {
                     return (
-                        <section className="attendance-list-by-time">
+                        <section
+                            className="attendance-list-by-time"
+                            key={`time__${time}`}
+                        >
                             <div className="attendance-time">{`${time.slice(0, 2)}:${time.slice(2, 4)}`}</div>
                             <div className="attendee-list">
                                 {attendeeList[time].map((item, index) => (
@@ -203,6 +282,7 @@ const Index = () => {
                                         time={time}
                                         index={index}
                                         handleListItem={handleListItem}
+                                        key={`attendee__${item.id}`}
                                     />
                                 ))}
                             </div>
@@ -213,6 +293,7 @@ const Index = () => {
             <Navigation
                 status={shouldShowNavigation}
                 setAttendeeList={setAttendeeList}
+                onSaveAction={onSaveAction}
             />
         </AttendanceIdContainer>
     );

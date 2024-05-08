@@ -14,6 +14,15 @@ import { useQuery } from '@tanstack/react-query';
 
 dayjs.locale('ko');
 
+type DayOfWeek =
+    | 'MONDAY'
+    | 'TUESDAY'
+    | 'WEDNESDAY'
+    | 'THURSDAY'
+    | 'FRIDAY'
+    | 'SATURDAY'
+    | 'SUNDAY';
+
 interface Attendance {
     attendeeCount: number;
     createId: string;
@@ -26,6 +35,7 @@ interface Attendance {
     imageUrl: string;
     updateId: string | null;
     updatedAt: string;
+    days: DayOfWeek[];
 }
 
 interface AttendanceId {
@@ -41,6 +51,21 @@ interface AttendanceId {
     userId: string;
 }
 
+function mapDaysToKorean(daysArray: DayOfWeek[]): string {
+    const dayMap: Record<DayOfWeek, string> = {
+        MONDAY: '월',
+        TUESDAY: '화',
+        WEDNESDAY: '수',
+        THURSDAY: '목',
+        FRIDAY: '금',
+        SATURDAY: '토',
+        SUNDAY: '일',
+    };
+
+    const koreanDays = daysArray.map((day) => dayMap[day]);
+
+    return koreanDays.join(', ');
+}
 const Page: React.FC = () => {
     const router = useRouter();
     const today = dayjs(); // 오늘 날짜
@@ -95,6 +120,7 @@ const Page: React.FC = () => {
                                                         `/attendances/${item.attendanceId}`
                                                     )
                                                 }
+                                                key={`attendance-item__${item.attendanceId}`}
                                             >
                                                 <Image
                                                     src={
@@ -133,7 +159,10 @@ const Page: React.FC = () => {
                                                         }
                                                     >
                                                         <TypoSTDay>
-                                                            월,화,목,금,일
+                                                            {mapDaysToKorean(
+                                                                item.attendance
+                                                                    .days
+                                                            )}
                                                         </TypoSTDay>
                                                         <TypoSTAttendeCount>
                                                             {
@@ -148,13 +177,15 @@ const Page: React.FC = () => {
                                     }
                                 )}
                             </GridST>
-                            <Image
-                                src={'/images/icons/add-icon.svg'}
-                                alt=""
-                                width={48}
-                                height={48}
-                                onClick={() => setIsCreate(true)}
-                            />
+                            <Box display={'flex'} justifyContent={'flex-end'}>
+                                <Image
+                                    src={'/images/icons/add-icon.svg'}
+                                    alt=""
+                                    width={48}
+                                    height={48}
+                                    onClick={() => setIsCreate(true)}
+                                />
+                            </Box>
                         </BoxSTAttendanceWrapper>
                     ) : (
                         <>...Loading</>
