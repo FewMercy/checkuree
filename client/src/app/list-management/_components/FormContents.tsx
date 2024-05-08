@@ -21,7 +21,6 @@ import Icon from '@/components/Icon';
 
 // Utils
 import { dateFormat } from '@/utils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useFormContents from '@/app/list-management/_hooks/useFormContents';
 
 // Styles
@@ -30,18 +29,11 @@ import {
     CalendarContainer,
     FormContentsContainer,
 } from '@/styles/app/listManagement.styles';
-import {
-    AttendanceData,
-    AttendeeData,
-    CreateAttendee,
-    CreateSchedules,
-    DeleteAttendees,
-    SingleSchedulesType,
-} from '@/api/attendances/schema';
-import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
 // Types
-interface Inputs {
+import { AttendanceData, SingleSchedulesType } from '@/api/attendances/schema';
+
+export interface Inputs {
     name: string;
     gender: string;
     birth: string;
@@ -62,36 +54,11 @@ const FormContents = ({
     attendanceId: string;
     onClose: () => void;
 }) => {
-    const queryClient = useQueryClient();
-
     const [selectedDay, setSelectedDay] = useState<string>(data?.days[0] || '');
     const [timeOptions, setTimeOptions] = useState<
         { label: string; value: string }[]
     >([]);
     const [showCalendar, setShowCalendar] = useState(false);
-
-    const { generateTimeOptions } = useFormContents();
-
-    const { data: attendeeDetail, isSuccess } = useQuery({
-        queryKey: ['attendee-detail', attendeeId],
-        queryFn: async (): Promise<AttendeeData> => {
-            const response =
-                await AttendanceApiClient.getInstance().getAttendeeDetail(
-                    attendeeId || ''
-                );
-
-            if (
-                response.status === 200 &&
-                _.has(response, 'data') &&
-                _.has(response.data, 'data')
-            ) {
-                return response.data.data;
-            }
-
-            return {} as AttendeeData;
-        },
-        enabled: attendeeId ? attendeeId.length > 0 : false,
-    });
 
     const {
         watch,
@@ -104,6 +71,20 @@ const FormContents = ({
         defaultValues: { gender: 'MALE' },
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
+    });
+
+    const {
+        attendeeDetail,
+        isSuccess,
+        createAttendee,
+        updateAttendee,
+        deleteAttendees,
+        generateTimeOptions,
+    } = useFormContents({
+        watch,
+        attendeeId,
+        attendanceId,
+        onClose,
     });
 
     const onSubmit = handleSubmit((data) => {
@@ -132,105 +113,6 @@ const FormContents = ({
         SUNDAY: '일',
     };
 
-    /** 출석대상 생성 */
-    const { mutate: createAttendee } = useMutation({
-        mutationFn: async (parameters: CreateAttendee) => {
-            const response =
-                await AttendanceApiClient.getInstance().createAttendee(
-                    parameters
-                );
-            return response.data;
-        },
-        onSuccess: async (data) => {
-            const selectedSchedules = watch('times');
-            const singleSchedulesList: SingleSchedulesType = [];
-
-            Object.keys(selectedSchedules).forEach((day) => {
-                const times = selectedSchedules[day];
-
-                times.forEach((time) => {
-                    singleSchedulesList.push({ day, time });
-                });
-            });
-            mutateSchedules({
-                attendanceId,
-                attendeeId: data.data.id,
-                singleSchedules: singleSchedulesList,
-            });
-        },
-    });
-
-    /** 출석대상 정보 수정 */
-    const { mutate: updateAttendee } = useMutation({
-        mutationFn: async (props: {
-            attendeeId: string;
-            parameters: CreateAttendee;
-        }) => {
-            const { attendeeId, parameters } = props;
-
-            const response =
-                await AttendanceApiClient.getInstance().updateAttendee(
-                    attendeeId,
-                    parameters
-                );
-            return response.data;
-        },
-        onSuccess: async (data) => {
-            const selectedSchedules = watch('times');
-            const singleSchedulesList: SingleSchedulesType = [];
-
-            Object.keys(selectedSchedules || {}).forEach((day) => {
-                const times = selectedSchedules[day];
-
-                times.forEach((time) => {
-                    singleSchedulesList.push({ day, time });
-                });
-            });
-
-            if (
-                selectedSchedules === undefined ||
-                !singleSchedulesList.length
-            ) {
-                await queryClient.invalidateQueries({
-                    queryKey: ['attendee-list'],
-                });
-                await queryClient.invalidateQueries({
-                    queryKey: ['attendee-detail'],
-                });
-                onClose();
-                return;
-            }
-
-            mutateSchedules({
-                attendanceId,
-                attendeeId: data.data.id,
-                singleSchedules: singleSchedulesList,
-            });
-        },
-    });
-
-    /** 출석대상의 스케쥴 생성 */
-    const { mutate: mutateSchedules } = useMutation({
-        mutationFn: async (parameters: CreateSchedules) => {
-            const response =
-                await AttendanceApiClient.getInstance().createSchedules(
-                    parameters
-                );
-            return response.data;
-        },
-        onSuccess: () => {
-            Promise.all([
-                queryClient.invalidateQueries({
-                    queryKey: ['attendee-list'],
-                }),
-                queryClient.invalidateQueries({
-                    queryKey: ['attendee-detail'],
-                }),
-            ]);
-            onClose();
-        },
-    });
-
     const handleSelectTime = (day: string, time: string) => {
         const updatedTimes = watch('times') || {};
 
@@ -247,18 +129,6 @@ const FormContents = ({
         }
         setValue('times', updatedTimes);
     };
-
-    const { mutate: deleteAttendees } = useMutation({
-        mutationKey: ['deleteAttendees'],
-        mutationFn: async (parameters: DeleteAttendees) =>
-            AttendanceApiClient.getInstance().deleteAttendees(parameters),
-        onSuccess: async () => {
-            onClose();
-            await queryClient.invalidateQueries({
-                queryKey: ['attendee-list'],
-            });
-        },
-    });
 
     useEffect(() => {
         if (isSuccess && attendeeDetail) {
