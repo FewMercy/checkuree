@@ -6,76 +6,81 @@ export const AttendanceIdContainer = styled.section`
     padding: 0 27px;
 
     & > .attendance-header {
-        width: calc(100% - 54px);
         position: fixed;
         top: 0;
         padding: 42px 0 12px;
-        box-sizing: border-box;
         background: ${Colors.White};
 
-        & > .attendance-img {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background-color: ${Colors.Gray40};
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
+        & > .attendance-header-wrapper {
+            min-width: 339px;
+            width: 100%;
+            box-sizing: border-box;
 
-        & > .attendance-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 4px;
-
-            & > .name {
-                font-size: 20px;
-                font-weight: 600;
-                color: ${Colors.Black01};
+            & > .attendance-img {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background-color: ${Colors.Gray40};
+                margin-bottom: 12px;
+                overflow: hidden;
             }
 
-            & > .date-container {
-                width: 71px;
-                height: 23px;
+            & > .attendance-info {
                 display: flex;
                 align-items: center;
-                justify-content: space-evenly;
-                border-radius: 4px;
-                box-sizing: border-box;
-                background-color: ${Colors.Gray40};
+                justify-content: space-between;
+                margin-bottom: 4px;
 
-                & > .date {
-                    width: 21px;
-                    height: 19px;
-                    border-radius: 2px;
+                & > .name {
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: ${Colors.Black01};
+                }
+
+                & > .date-container {
+                    width: 71px;
+                    height: 23px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-evenly;
+                    border-radius: 4px;
                     box-sizing: border-box;
-                    font-size: 14px;
-                    text-align: center;
-                    line-height: 19px;
-                    background-color: ${Colors.White};
+                    background-color: ${Colors.Gray40};
+
+                    & > .date {
+                        width: 21px;
+                        height: 19px;
+                        border-radius: 2px;
+                        box-sizing: border-box;
+                        font-size: 14px;
+                        text-align: center;
+                        line-height: 19px;
+                        background-color: ${Colors.White};
+                    }
                 }
             }
-        }
 
-        & > .attendance-status-container {
-            display: flex;
-            gap: 4px;
-
-            & > .status {
+            & > .attendance-status-container {
                 display: flex;
-                gap: 2px;
-                align-items: center;
+                gap: 4px;
 
-                & > .count {
-                    font-size: 12px;
-                    font-weight: 500;
-                    color: ${Colors.Gray80};
+                & > .status {
+                    display: flex;
+                    gap: 2px;
+                    align-items: center;
+
+                    & > .count {
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: ${Colors.Gray80};
+                    }
                 }
             }
         }
     }
 
     & > .attendance-list {
+        min-width: 339px;
         display: flex;
         gap: 24px;
         flex-direction: column;

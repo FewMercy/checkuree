@@ -150,7 +150,6 @@ const Index = () => {
     });
 
     const shouldShowNavigation = Object.keys(attendeeList).some((key) => {
-        console.log('attendeeList[key]', attendeeList[key]);
         return attendeeList[key].some((item) => item.newStatus !== '');
     });
 
@@ -245,46 +244,48 @@ const Index = () => {
     return (
         <AttendanceIdContainer>
             <section className="attendance-header">
-                <div className="attendance-img">
-                    {detailData?.imageUrl && (
-                        <Image
-                            src={detailData.imageUrl}
-                            alt="attendance-img"
-                            width={32}
-                            height={32}
-                        />
-                    )}
-                </div>
-
-                <section className="attendance-info">
-                    <div className="name">
-                        {/* @ts-ignore */}
-                        {detailData?.title || '출석부 이름'}
-                    </div>
-                    <div className="date-container">
-                        <div className="date">{today.split('-')[1]}</div>
-                        <div className="date">{today.split('-')[2]}</div>
-                        <div className="date">
-                            {dayjs().locale('ko').format('ddd')}
-                        </div>
-                    </div>
-                </section>
-
-                <section className="attendance-status-container">
-                    {statusIcons.map((item) => (
-                        <div
-                            className="status"
-                            key={`attendance-status__${item.icon}`}
-                        >
-                            <Icon
-                                icon={Icons[item.icon]}
-                                color={Colors.Gray80}
-                                size={16}
+                <div className="attendance-header-wrapper">
+                    <div className="attendance-img">
+                        {detailData?.imageUrl && (
+                            <Image
+                                src={detailData.imageUrl}
+                                alt="attendance-img"
+                                width={32}
+                                height={32}
                             />
-                            <div className="count">{item.count || 0}</div>
+                        )}
+                    </div>
+
+                    <section className="attendance-info">
+                        <div className="name">
+                            {/* @ts-ignore */}
+                            {detailData?.title || '출석부 이름'}
                         </div>
-                    ))}
-                </section>
+                        <div className="date-container">
+                            <div className="date">{today.split('-')[1]}</div>
+                            <div className="date">{today.split('-')[2]}</div>
+                            <div className="date">
+                                {dayjs().locale('ko').format('ddd')}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="attendance-status-container">
+                        {statusIcons.map((item) => (
+                            <div
+                                className="status"
+                                key={`attendance-status__${item.icon}`}
+                            >
+                                <Icon
+                                    icon={Icons[item.icon]}
+                                    color={Colors.Gray80}
+                                    size={16}
+                                />
+                                <div className="count">{item.count || 0}</div>
+                            </div>
+                        ))}
+                    </section>
+                </div>
             </section>
 
             {/* 출석부 명단 */}
