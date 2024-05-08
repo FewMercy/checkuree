@@ -2,6 +2,7 @@ import './globals.css';
 import React from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
+
 // Provider
 import { ThemeProvider } from '@mui/material';
 import theme from '@/styles/theme';
