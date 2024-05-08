@@ -9,6 +9,7 @@ import { AbsenceType } from '../const/absence-type.enum';
 
 // 출석 체크 방법
 @Entity()
+@Unique('UQ_RECORD', ['attendeeId', 'date', 'time'])
 export class Record extends BaseTimeEntity {
   @PrimaryGeneratedColumn('increment', { comment: '출석 기록 PK', type: 'int' })
   @ApiProperty({ description: '출석 기록 PK', type: 'int' })
@@ -29,6 +30,10 @@ export class Record extends BaseTimeEntity {
   @Column({ comment: '출석 날짜', type: 'varchar' })
   @ApiProperty({ description: '출석 날짜', type: 'string' })
   date: string;
+
+  @Column({ comment: '출석 시간', type: 'varchar' })
+  @ApiProperty({ description: '출석 시간', type: 'string' })
+  time: string;
 
   @Column({ comment: '출석 요일', type: 'enum', enum: DayType })
   @ApiProperty({

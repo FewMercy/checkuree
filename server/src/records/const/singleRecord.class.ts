@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional, IsString, Matches } from 'class-validator';
 import { AttendanceStatus } from './record-type.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DayType } from '../../schedules/const/day-type.enum';
@@ -30,6 +30,15 @@ export class SingleRecord {
     example: '2024-12-03',
   })
   date: string;
+
+  @IsString()
+  @Matches(/^\d{4}$/)
+  @ApiProperty({
+    description: '출석 시간',
+    type: 'string',
+    example: '0930',
+  })
+  time: string;
 
   @IsEnum(DayType, { message: '요일이 정확하지 않습니다.' })
   @ApiProperty({
