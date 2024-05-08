@@ -40,13 +40,14 @@ const ListManagement = () => {
                 );
 
             if (response.status === 200 && _.has(response.data, 'items')) {
-                return response.data.items.map((item) => ({
+                return (response.data.items || []).map((item) => ({
                     ...item,
                     status: '',
                     isDetailOpen: false,
                 }));
             }
-            return response.data.items;
+
+            return [] as AttendeeData[];
         },
     });
 
