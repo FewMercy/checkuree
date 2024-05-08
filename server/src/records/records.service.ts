@@ -16,6 +16,7 @@ import { CreateAllRecordDto } from './dto/createAll-record.dto';
 import { MultiIdsResponseDto } from '../common/response/multi-ids-response.dto';
 import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
 import { AttendeeRecordSummaryDto } from './dto/attendee-record-summary.dto';
+import { AbsenceType } from './const/absence-type.enum';
 
 @Injectable()
 export class RecordsService {
@@ -39,6 +40,10 @@ export class RecordsService {
       }
       if (record.status !== AttendanceStatus.LATE) {
         delete record.lateTime;
+      }
+
+      if (record.status === AttendanceStatus.ABSENT && !record.absenceType) {
+        record.absenceType = AbsenceType.GENERAL;
       }
     });
 
@@ -334,7 +339,7 @@ export class RecordsService {
     // 레코드 분류 및 중복 제거
     const uniqueRecordsMap = new Map();
     records.forEach((record) => {
-      const key = `${record.attendeeId}-${record.date}`;
+      const key = `${record.attendeeId}-${record.date}-${record.time}`;
       uniqueRecordsMap.set(key, record); // 같은 키로 들어오는 레코드를 덮어쓰기. 마지막 레코드만 남음
     });
 
