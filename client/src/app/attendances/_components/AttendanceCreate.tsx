@@ -142,26 +142,15 @@ const AttendanceCreateForm = (props: IProps) => {
 
     return (
         <ContainerSTForm>
-            <Image
-                src={'/images/icons/arrow-back-icon.svg'}
-                alt=""
-                width={24}
-                height={24}
-                style={{
-                    cursor: 'pointer',
-                }}
-                onClick={() => setIsCreate(false)}
-            />
-            <Typography fontSize={20} fontWeight={600} lineHeight={'27.24px'}>
+            <Typography
+                fontSize={20}
+                fontWeight={600}
+                lineHeight={'27.24px'}
+                width={340}
+            >
                 정보 입력
             </Typography>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                }}
-            >
+            <BoxSTImageWrapper sx={{}}>
                 <Typography
                     fontSize={14}
                     lineHeight={'19.07px'}
@@ -201,7 +190,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         jpg, png 형식 가능
                     </Typography>
                 </Box>
-            </Box>
+            </BoxSTImageWrapper>
             <input
                 type="file"
                 ref={fileInputRef}
@@ -342,7 +331,15 @@ const AttendanceCreateForm = (props: IProps) => {
                 </Box>
             </BoxSTTitle>
 
-            <BoxSTSave onClick={() => attendanceMutaion()}>저장하기</BoxSTSave>
+            {/* <BoxSTSave onClick={() => attendanceMutaion()}>저장하기</BoxSTSave> */}
+            <BoxSTbutton>
+                <BoxSTcancel onClick={() => setIsCreate(false)}>
+                    취소
+                </BoxSTcancel>
+                <BoxSTSave onClick={() => attendanceMutaion()}>
+                    저장하기
+                </BoxSTSave>
+            </BoxSTbutton>
         </ContainerSTForm>
     );
 };
@@ -356,7 +353,8 @@ const ContainerSTForm = styled(Box)(() => {
         gap: '24px',
         flexDirection: 'column',
         flexWrap: 'wrap',
-        width: '340px',
+        width: '100%',
+        alignItems: 'center',
     };
 });
 
@@ -370,6 +368,14 @@ const TextFieldProps = {
         fontSize: '16px',
     },
 };
+const BoxSTImageWrapper = styled(Box)(() => {
+    return {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        width: 340,
+    };
+});
 
 const BoxSTImage = styled(Box)(() => {
     return {
@@ -399,15 +405,34 @@ const TypoST = styled(Typography)(() => {
 
 const BoxSTSave = styled(Box)(() => {
     return {
-        width: '340px',
-        height: '48px',
-        border: '1px solid #59996B',
+        maxWidth: '281px',
+        width: '100%',
+        height: '60px',
         background: ' #59996B',
         color: 'white',
-        borderRadius: '8px',
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
+    };
+});
+const BoxSTcancel = styled(Box)(() => {
+    return {
+        maxWidth: '112px',
+        width: '100%',
+        height: '60px',
+        background: ' #C9C9C9',
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    };
+});
+
+const BoxSTbutton = styled(Box)(() => {
+    return {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
     };
 });
 
