@@ -11,6 +11,7 @@ import AttendanceCreateForm from '@/app/attendances/_components/AttendanceCreate
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
+import BottomDrawer from '@/components/BottomDrawer';
 
 dayjs.locale('ko');
 
@@ -84,115 +85,109 @@ const Page: React.FC = () => {
     });
 
     return (
-        <ContainerST>
-            {isCreate ? (
-                <AttendanceCreateForm
-                    setIsCreate={setIsCreate}
-                    attendancesRefetch={attendancesRefetch}
-                />
-            ) : (
-                <>
-                    {attendancyList ? (
-                        <BoxSTAttendanceWrapper>
-                            <Box>
-                                <Typography
-                                    fontSize={14}
-                                    lineHeight={'19.07px'}
-                                    color={'#797979'}
-                                >
-                                    {todayFormat}
-                                </Typography>
-                                <Typography
-                                    fontSize={20}
-                                    lineHeight={'27.24px'}
-                                    fontWeight={600}
-                                >
-                                    김범수님, 안녕하세요.
-                                </Typography>
-                            </Box>
-                            <GridST>
-                                {attendancyList?.items.map(
-                                    (item: AttendanceId) => {
-                                        return (
-                                            <BoxSTAttendance
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/attendances/${item.attendanceId}`
-                                                    )
-                                                }
-                                                key={`attendance-item__${item.attendanceId}`}
+        <>
+            <ContainerST>
+                {attendancyList ? (
+                    <BoxSTAttendanceWrapper>
+                        <Box>
+                            <Typography
+                                fontSize={14}
+                                lineHeight={'19.07px'}
+                                color={'#797979'}
+                            >
+                                {todayFormat}
+                            </Typography>
+                            <Typography
+                                fontSize={20}
+                                lineHeight={'27.24px'}
+                                fontWeight={600}
+                            >
+                                김범수님, 안녕하세요.
+                            </Typography>
+                        </Box>
+                        <GridST>
+                            {attendancyList?.items.map((item: AttendanceId) => {
+                                return (
+                                    <BoxSTAttendance
+                                        onClick={() =>
+                                            router.push(
+                                                `/attendances/${item.attendanceId}`
+                                            )
+                                        }
+                                        key={`attendance-item__${item.attendanceId}`}
+                                    >
+                                        <Image
+                                            src={
+                                                item.attendance.imageUrl ||
+                                                'images/sckeleton-image.svg'
+                                            }
+                                            width={142}
+                                            height={102}
+                                            alt="스켈레톤 이미지"
+                                            style={{
+                                                objectFit: 'cover',
+                                                // objectPosition:
+                                                //     '0px -10px',
+                                            }}
+                                        />
+                                        <BoxSTAttendanceFooter>
+                                            <Box>
+                                                <TypoSTTitle>
+                                                    {item.attendance.title}
+                                                </TypoSTTitle>
+                                                <TypoSTDescription>
+                                                    {item.attendance
+                                                        .description ||
+                                                        '출석부 설명입니다.'}
+                                                </TypoSTDescription>
+                                            </Box>
+                                            <Box
+                                                display={'flex'}
+                                                alignItems={'center'}
+                                                justifyContent={'space-between'}
                                             >
-                                                <Image
-                                                    src={
+                                                <TypoSTDay>
+                                                    {mapDaysToKorean(
+                                                        item.attendance.days
+                                                    )}
+                                                </TypoSTDay>
+                                                <TypoSTAttendeCount>
+                                                    {
                                                         item.attendance
-                                                            .imageUrl ||
-                                                        'images/sckeleton-image.svg'
+                                                            .attendeeCount
                                                     }
-                                                    width={142}
-                                                    height={102}
-                                                    alt="스켈레톤 이미지"
-                                                    style={{
-                                                        objectFit: 'cover',
-                                                        // objectPosition:
-                                                        //     '0px -10px',
-                                                    }}
-                                                />
-                                                <BoxSTAttendanceFooter>
-                                                    <Box>
-                                                        <TypoSTTitle>
-                                                            {
-                                                                item.attendance
-                                                                    .title
-                                                            }
-                                                        </TypoSTTitle>
-                                                        <TypoSTDescription>
-                                                            {item.attendance
-                                                                .description ||
-                                                                '출석부 설명입니다.'}
-                                                        </TypoSTDescription>
-                                                    </Box>
-                                                    <Box
-                                                        display={'flex'}
-                                                        alignItems={'center'}
-                                                        justifyContent={
-                                                            'space-between'
-                                                        }
-                                                    >
-                                                        <TypoSTDay>
-                                                            {mapDaysToKorean(
-                                                                item.attendance
-                                                                    .days
-                                                            )}
-                                                        </TypoSTDay>
-                                                        <TypoSTAttendeCount>
-                                                            {
-                                                                item.attendance
-                                                                    .attendeeCount
-                                                            }
-                                                        </TypoSTAttendeCount>
-                                                    </Box>
-                                                </BoxSTAttendanceFooter>
-                                            </BoxSTAttendance>
-                                        );
-                                    }
-                                )}
-                            </GridST>
-                            <Box display={'flex'} justifyContent={'flex-end'}>
-                                <Image
-                                    src={'/images/icons/add-icon.svg'}
-                                    alt=""
-                                    width={48}
-                                    height={48}
-                                    onClick={() => setIsCreate(true)}
-                                />
-                            </Box>
-                        </BoxSTAttendanceWrapper>
-                    ) : (
-                        <>...Loading</>
-                    )}
-                </>
-            )}
-        </ContainerST>
+                                                </TypoSTAttendeCount>
+                                            </Box>
+                                        </BoxSTAttendanceFooter>
+                                    </BoxSTAttendance>
+                                );
+                            })}
+                        </GridST>
+                        <Box display={'flex'} justifyContent={'flex-end'}>
+                            <Image
+                                src={'/images/icons/add-icon.svg'}
+                                alt=""
+                                width={48}
+                                height={48}
+                                onClick={() => setIsCreate(true)}
+                            />
+                        </Box>
+                    </BoxSTAttendanceWrapper>
+                ) : (
+                    <>...Loading</>
+                )}
+                <BottomDrawer
+                    open={isCreate}
+                    onClose={() => {}}
+                    children={
+                        <AttendanceCreateForm
+                            setIsCreate={setIsCreate}
+                            attendancesRefetch={attendancesRefetch}
+                        />
+                    }
+                />
+            </ContainerST>
+        </>
     );
 };
 
