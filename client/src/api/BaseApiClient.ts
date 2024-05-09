@@ -67,6 +67,8 @@ class BaseApiClient {
             return this.tokens.accessToken;
         }
         if (typeof window !== 'undefined') {
+            axios.defaults.headers.common['Authorization'] =
+                `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY ?? 'ACCESS_TOKEN'}`;
             return Cookies.get(
                 process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY ?? 'ACCESS_TOKEN'
             );
