@@ -287,7 +287,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         labelId="start-time-label"
                         id="start-time-select"
                         displayEmpty
-                        value={''}
+                        value={attendanceCreate?.availableFrom}
                         onChange={(e) => {
                             onChange('availableFrom', e.target.value as string);
                         }}
@@ -309,7 +309,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         labelId="end-time-label"
                         id="end-time-select"
                         displayEmpty
-                        value={''}
+                        value={attendanceCreate?.availableTo}
                         disabled={attendanceCreate?.availableFrom === ''}
                         onChange={(e) => {
                             onChange('availableTo', e.target.value as string);
