@@ -66,7 +66,7 @@ export class AttendancesService {
   async findAllByUserId(userId: string): Promise<ResponseWithoutPaginationDto<UserAttendance>> {
     const [items, count] = await this.userAttendanceRepository
       .createQueryBuilder('userAttendance')
-      .leftJoinAndSelect('userAttendance.attendance', 'attendance')
+      .innerJoinAndSelect('userAttendance.attendance', 'attendance', 'attendance.deletedAt IS NULL')
       .leftJoinAndSelect('attendance.attendanceDays', 'attendanceDays')
       .loadRelationCountAndMap('attendance.attendeeCount', 'attendance.attendees')
       .where('userAttendance.userId = :userId', { userId })
