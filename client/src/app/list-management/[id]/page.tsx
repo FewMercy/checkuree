@@ -17,11 +17,12 @@ import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { Fab } from '@mui/material';
 import Icon from '@/components/Icon';
 import BottomDrawer from '@/components/BottomDrawer';
-import AttendanceItem from '@/app/list-management/_components/AttendanceItem';
-import FormContents from '@/app/list-management/_components/FormContents';
+import AttendanceItem from '@/app/list-management/[id]/_components/AttendanceItem';
+import FormContents from '@/app/list-management/[id]/_components/FormContents';
 
 // Types
-import { AttendanceData, AttendeeData } from '@/api/attendances/schema';
+import { Attendance, AttendeeData } from '@/api/attendances/schema';
+import Image from 'next/image';
 
 const ListManagement = () => {
     const attendanceId = usePathname().split('/')[2];
@@ -32,7 +33,7 @@ const ListManagement = () => {
 
     // 출석대상 명단 조회
     const { data = [], isSuccess } = useQuery({
-        queryKey: ['attendee-list'],
+        queryKey: ['attendee-list', attendanceId],
         queryFn: async (): Promise<AttendeeData[]> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendeeList(
@@ -52,9 +53,9 @@ const ListManagement = () => {
     });
 
     // 출석부 상세 조회
-    const { data: attendanceDetail = {} as AttendanceData } = useQuery({
-        queryKey: ['attendance-detail'],
-        queryFn: async (): Promise<AttendanceData> => {
+    const { data: attendanceDetail = {} as Attendance } = useQuery({
+        queryKey: ['attendance-detail', attendanceId],
+        queryFn: async (): Promise<Attendance> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceDetail(
                     attendanceId
@@ -68,13 +69,13 @@ const ListManagement = () => {
                 return response.data.data;
             }
 
-            return {} as AttendanceData;
+            return {} as Attendance;
         },
     });
 
     // 출석 기록 summary 조회
     const { data: attendanceSummary } = useQuery({
-        queryKey: ['attendance-summary'],
+        queryKey: ['attendance-summary', attendanceId],
         queryFn: async () => {
             const attendeeIds = data.map((item) => item.id);
             const response =
@@ -89,7 +90,7 @@ const ListManagement = () => {
 
             return [];
         },
-        enabled: data && isSuccess,
+        enabled: data && data?.length > 0 && isSuccess,
     });
 
     const onCloseModal = () => {
@@ -110,7 +111,16 @@ const ListManagement = () => {
     return (
         <ListManagementContainer>
             <section className="attendance-header">
-                <div className="attendance-img"></div>
+                <div className="attendance-img">
+                    {attendanceDetail.imageUrl ? (
+                        <Image
+                            src={attendanceDetail.imageUrl}
+                            alt="attendance-image"
+                            width={32}
+                            height={32}
+                        />
+                    ) : null}
+                </div>
 
                 <section className="attendance-info">
                     <div className="name">{attendanceDetail.title}</div>
@@ -119,15 +129,16 @@ const ListManagement = () => {
 
             {/* 출석부 명단 */}
             <section className="attendance-list">
-                {attendeeList &&
-                    attendanceSummary &&
-                    attendeeList.map((item, index) => (
-                        <AttendanceItem
-                            item={{ ...item, ...attendanceSummary[index] }}
-                            setIsUpdateOpen={setIsUpdateOpen}
-                            key={`attendance-item__${item.id}`}
-                        />
-                    ))}
+                {attendeeList && attendeeList.length > 0
+                    ? attendanceSummary &&
+                      attendeeList.map((item, index) => (
+                          <AttendanceItem
+                              item={{ ...item, ...attendanceSummary[index] }}
+                              setIsUpdateOpen={setIsUpdateOpen}
+                              key={`attendance-item__${item.id}`}
+                          />
+                      ))
+                    : '출석 대상이 없습니다.'}
             </section>
 
             {/* 등록 버튼 */}

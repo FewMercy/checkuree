@@ -13,6 +13,7 @@ export interface Attendance {
         role: 'MASTER' | 'MANAGER' | 'GENERAL' | 'READER';
         // user*	User{...}
     };
+    days: string[];
     attendees: {};
     attendanceDays: { attendanceId: string; day: string; id: number }[];
 }

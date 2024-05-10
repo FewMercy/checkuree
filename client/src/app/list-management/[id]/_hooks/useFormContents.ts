@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
 import { UseFormWatch } from 'react-hook-form';
-import { Inputs } from '@/app/list-management/_components/FormContents';
+import { Inputs } from '@/app/list-management/[id]/_components/FormContents';
 
 import {
     AttendeeData,

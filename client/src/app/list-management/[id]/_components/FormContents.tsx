@@ -21,7 +21,7 @@ import Icon from '@/components/Icon';
 
 // Utils
 import { dateFormat } from '@/utils';
-import useFormContents from '@/app/list-management/_hooks/useFormContents';
+import useFormContents from '@/app/list-management/[id]/_hooks/useFormContents';
 
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
@@ -31,7 +31,7 @@ import {
 } from '@/styles/app/listManagement.styles';
 
 // Types
-import { AttendanceData, SingleSchedulesType } from '@/api/attendances/schema';
+import { Attendance, SingleSchedulesType } from '@/api/attendances/schema';
 
 export interface Inputs {
     name: string;
@@ -49,11 +49,12 @@ const FormContents = ({
     attendanceId,
     onClose,
 }: {
-    data: AttendanceData;
+    data: Attendance;
     attendeeId?: string;
     attendanceId: string;
     onClose: () => void;
 }) => {
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const [selectedDay, setSelectedDay] = useState<string>(data?.days[0] || '');
     const [timeOptions, setTimeOptions] = useState<
         { label: string; value: string }[]
@@ -176,6 +177,14 @@ const FormContents = ({
 
     return (
         <FormContentsContainer gender={watch('gender')}>
+            <Modal
+                open={isScheduleModalOpen}
+                onClose={() => setIsScheduleModalOpen(false)}
+                aria-labelledby="전체 스케쥴보기 모달"
+                aria-describedby="전체 스케쥴보기 모달"
+            >
+                <div>hihi</div>
+            </Modal>
             <form id="create-attendees" onSubmit={onSubmit}>
                 <div className="form-row">
                     <div className="label">이름</div>
@@ -377,7 +386,12 @@ const FormContents = ({
             </form>
 
             <section className="additional-button-container">
-                <div className="additional-button">전체 스케줄보기</div>
+                <div
+                    className="additional-button"
+                    onClick={() => setIsScheduleModalOpen(true)}
+                >
+                    전체 스케줄보기
+                </div>
                 <div className="additional-button">출석 히스토리</div>
             </section>
 
