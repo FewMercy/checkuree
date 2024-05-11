@@ -66,7 +66,7 @@ export function ScheduleModalContent({
                                 {data &&
                                     data[key].map((time) => (
                                         <div className="schedules-table__body-cell">
-                                            {time}
+                                            {`${time.substring(0, 2)}:${time.substring(2, 4)}`}
                                         </div>
                                     ))}
                             </div>
