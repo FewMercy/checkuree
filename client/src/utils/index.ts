@@ -19,3 +19,17 @@ export const dateFormat = (
             return format(date, 'yyyy-MM-dd');
     }
 };
+
+export const dayObj: Record<string, string> = {
+    MONDAY: '월',
+    TUESDAY: '화',
+    WEDNESDAY: '수',
+    THURSDAY: '목',
+    FRIDAY: '금',
+    SATURDAY: '토',
+    SUNDAY: '일',
+};
+
+export const convertEngDayToKorDay = (engDay: string) => {
+    return dayObj[engDay];
+};
