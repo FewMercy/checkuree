@@ -2,7 +2,7 @@
 
 import 'dayjs/locale/ko'; // 한국어 locale 설정
 
-import { Box, Container, Typography, styled } from '@mui/material';
+import { Box, Container, Fab, Typography, styled } from '@mui/material';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
 
@@ -163,7 +163,7 @@ const Page: React.FC = () => {
                                 );
                             })}
                         </GridST>
-                        <Box display={'flex'} justifyContent={'flex-end'}>
+                        <FabSTbutton>
                             <Image
                                 src={'/images/icons/add-icon.svg'}
                                 alt=""
@@ -171,7 +171,7 @@ const Page: React.FC = () => {
                                 height={48}
                                 onClick={() => setIsCreate(true)}
                             />
-                        </Box>
+                        </FabSTbutton>
                     </BoxSTAttendanceWrapper>
                 ) : (
                     <>...Loading</>
@@ -284,5 +284,14 @@ const TypoSTDay = styled(Typography)(() => {
         fontWeight: 500,
         color: '#797979',
         lineHeight: '16.34px',
+    };
+});
+
+const FabSTbutton = styled(Fab)(() => {
+    return {
+        position: 'fixed',
+        bottom: 24,
+        right: 24,
+        background: '#59996B',
     };
 });
