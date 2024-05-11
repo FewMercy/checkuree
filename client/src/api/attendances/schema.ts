@@ -1,3 +1,7 @@
+interface BaseApiResponse {
+    success: boolean;
+    count: number;
+}
 export interface Attendance {
     id: string;
     title: string;
@@ -17,10 +21,8 @@ export interface Attendance {
     attendees: {};
     attendanceDays: { attendanceId: string; day: string; id: number }[];
 }
-export interface AttendanceDetail {
+export interface AttendanceDetail extends BaseApiResponse {
     data: Attendance;
-    success: boolean;
-    count: number;
 }
 
 export interface ScheduleType {
@@ -66,11 +68,9 @@ export interface AttendeeData {
     isDetailOpen?: boolean;
 }
 
-export interface AttendeeList {
+export interface AttendeeList extends BaseApiResponse {
     data?: AttendeeData[];
     items?: AttendeeData[];
-    success: boolean;
-    count: number;
 }
 
 export interface AttendeeDetail {
@@ -98,11 +98,9 @@ export interface AttendanceSchedulesByDateItemObj {
     [key: string]: AttendanceSchedulesByDateItem[];
 }
 
-export interface AttendanceSchedulesByDate {
+export interface AttendanceSchedulesByDate extends BaseApiResponse {
     items: AttendanceSchedulesByDateItemObj[];
-    count: number;
     pageSize: number;
-    success: boolean;
     totalPage: number;
 }
 
@@ -154,4 +152,14 @@ export interface CreateRecords {
 export interface DeleteAttendees {
     ids: string[];
     attendanceId: string;
+}
+
+export interface AttendeeSchedules extends BaseApiResponse {
+    items: {
+        attendeeId: string;
+        createdAt: string;
+        day: string;
+        id: number;
+        time: string;
+    }[];
 }

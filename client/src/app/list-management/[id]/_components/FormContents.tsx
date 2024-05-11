@@ -32,6 +32,7 @@ import {
 
 // Types
 import { Attendance, SingleSchedulesType } from '@/api/attendances/schema';
+import { ScheduleModalContent } from '@/app/list-management/[id]/_components/ScheduleModalContent';
 
 export interface Inputs {
     name: string;
@@ -177,14 +178,21 @@ const FormContents = ({
 
     return (
         <FormContentsContainer gender={watch('gender')}>
-            <Modal
-                open={isScheduleModalOpen}
-                onClose={() => setIsScheduleModalOpen(false)}
-                aria-labelledby="전체 스케쥴보기 모달"
-                aria-describedby="전체 스케쥴보기 모달"
-            >
-                <div>hihi</div>
-            </Modal>
+            {/* 전체 스케쥴보기 모달은 수정일때만 노출 */}
+            {attendeeId && (
+                <Modal
+                    open={isScheduleModalOpen}
+                    onClose={() => setIsScheduleModalOpen(false)}
+                    aria-labelledby="전체 스케쥴보기 모달"
+                    aria-describedby="전체 스케쥴보기 모달"
+                >
+                    <ScheduleModalContent
+                        attendeeId={attendeeId}
+                        onClose={() => setIsScheduleModalOpen(false)}
+                    />
+                </Modal>
+            )}
+
             <form id="create-attendees" onSubmit={onSubmit}>
                 <div className="form-row">
                     <div className="label">이름</div>
@@ -316,6 +324,7 @@ const FormContents = ({
                             <div
                                 className={`day ${selectedDay === day ? 'selected' : ''}`}
                                 onClick={() => setSelectedDay(day)}
+                                key={day}
                             >
                                 {days[day]}
                             </div>

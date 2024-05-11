@@ -4,6 +4,7 @@ import {
     AttendanceSchedulesByDate,
     AttendeeDetail,
     AttendeeList,
+    AttendeeSchedules,
     CreateAttendance,
     CreateAttendee,
     CreateRecords,
@@ -152,6 +153,13 @@ class AttendanceApiClient extends BaseApiClient {
             method: 'DELETE',
             url: `/attendees`,
             data: parameters,
+        });
+
+    /** 출석대상의 스케쥴 조회 */
+    public getSchedulesById = (attendeeId: string) =>
+        this.axios.request<AttendeeSchedules>({
+            method: 'GET',
+            url: `/attendee/${attendeeId}/schedules`,
         });
 }
 
