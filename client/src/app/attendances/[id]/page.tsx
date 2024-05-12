@@ -12,6 +12,11 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import { dateFormat } from '@/utils';
 
+// Calendar
+import DatePicker from 'react-datepicker';
+import { ko } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
 import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
@@ -57,6 +62,7 @@ const Index = () => {
     const today = dateFormat(new Date(), 'dash');
     const day = dayjs(new Date()).locale('en').format('dddd');
 
+    const [selectedDate, setSelectedDate] = useState(today);
     const [attendeeList, setAttendeeList] = useState<ParsedAttendeeListType>(
         {}
     );
@@ -65,12 +71,12 @@ const Index = () => {
 
     // 출석대상 명단 조회
     const { data: attendance, isSuccess } = useQuery({
-        queryKey: ['attendanceToday', attendanceId],
+        queryKey: ['attendanceToday', attendanceId, selectedDate],
         queryFn: async (): Promise<AttendanceSchedulesByDateItemObj> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
                     attendanceId,
-                    today
+                    selectedDate
                 );
 
             if (
@@ -105,12 +111,12 @@ const Index = () => {
 
     // 출석, 지각, 결석 수 조회
     const { data: summaryData } = useQuery({
-        queryKey: ['attendanceSummary', attendanceId],
+        queryKey: ['attendanceSummary', attendanceId, selectedDate],
         queryFn: async () => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceSummaryByDate(
                     attendanceId,
-                    today
+                    selectedDate
                 );
             return response.data;
         },
@@ -134,11 +140,7 @@ const Index = () => {
     });
 
     // 출석기록 생성 및 수정
-    const {
-        mutate: createRecords,
-        isPending: isCreateRecordsPending,
-        isSuccess: isCreateRecordsSuccess,
-    } = useMutation({
+    const { mutate: createRecords } = useMutation({
         mutationKey: ['records'],
         mutationFn: async (parameters: CreateRecords) =>
             AttendanceApiClient.getInstance().createRecords(parameters),
@@ -157,9 +159,8 @@ const Index = () => {
         {
             icon: 'groups',
             count:
-                summaryData?.presentCount +
-                summaryData?.lateCount +
-                summaryData?.absenceCount,
+                Object.keys(attendeeList).flatMap((key) => attendeeList[key])
+                    ?.length || 0,
         },
         {
             icon: 'sentiment_satisfied_alt',
@@ -201,7 +202,7 @@ const Index = () => {
                     parameters.singleRecords.push({
                         status: item.newStatus,
                         attendeeId: item.attendeeId,
-                        date: today,
+                        date: selectedDate,
                         time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
@@ -211,7 +212,7 @@ const Index = () => {
                     parameters.singleRecords.push({
                         status: item.newStatus,
                         attendeeId: item.attendeeId,
-                        date: today,
+                        date: selectedDate,
                         time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
@@ -222,7 +223,7 @@ const Index = () => {
                     parameters.singleRecords.push({
                         status: item.newStatus,
                         attendeeId: item.attendeeId,
-                        date: today,
+                        date: selectedDate,
                         time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
@@ -261,12 +262,35 @@ const Index = () => {
                             {/* @ts-ignore */}
                             {detailData?.title || '출석부 이름'}
                         </div>
-                        <div className="date-container">
-                            <div className="date">{today.split('-')[1]}</div>
-                            <div className="date">{today.split('-')[2]}</div>
-                            <div className="date">
-                                {dayjs().locale('ko').format('ddd')}
-                            </div>
+                        <div className="date-box">
+                            <DatePicker
+                                locale={ko}
+                                selected={new Date(selectedDate)}
+                                onChange={(date) => {
+                                    if (date) {
+                                        const formattedDate = dateFormat(
+                                            date,
+                                            'dash'
+                                        );
+                                        setSelectedDate(formattedDate);
+                                    }
+                                }}
+                                customInput={
+                                    <div className="date-container">
+                                        <div className="date">
+                                            {selectedDate.split('-')[1]}
+                                        </div>
+                                        <div className="date">
+                                            {selectedDate.split('-')[2]}
+                                        </div>
+                                        <div className="date">
+                                            {dayjs(selectedDate)
+                                                .locale('ko')
+                                                .format('ddd')}
+                                        </div>
+                                    </div>
+                                }
+                            />
                         </div>
                     </section>
 
@@ -312,6 +336,7 @@ const Index = () => {
                     );
                 })}
             </section>
+
             <Navigation
                 status={shouldShowNavigation}
                 setAttendeeList={setAttendeeList}

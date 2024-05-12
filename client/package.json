@@ -27,6 +27,7 @@
     "prettier": "^3.2.5",
     "react": "^18",
     "react-calendar": "^4.8.0",
+    "react-datepicker": "^6.9.0",
     "react-dom": "^18",
     "react-hook-form": "^7.51.2",
     "react-responsive": "^10.0.0"
@@ -44,6 +45,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
