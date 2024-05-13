@@ -23,8 +23,7 @@ class BaseApiClient {
         });
 
         this.axios.interceptors.request.use(async (config) => {
-            const accessToken = this.getAccessToken();
-            console.log(accessToken);
+            const accessToken = Cookies.get("ACCESS_TOKEN");
             config.headers.Authorization = `Bearer ${accessToken}`;
             if (accessToken != null) {
                 config.headers.Authorization = `Bearer ${accessToken}`;
@@ -43,8 +42,6 @@ class BaseApiClient {
                     data,
                     request: { responseURL },
                 } = error.response;
-                console.error(this.getAccessToken());
-                console.error(this.tokens);
                 console.error(
                     `API Error => responseURL : ${responseURL} status:${status} statusText:${statusText} data:${JSON.stringify(
                         data
