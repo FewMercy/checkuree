@@ -24,7 +24,7 @@ class BaseApiClient {
 
         this.axios.interceptors.request.use(async (config) => {
             const accessToken = this.getAccessToken();
-
+            config.headers.Authorization = `Bearer ${accessToken}`;
             if (accessToken != null) {
                 config.headers.Authorization = `Bearer ${accessToken}`;
             }
