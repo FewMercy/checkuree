@@ -55,6 +55,10 @@ class BaseApiClient {
                     // 토큰 만료 혹은 인증 실패 시
                     return this.refresh(error.config);
                 }
+                if (status === 401) {
+                    axios.defaults.headers.common['Authorization'] =
+                        `Bearer ${accessToken}`;
+                }
 
                 return Promise.reject(error);
             }
@@ -67,8 +71,6 @@ class BaseApiClient {
             return this.tokens.accessToken;
         }
         if (typeof window !== 'undefined') {
-            axios.defaults.headers.common['Authorization'] =
-                `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY ?? 'ACCESS_TOKEN'}`;
             return Cookies.get(
                 process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY ?? 'ACCESS_TOKEN'
             );
