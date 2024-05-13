@@ -13,7 +13,10 @@ export default async function handler(req: NextRequest) {
     const { pathname, origin } = req.nextUrl;
 
     const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
+    console.log(accessToken);
+  
     const refreshToken = Cookies.get(REFRESH_TOKEN_KEY);
+    console.log(refreshToken);
     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
     if (pathname === '/') {
         return NextResponse.redirect(`${origin + '/auth/signin'}`);
