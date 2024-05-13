@@ -156,13 +156,12 @@ const Page: React.FC = () => {
                                                         item.attendance
                                                             .attendeeCount
                                                     }
-                                                </TypoSTAttendeCount>
+                                                 </TypoSTAttendeCount>
                                             </Box>
                                         </BoxSTAttendanceFooter>
                                     </BoxSTAttendance>
                                 );
                             })}
-                        </GridST>
                         <FabSTbutton>
                             <Image
                                 src={'/images/icons/add-icon.svg'}
@@ -172,6 +171,8 @@ const Page: React.FC = () => {
                                 onClick={() => setIsCreate(true)}
                             />
                         </FabSTbutton>
+                        </GridST>
+                      
                     </BoxSTAttendanceWrapper>
                 ) : (
                     <>...Loading</>
