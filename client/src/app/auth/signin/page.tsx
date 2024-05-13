@@ -6,13 +6,12 @@ import {
     Box,
     Checkbox,
     Container,
-    CssBaseline,
     TextField,
     Typography,
     styled,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-
+import Cookies from 'js-cookie';
 import Image from 'next/image';
 import axios from 'axios';
 import { setTokens } from '@/libs/auth';
@@ -21,8 +20,8 @@ import { useRouter } from 'next/navigation';
 
 const Index = () => {
     const router = useRouter();
-
     const [mounted, setMounted] = useState<boolean>(false);
+    const accessToken = Cookies.get("ACCESS_TOKEN");
     const [login, setLogin] = useState<LoginData>({
         username: '',
         password: '',
@@ -72,6 +71,9 @@ const Index = () => {
 
     useEffect(() => {
         setMounted(true);
+        if(accessToken){
+            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        }
     }, []);
 
     return (
