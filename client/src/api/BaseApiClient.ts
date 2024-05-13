@@ -49,6 +49,8 @@ class BaseApiClient {
                 );
 
                 const accessToken = Cookies.get("ACCESS_TOKEN");
+                console.log(this.tokens);
+                
                 console.log(accessToken);
                 if (accessToken != null && status === 401) {
                     // 토큰 만료 혹은 인증 실패 시
