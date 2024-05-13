@@ -28,7 +28,7 @@ class BaseApiClient {
 
         this.axios.interceptors.request.use(async (config) => {
             console.log(Cookies.get("ACCESS_TOKEN"))
-            const accessToken = Cookies.get("ACCESS_TOKEN");
+            const accessToken = this.getAccessToken();
             config.headers.Authorization = `Bearer ${accessToken}`;
             if (accessToken != null) {
                 config.headers.Authorization = `Bearer ${accessToken}`;
