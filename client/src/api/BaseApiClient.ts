@@ -13,8 +13,10 @@ class BaseApiClient {
 
     private tokens?: Tokens;
 
+    
     public constructor(baseURL: string, tokens?: Tokens) {
         this.tokens = tokens;
+        console.log(this.tokens?.accessToken)
         this.axios = axios.create({
             baseURL,
             headers: {
@@ -25,6 +27,7 @@ class BaseApiClient {
         });
 
         this.axios.interceptors.request.use(async (config) => {
+            console.log(Cookies.get("ACCESS_TOKEN"))
             const accessToken = Cookies.get("ACCESS_TOKEN");
             config.headers.Authorization = `Bearer ${accessToken}`;
             if (accessToken != null) {
