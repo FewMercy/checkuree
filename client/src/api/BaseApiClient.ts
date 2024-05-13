@@ -24,7 +24,8 @@ class BaseApiClient {
 
         this.axios.interceptors.request.use(async (config) => {
             const accessToken = this.getAccessToken();
-
+            console.log(accessToken);
+            config.headers.Authorization = `Bearer ${accessToken}`;
             if (accessToken != null) {
                 config.headers.Authorization = `Bearer ${accessToken}`;
             }
@@ -42,7 +43,8 @@ class BaseApiClient {
                     data,
                     request: { responseURL },
                 } = error.response;
-
+                console.error(this.getAccessToken());
+                console.error(this.tokens);
                 console.error(
                     `API Error => responseURL : ${responseURL} status:${status} statusText:${statusText} data:${JSON.stringify(
                         data
@@ -54,6 +56,10 @@ class BaseApiClient {
                 if (accessToken != null && status === 401) {
                     // 토큰 만료 혹은 인증 실패 시
                     return this.refresh(error.config);
+                }
+                if (status === 401) {
+                    axios.defaults.headers.common['Authorization'] =
+                        `Bearer ${this.getAccessToken()}`;
                 }
 
                 return Promise.reject(error);
@@ -67,8 +73,6 @@ class BaseApiClient {
             return this.tokens.accessToken;
         }
         if (typeof window !== 'undefined') {
-            axios.defaults.headers.common['Authorization'] =
-                `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY ?? 'ACCESS_TOKEN'}`;
             return Cookies.get(
                 process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY ?? 'ACCESS_TOKEN'
             );

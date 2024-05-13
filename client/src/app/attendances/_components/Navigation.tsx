@@ -73,7 +73,7 @@ const Navigation = (props: Iprops) => {
                     time,
                     items.map((item) => ({
                         ...item,
-                        status: '',
+                        newStatus: '',
                         isDetailOpen: false,
                         etc: '',
                     })),
