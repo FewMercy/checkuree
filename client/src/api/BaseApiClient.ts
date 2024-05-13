@@ -24,6 +24,7 @@ class BaseApiClient {
 
         this.axios.interceptors.request.use(async (config) => {
             const accessToken = this.getAccessToken();
+            console.log(accessToken);
             config.headers.Authorization = `Bearer ${accessToken}`;
             if (accessToken != null) {
                 config.headers.Authorization = `Bearer ${accessToken}`;
@@ -42,7 +43,8 @@ class BaseApiClient {
                     data,
                     request: { responseURL },
                 } = error.response;
-
+                console.error(this.getAccessToken());
+                console.error(this.tokens);
                 console.error(
                     `API Error => responseURL : ${responseURL} status:${status} statusText:${statusText} data:${JSON.stringify(
                         data
@@ -57,7 +59,7 @@ class BaseApiClient {
                 }
                 if (status === 401) {
                     axios.defaults.headers.common['Authorization'] =
-                        `Bearer ${accessToken}`;
+                        `Bearer ${this.getAccessToken()}`;
                 }
 
                 return Promise.reject(error);
