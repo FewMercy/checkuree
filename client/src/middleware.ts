@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Cookies from 'js-cookie';
+
 import { safeJwtDecode } from './libs/jwt';
 import axios from 'axios';
 
@@ -12,12 +12,8 @@ const PRIVATE_PATHS = ['/attendances'];
 export default async function handler(req: NextRequest) {
     const { pathname, origin } = req.nextUrl;
 
-    const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
-    console.log(accessToken);
-  
-    const refreshToken = Cookies.get(REFRESH_TOKEN_KEY);
-    console.log(refreshToken);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    const accessToken = req.cookies.get(ACCESS_TOKEN_KEY);
+    const refreshToken = req.cookies.get(REFRESH_TOKEN_KEY);
     if (pathname === '/') {
         return NextResponse.redirect(`${origin + '/auth/signin'}`);
     }
@@ -37,7 +33,7 @@ export default async function handler(req: NextRequest) {
     }
 
     // 토큰 만료시 (refresh)
-    const decoded = await safeJwtDecode(String(accessToken));
+    const decoded = await safeJwtDecode(String(accessToken?.value));
 
     if (decoded?.exp != null && decoded.exp * 1000 <= Date.now()) {
         if (refreshToken != null) {
