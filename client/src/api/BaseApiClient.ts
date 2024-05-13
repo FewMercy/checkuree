@@ -48,15 +48,15 @@ class BaseApiClient {
                     )}`
                 );
 
-                const accessToken = this.getAccessToken();
-
+                const accessToken = Cookies.get("ACCESS_TOKEN");
+                console.log(accessToken);
                 if (accessToken != null && status === 401) {
                     // 토큰 만료 혹은 인증 실패 시
                     return this.refresh(error.config);
                 }
                 if (status === 401) {
                     axios.defaults.headers.common['Authorization'] =
-                        `Bearer ${this.getAccessToken()}`;
+                        `Bearer ${accessToken}`;
                 }
 
                 return Promise.reject(error);
