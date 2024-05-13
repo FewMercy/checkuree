@@ -152,8 +152,6 @@ export class RecordsService {
       });
     });
 
-    console.log(summary);
-
     summary.forEach((record) => {
       const result = results.find((result) => result.attendeeId === record.attendeeId);
       const status = (record.status + '').toUpperCase();
