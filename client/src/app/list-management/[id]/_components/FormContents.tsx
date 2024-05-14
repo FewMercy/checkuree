@@ -20,7 +20,7 @@ import {
 import Icon from '@/components/Icon';
 
 // Utils
-import { dateFormat } from '@/utils';
+import { dateFormat, sortWeekdays } from '@/utils';
 import useFormContents from '@/app/list-management/[id]/_hooks/useFormContents';
 
 // Styles
@@ -320,7 +320,7 @@ const FormContents = ({
 
                 <div className="days-times-container">
                     <div className="days-container">
-                        {data?.days.map((day) => (
+                        {sortWeekdays(data?.days).map((day) => (
                             <div
                                 className={`day ${selectedDay === day ? 'selected' : ''}`}
                                 onClick={() => setSelectedDay(day)}

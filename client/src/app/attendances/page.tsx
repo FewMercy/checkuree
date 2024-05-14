@@ -13,17 +13,9 @@ import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import BottomDrawer from '@/components/BottomDrawer';
 import axios from 'axios';
+import { DayOfWeek, sortWeekdays } from '@/utils';
 
 dayjs.locale('ko');
-
-type DayOfWeek =
-    | 'MONDAY'
-    | 'TUESDAY'
-    | 'WEDNESDAY'
-    | 'THURSDAY'
-    | 'FRIDAY'
-    | 'SATURDAY'
-    | 'SUNDAY';
 
 interface Attendance {
     attendeeCount: number;
@@ -64,7 +56,7 @@ function mapDaysToKorean(daysArray: DayOfWeek[]): string {
         SUNDAY: '일',
     };
 
-    const koreanDays = daysArray.map((day) => dayMap[day]);
+    const koreanDays = sortWeekdays(daysArray).map((day) => dayMap[day]);
 
     return koreanDays.join(', ');
 }

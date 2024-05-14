@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { ScheduleType } from '@/api/attendances/schema';
 
 export const dateFormat = (
     date: Date,
@@ -33,3 +34,35 @@ export const dayObj: Record<string, string> = {
 export const convertEngDayToKorDay = (engDay: string) => {
     return dayObj[engDay];
 };
+
+// 요일 순서
+const dayOrder = [
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY',
+    'SUNDAY',
+];
+
+// 요일 순서 정렬을 위한 비교 함수 (ex - { a: {id: 1, day: "MONDAY", time: "0800" }, b: { ... } )
+export const compareDays = (a: ScheduleType, b: ScheduleType) => {
+    return dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
+};
+
+export type DayOfWeek =
+    | 'MONDAY'
+    | 'TUESDAY'
+    | 'WEDNESDAY'
+    | 'THURSDAY'
+    | 'FRIDAY'
+    | 'SATURDAY'
+    | 'SUNDAY';
+
+// 요일 순서 정렬을 위한 비교 함수 (ex - weekdays: ["MONDAY", "TUESDAY"])
+export function sortWeekdays(weekdays: string[]): DayOfWeek[] {
+    return weekdays.sort(
+        (a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b)
+    ) as DayOfWeek[];
+}
