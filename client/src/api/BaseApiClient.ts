@@ -15,7 +15,7 @@ class BaseApiClient {
 
     public constructor(baseURL: string, tokens?: Tokens) {
         this.tokens = tokens;
-        console.log(this.tokens?.accessToken);
+        // console.log(this.tokens?.accessToken);
         this.axios = axios.create({
             baseURL,
             headers: {
@@ -53,7 +53,7 @@ class BaseApiClient {
                 );
 
                 const accessToken = Cookies.get('ACCESS_TOKEN');
-                console.log(this.tokens);
+                // console.log(this.tokens);
 
                 if (accessToken != null && status === 401) {
                     // 토큰 만료 혹은 인증 실패 시

@@ -35,9 +35,14 @@ const AttendanceItem = (props: PropsType) => {
         { label: '결석', value: 'Absent' },
     ];
 
+    const status =
+        item.newStatus && item.newStatus.length > 0
+            ? item.newStatus
+            : item.status;
+
     return (
         <AttendanceItemContainer
-            status={item.status || item.newStatus || ''}
+            status={status || ''}
             isDetailOpen={item.isDetailOpen || false}
             key={`attendance-item__${item.id}`}
         >
@@ -62,10 +67,7 @@ const AttendanceItem = (props: PropsType) => {
                 <div className="status-buttons">
                     {statusButtons.map((button) => (
                         <StatusButton
-                            isSelected={
-                                item.status === button.value ||
-                                item.newStatus === button.value
-                            }
+                            isSelected={status === button.value}
                             onClick={() => {
                                 handleListItem(
                                     index,
@@ -73,11 +75,11 @@ const AttendanceItem = (props: PropsType) => {
                                     'newStatus',
                                     button.value
                                 );
-                                handleListItem(index, time, 'status', '');
+                                // handleListItem(index, time, 'status', '');
 
-                                if (button.value === 'Present') {
-                                    handleListItem(index, time, 'etc', '');
-                                }
+                                // if (button.value === 'Present') {
+                                //     handleListItem(index, time, 'etc', '');
+                                // }
                             }}
                             key={`status-button__${button.label}`}
                         >
