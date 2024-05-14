@@ -72,7 +72,7 @@ const Page: React.FC = () => {
     const router = useRouter();
     const today = dayjs(); // 오늘 날짜
     const todayFormat = today.format('YYYY년 MM월 DD일 dddd');
-    const accessToken = Cookies.get("ACCESS_TOKEN");
+    const accessToken = Cookies.get('ACCESS_TOKEN');
     // State
     const [isCreate, setIsCreate] = useState<boolean>(false);
 
@@ -85,12 +85,13 @@ const Page: React.FC = () => {
         },
     });
 
-    console.log(accessToken);
     useEffect(() => {
-if(accessToken) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-}
-    },[])
+        if (accessToken) {
+            axios.defaults.headers.common['Authorization'] =
+                `Bearer ${accessToken}`;
+        }
+    }, []);
+
     return (
         <>
             <ContainerST>
@@ -163,23 +164,22 @@ if(accessToken) {
                                                         item.attendance
                                                             .attendeeCount
                                                     }
-                                                 </TypoSTAttendeCount>
+                                                </TypoSTAttendeCount>
                                             </Box>
                                         </BoxSTAttendanceFooter>
                                     </BoxSTAttendance>
                                 );
                             })}
-                        <FabSTbutton>
-                            <Image
-                                src={'/images/icons/add-icon.svg'}
-                                alt=""
-                                width={48}
-                                height={48}
-                                onClick={() => setIsCreate(true)}
-                            />
-                        </FabSTbutton>
+                            <FabSTbutton>
+                                <Image
+                                    src={'/images/icons/add-icon.svg'}
+                                    alt=""
+                                    width={48}
+                                    height={48}
+                                    onClick={() => setIsCreate(true)}
+                                />
+                            </FabSTbutton>
                         </GridST>
-                      
                     </BoxSTAttendanceWrapper>
                 ) : (
                     <>...Loading</>
