@@ -2,6 +2,7 @@ import './globals.css';
 import React from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
+import { parseCookies } from 'nookies';
 
 // Provider
 import { ThemeProvider } from '@mui/material';
@@ -40,3 +41,12 @@ export default function RootLayout({
         </html>
     );
 }
+
+RootLayout.getServerSideProps = async (context: any) => {
+    const cookies = parseCookies(context);
+    const ACCESS_TOKEN = cookies.ACCESS_TOKEN;
+
+    return {
+        props: {},
+    };
+};
