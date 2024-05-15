@@ -15,7 +15,6 @@ class BaseApiClient {
 
     public constructor(baseURL: string, tokens?: Tokens) {
         this.tokens = tokens;
-        // console.log(this.tokens?.accessToken);
         this.axios = axios.create({
             baseURL,
             headers: {
@@ -26,12 +25,9 @@ class BaseApiClient {
         });
 
         this.axios.interceptors.request.use(async (config) => {
-            // console.log(Cookies.get("ACCESS_TOKEN"))
             const accessToken = this.getAccessToken();
             config.headers.Authorization = `Bearer ${accessToken}`;
-            if (accessToken != null) {
-                config.headers.Authorization = `Bearer ${accessToken}`;
-            }
+
             return config;
         });
 
@@ -53,12 +49,12 @@ class BaseApiClient {
                 );
 
                 const accessToken = Cookies.get('ACCESS_TOKEN');
-                // console.log(this.tokens);
 
                 if (accessToken != null && status === 401) {
                     // 토큰 만료 혹은 인증 실패 시
                     return this.refresh(error.config);
                 }
+                
                 if (status === 401) {
                     error.config.headers.Authorization = `Bearer ${accessToken}`;
                 }

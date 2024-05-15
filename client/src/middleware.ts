@@ -15,7 +15,7 @@ export default async function handler(req: NextRequest) {
     const accessToken = req.cookies.get(ACCESS_TOKEN_KEY);
     const refreshToken = req.cookies.get(REFRESH_TOKEN_KEY);
     req.headers.set("Authorization", "Bearer " + accessToken?.value)
-    console.log(req.headers);
+
     if (pathname === '/') {
         return NextResponse.redirect(`${origin + '/auth/signin'}`);
     }
