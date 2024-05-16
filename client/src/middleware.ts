@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { safeJwtDecode } from './libs/jwt';
-import axios from 'axios';
+import { cookies } from 'next/headers';
 
 const ACCESS_TOKEN_KEY = 'ACCESS_TOKEN';
 const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
 
-const AUTH_PATHS = ['/auth/signin', '/auth/signup'];
 const PRIVATE_PATHS = ['/attendances'];
 
 export default async function handler(req: NextRequest) {
     const { pathname, origin } = req.nextUrl;
 
-    const accessToken = req.cookies.get(ACCESS_TOKEN_KEY);
-    const refreshToken = req.cookies.get(REFRESH_TOKEN_KEY);
-    req.headers.set("Authorization", "Bearer " + accessToken?.value)
+    const cookieStore = cookies();
+
+    const accessToken = cookieStore.get(ACCESS_TOKEN_KEY);
+    const refreshToken = cookieStore.get(REFRESH_TOKEN_KEY);
+
+    req.headers.set('Authorization', 'Bearer ' + accessToken?.value);
 
     if (pathname === '/') {
         return NextResponse.redirect(`${origin + '/auth/signin'}`);
