@@ -2,8 +2,6 @@ import './globals.css';
 import React from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
-import { parseCookies } from 'nookies';
-import Cookies from 'js-cookie';
 
 // Provider
 import { ThemeProvider } from '@mui/material';
@@ -42,14 +40,3 @@ export default function RootLayout({
         </html>
     );
 }
-
-RootLayout.getServerSideProps = async (context: any) => {
-    const cookies = parseCookies(context);
-    const REFRESH_TOKEN = cookies.REFRESH_TOKEN;
-    const REFRESH_TOKEN2 = Cookies.get("REFRESH_TOKEN");
-    console.log(REFRESH_TOKEN);
-    console.log(REFRESH_TOKEN2);
-    return {
-        props: {},
-    };
-};
