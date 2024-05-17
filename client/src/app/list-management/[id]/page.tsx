@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 import _ from 'lodash';
@@ -22,7 +23,6 @@ import FormContents from '@/app/list-management/[id]/_components/FormContents';
 
 // Types
 import { Attendance, AttendeeData } from '@/api/attendances/schema';
-import Image from 'next/image';
 
 const ListManagement = () => {
     const attendanceId = usePathname().split('/')[2];

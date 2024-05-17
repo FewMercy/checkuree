@@ -18,6 +18,7 @@ import Image from 'next/image';
 import { useMutation } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { CreateAttendance } from '@/api/attendances/schema';
+import Cookies from 'js-cookie';
 
 interface IProps {
     setIsCreate: React.Dispatch<SetStateAction<boolean>>;
@@ -35,6 +36,7 @@ const daysOfWeek = [
 
 const AttendanceCreateForm = (props: IProps) => {
     const { setIsCreate, attendancesRefetch } = props;
+    const refreshToken = Cookies.get('REFRESH_TOKEN');
     const startHours = [];
     const endHours = [];
 
@@ -58,6 +60,26 @@ const AttendanceCreateForm = (props: IProps) => {
         }
     }
 
+    // TODO: REFRESH
+    const RefreshApi = async () => {
+        const result = await fetch(
+            `${process.env.NEXT_PUBLIC_API_ROOT}/auth/refresh-token`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    refreshToken,
+                }),
+            }
+        ).then((response) => response.json());
+
+        // 쿠키 등록
+        Cookies.set('ACCESS_TOKEN', result.data.accessToken);
+        Cookies.set('REFRESH_TOKEN', result.data.refreshToken);
+    };
+
     // 출석부 생성
     const { mutate: attendanceMutaion } = useMutation({
         mutationKey: ['attendancy-list'],
@@ -80,6 +102,7 @@ const AttendanceCreateForm = (props: IProps) => {
             alert('출석부가 생성되었습니다.');
             attendancesRefetch();
             setIsCreate(false);
+            RefreshApi();
         },
     });
 

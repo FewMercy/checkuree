@@ -3,6 +3,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import _ from 'lodash';
+import { compareDays } from '@/utils';
 
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
@@ -43,21 +44,6 @@ const AttendanceItem = (props: PropsType) => {
         FRIDAY: '금',
         SATURDAY: '토',
         SUNDAY: '일',
-    };
-    // 요일 순서
-    const dayOrder = [
-        'MONDAY',
-        'TUESDAY',
-        'WEDNESDAY',
-        'THURSDAY',
-        'FRIDAY',
-        'SATURDAY',
-        'SUNDAY',
-    ];
-
-    // 요일 순서 정렬을 위한 비교 함수
-    const compareDays = (a: ScheduleType, b: ScheduleType) => {
-        return dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
     };
 
     const [attendanceDay, setAttendanceDay] = useState<string>('');

@@ -2,8 +2,8 @@
 
 import 'dayjs/locale/ko'; // 한국어 locale 설정
 
-import { Box, Container, Fab, Typography, styled } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Box, Fab, Typography, styled } from '@mui/material';
+import React, {  useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
 import Cookies from 'js-cookie';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
@@ -12,18 +12,9 @@ import Image from 'next/image';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import BottomDrawer from '@/components/BottomDrawer';
-import axios from 'axios';
+import { DayOfWeek, sortWeekdays } from '@/utils';
 
 dayjs.locale('ko');
-
-type DayOfWeek =
-    | 'MONDAY'
-    | 'TUESDAY'
-    | 'WEDNESDAY'
-    | 'THURSDAY'
-    | 'FRIDAY'
-    | 'SATURDAY'
-    | 'SUNDAY';
 
 interface Attendance {
     attendeeCount: number;
@@ -64,7 +55,7 @@ function mapDaysToKorean(daysArray: DayOfWeek[]): string {
         SUNDAY: '일',
     };
 
-    const koreanDays = daysArray.map((day) => dayMap[day]);
+    const koreanDays = sortWeekdays(daysArray).map((day) => dayMap[day]);
 
     return koreanDays.join(', ');
 }
@@ -72,7 +63,7 @@ const Page: React.FC = () => {
     const router = useRouter();
     const today = dayjs(); // 오늘 날짜
     const todayFormat = today.format('YYYY년 MM월 DD일 dddd');
-    const accessToken = Cookies.get("ACCESS_TOKEN");
+    
     // State
     const [isCreate, setIsCreate] = useState<boolean>(false);
 
@@ -85,12 +76,6 @@ const Page: React.FC = () => {
         },
     });
 
-    console.log(accessToken);
-    useEffect(() => {
-if(accessToken) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-}
-    },[])
     return (
         <>
             <ContainerST>
@@ -163,23 +148,22 @@ if(accessToken) {
                                                         item.attendance
                                                             .attendeeCount
                                                     }
-                                                 </TypoSTAttendeCount>
+                                                </TypoSTAttendeCount>
                                             </Box>
                                         </BoxSTAttendanceFooter>
                                     </BoxSTAttendance>
                                 );
                             })}
-                        <FabSTbutton>
-                            <Image
-                                src={'/images/icons/add-icon.svg'}
-                                alt=""
-                                width={48}
-                                height={48}
-                                onClick={() => setIsCreate(true)}
-                            />
-                        </FabSTbutton>
+                            <FabSTbutton>
+                                <Image
+                                    src={'/images/icons/add-icon.svg'}
+                                    alt=""
+                                    width={48}
+                                    height={48}
+                                    onClick={() => setIsCreate(true)}
+                                />
+                            </FabSTbutton>
                         </GridST>
-                      
                     </BoxSTAttendanceWrapper>
                 ) : (
                     <>...Loading</>

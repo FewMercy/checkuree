@@ -60,7 +60,6 @@ const Index = () => {
     const attendanceId = usePathname().split('/')[2];
 
     const today = dateFormat(new Date(), 'dash');
-    const day = dayjs(new Date()).locale('en').format('dddd');
 
     const [selectedDate, setSelectedDate] = useState(today);
     const [attendeeList, setAttendeeList] = useState<ParsedAttendeeListType>(
@@ -191,6 +190,11 @@ const Index = () => {
     };
 
     const onSaveAction = () => {
+        const day = dayjs(selectedDate)
+            .locale('en')
+            .format('dddd')
+            .toUpperCase();
+
         const parameters: CreateRecords = {
             attendanceId: !_.isEmpty(detailData) ? detailData.id : '',
             singleRecords: [],
@@ -233,7 +237,7 @@ const Index = () => {
             })
         );
 
-        createRecords(parameters);
+        // createRecords(parameters);
     };
 
     useEffect(() => {

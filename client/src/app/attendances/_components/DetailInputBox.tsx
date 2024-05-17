@@ -44,9 +44,16 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
         ],
     };
 
+    const status =
+        item.newStatus && item.newStatus.length > 0
+            ? item.newStatus
+            : item.status;
+
+    console.log('item', item);
+
     return (
         <div className="detail-box">
-            {(item.status || item.newStatus) === 'Late' ? (
+            {status === 'Late' ? (
                 <div className="detail-buttons">
                     {detailOptions.Late.map((option) => (
                         <DetailButton
@@ -71,7 +78,7 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
                         </DetailButton>
                     ))}
                 </div>
-            ) : (item.status || item.newStatus) === 'Absent' ? (
+            ) : status === 'Absent' ? (
                 <div className="detail-buttons">
                     {detailOptions.Absent.map((option) => (
                         <DetailButton
@@ -100,7 +107,7 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
 
             <TextField
                 value={item.etc}
-                rows={(item.status || item.newStatus) === 'Present' ? 4 : 3}
+                rows={status === 'Present' ? 4 : 3}
                 onChange={(e) => {
                     handleListItem(index, time, 'etc', e.target.value);
 
