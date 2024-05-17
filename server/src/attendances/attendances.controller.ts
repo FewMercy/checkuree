@@ -9,7 +9,7 @@ import { GetUser } from '../common/decorator/user.decorator';
 import { Attendance } from './entities/attendance.entity';
 import { UserAttendance } from './entities/user-attendance.entity';
 import { RoleGuard } from '../roles/role.guard';
-import { RoleType } from '../roles/entities/role-type.enum';
+import { RoleType } from '../roles/const/role-type.enum';
 import { Roles } from '../roles/role.decorator';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
@@ -63,7 +63,7 @@ export class AttendancesController {
   @ApiOperation({ summary: '출석부 상세 조회' })
   @ApiOkResponse({
     status: 200,
-    description: '출석부 정보 수정',
+    description: '출석부 상세 조회',
     type: CommonResponseDto<Attendance>,
   })
   findOneById(@Param('attendanceId') attendanceId: string): Promise<CommonResponseDto<Attendance>> {

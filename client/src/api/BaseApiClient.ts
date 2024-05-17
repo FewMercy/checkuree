@@ -19,15 +19,15 @@ class BaseApiClient {
             baseURL,
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                Authorization: `Bearer ${this.tokens?.accessToken}`,
             },
         });
 
         this.axios.interceptors.request.use(async (config) => {
             const accessToken = this.getAccessToken();
+            config.headers.Authorization = `Bearer ${accessToken}`;
 
-            if (accessToken != null) {
-                config.headers.Authorization = `Bearer ${accessToken}`;
-            }
             return config;
         });
 
@@ -42,18 +42,21 @@ class BaseApiClient {
                     data,
                     request: { responseURL },
                 } = error.response;
-
                 console.error(
                     `API Error => responseURL : ${responseURL} status:${status} statusText:${statusText} data:${JSON.stringify(
                         data
                     )}`
                 );
 
-                const accessToken = this.getAccessToken();
+                const accessToken = Cookies.get('ACCESS_TOKEN');
 
                 if (accessToken != null && status === 401) {
                     // 토큰 만료 혹은 인증 실패 시
                     return this.refresh(error.config);
+                }
+                
+                if (status === 401) {
+                    error.config.headers.Authorization = `Bearer ${accessToken}`;
                 }
 
                 return Promise.reject(error);

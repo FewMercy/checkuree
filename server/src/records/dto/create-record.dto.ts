@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString, validate, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Record } from '../entities/record.entity';
 import { SingleRecord } from '../const/singleRecord.class';
-import { plainToInstance, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateRecordDto {
   @IsString()
@@ -29,6 +29,7 @@ export class CreateRecordDto {
       record.date = singleRecord.date;
       record.day = singleRecord.day;
       record.etc = singleRecord?.etc;
+      record.time = singleRecord.time;
       record.lateTime = singleRecord?.lateTime;
       record.absenceType = singleRecord?.absenceType;
       record.attendeeId = singleRecord.attendeeId;

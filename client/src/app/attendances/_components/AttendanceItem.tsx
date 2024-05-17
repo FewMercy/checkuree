@@ -30,14 +30,19 @@ const AttendanceItem = (props: PropsType) => {
     const { item, time, index, handleListItem } = props;
 
     const statusButtons: { label: string; value: string }[] = [
-        { label: '출석', value: '출석' },
-        { label: '지각', value: '지각' },
-        { label: '결석', value: '결석' },
+        { label: '출석', value: 'Present' },
+        { label: '지각', value: 'Late' },
+        { label: '결석', value: 'Absent' },
     ];
+
+    const status =
+        item.newStatus && item.newStatus.length > 0
+            ? item.newStatus
+            : item.status;
 
     return (
         <AttendanceItemContainer
-            status={item.status || ''}
+            status={status || ''}
             isDetailOpen={item.isDetailOpen || false}
             key={`attendance-item__${item.id}`}
         >
@@ -45,6 +50,7 @@ const AttendanceItem = (props: PropsType) => {
                 <div className="name">
                     {item.attendee.name}
                     <Image
+                        className={item.isDetailOpen ? 'detail-open' : ''}
                         src={Images.DetailOpen}
                         alt={`open-detail__${item.attendee.name}`}
                         onClick={() =>
@@ -61,15 +67,21 @@ const AttendanceItem = (props: PropsType) => {
                 <div className="status-buttons">
                     {statusButtons.map((button) => (
                         <StatusButton
-                            isSelected={item.status === button.value}
-                            onClick={() =>
+                            isSelected={status === button.value}
+                            onClick={() => {
                                 handleListItem(
                                     index,
                                     time,
-                                    'status',
+                                    'newStatus',
                                     button.value
-                                )
-                            }
+                                );
+                                // handleListItem(index, time, 'status', '');
+
+                                // if (button.value === 'Present') {
+                                //     handleListItem(index, time, 'etc', '');
+                                // }
+                            }}
+                            key={`status-button__${button.label}`}
                         >
                             {button.label}
                         </StatusButton>

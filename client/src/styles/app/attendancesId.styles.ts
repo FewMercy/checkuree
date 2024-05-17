@@ -6,80 +6,127 @@ export const AttendanceIdContainer = styled.section`
     padding: 0 27px;
 
     & > .attendance-header {
-        width: calc(100% - 54px);
         position: fixed;
         top: 0;
         padding: 42px 0 12px;
-        box-sizing: border-box;
         background: ${Colors.White};
 
-        & > .attendance-img {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background-color: ${Colors.Gray40};
-            margin-bottom: 12px;
-        }
+        & > .attendance-header-wrapper {
+            min-width: 339px;
+            width: 100%;
+            box-sizing: border-box;
 
-        & > .attendance-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 4px;
-
-            & > .name {
-                font-size: 20px;
-                font-weight: 600;
-                color: ${Colors.Black01};
+            & > .attendance-img {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background-color: ${Colors.Gray40};
+                margin-bottom: 12px;
+                overflow: hidden;
             }
 
-            & > .date-container {
-                width: 71px;
-                height: 23px;
+            & > .attendance-info {
                 display: flex;
                 align-items: center;
-                justify-content: space-evenly;
-                border-radius: 4px;
-                box-sizing: border-box;
-                background-color: ${Colors.Gray40};
+                justify-content: space-between;
+                position: relative;
+                margin-bottom: 4px;
 
-                & > .date {
-                    width: 21px;
-                    height: 19px;
-                    border-radius: 2px;
-                    box-sizing: border-box;
-                    font-size: 14px;
-                    text-align: center;
-                    line-height: 19px;
-                    background-color: ${Colors.White};
+                & > .name {
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: ${Colors.Black01};
+                }
+
+                & > .date-box {
+                    & .date-container {
+                        width: 71px;
+                        height: 23px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-evenly;
+                        border-radius: 4px;
+                        box-sizing: border-box;
+                        background-color: ${Colors.Gray40};
+                        z-index: 1000;
+
+                        & > .date {
+                            width: 21px;
+                            height: 19px;
+                            border-radius: 2px;
+                            box-sizing: border-box;
+                            font-size: 14px;
+                            text-align: center;
+                            line-height: 19px;
+                            background-color: ${Colors.White};
+                        }
+                    }
+
+                    & .react-datepicker__tab-loop {
+                        & .react-datepicker-popper {
+                            left: unset !important;
+                            right: 0;
+                            top: 44px !important;
+                            transform: none !important;
+
+                            & .react-datepicker {
+                                border: 1px solid ${Colors.CheckureeGreen};
+                            }
+
+                            & .react-datepicker__header {
+                                padding: 10px 0;
+                                background-color: ${Colors.CheckureeGreen10};
+
+                                & .react-datepicker__current-month {
+                                    margin-bottom: 8px;
+                                }
+                            }
+
+                            & .react-datepicker__navigation {
+                                top: 3px;
+                            }
+
+                            & .react-datepicker__day--selected {
+                                background-color: ${Colors.CheckureeGreen};
+                            }
+                        }
+
+                        & .react-datepicker__triangle {
+                            left: 82% !important;
+                            color: ${Colors.CheckureeGreen10} !important;
+                            fill: ${Colors.CheckureeGreen10} !important;
+                            stroke: ${Colors.CheckureeGreen};
+                        }
+                    }
                 }
             }
-        }
 
-        & > .attendance-status-container {
-            display: flex;
-            gap: 4px;
-
-            & > .status {
+            & > .attendance-status-container {
                 display: flex;
-                gap: 2px;
-                align-items: center;
+                gap: 4px;
 
-                & > .count {
-                    font-size: 12px;
-                    font-weight: 500;
-                    color: ${Colors.Gray80};
+                & > .status {
+                    display: flex;
+                    gap: 2px;
+                    align-items: center;
+
+                    & > .count {
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: ${Colors.Gray80};
+                    }
                 }
             }
         }
     }
 
     & > .attendance-list {
+        min-width: 339px;
         display: flex;
         gap: 24px;
         flex-direction: column;
         padding: 12px 0 120px;
-        margin-top: 157px;
+        margin-top: 146px;
 
         & > .attendance-list-by-time {
             & > .attendance-time {
@@ -114,9 +161,9 @@ export const AttendanceItemContainer = styled.div<{
         border-radius: 8px;
         box-sizing: border-box;
         background-color: ${(props) => {
-            if (props.status === '출석') return Colors.LightGreen;
-            if (props.status === '지각') return Colors.Orange;
-            if (props.status === '결석') return Colors.Red;
+            if (props.status === 'Present') return Colors.LightGreen;
+            if (props.status === 'Late') return Colors.Orange;
+            if (props.status === 'Absent') return Colors.Red;
             return Colors.White;
         }};
         margin-bottom: ${(props) => (props.isDetailOpen ? '4px' : 0)};
@@ -129,6 +176,10 @@ export const AttendanceItemContainer = styled.div<{
 
             & > img {
                 cursor: pointer;
+            }
+
+            & .detail-open {
+                transform: rotate(180deg);
             }
         }
 
@@ -144,9 +195,9 @@ export const AttendanceItemContainer = styled.div<{
         padding: ${(props) => (props.isDetailOpen ? '4px' : 0)};
         border-radius: 8px;
         background-color: ${(props) =>
-            props.status === '지각'
+            props.status === 'Late'
                 ? Colors.Orange
-                : props.status === '결석'
+                : props.status === 'Absent'
                   ? Colors.Red
                   : Colors.LightGreen};
         transition: height 0.2s ease-in;
@@ -166,7 +217,7 @@ export const AttendanceItemContainer = styled.div<{
                 width: 100%;
                 height: ${(props) =>
                     props.isDetailOpen
-                        ? props.status === '지각' || props.status === '결석'
+                        ? props.status === 'Late' || props.status === 'Absent'
                             ? '68px'
                             : '96px'
                         : 0};
@@ -179,7 +230,8 @@ export const AttendanceItemContainer = styled.div<{
                 & > textarea {
                     height: ${(props) =>
                         props.isDetailOpen
-                            ? props.status === '지각' || props.status === '결석'
+                            ? props.status === 'Late' ||
+                              props.status === 'Absent'
                                 ? '68px'
                                 : '96px'
                             : 0} !important;

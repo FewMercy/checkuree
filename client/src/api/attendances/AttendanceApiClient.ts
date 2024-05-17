@@ -1,13 +1,15 @@
 import BaseApiClient, { Tokens } from '../BaseApiClient';
 import {
-    AttendanceData,
     AttendanceDetail,
     AttendanceSchedulesByDate,
-    AttendeeData,
     AttendeeDetail,
+    AttendeeList,
+    AttendeeSchedules,
     CreateAttendance,
     CreateAttendee,
+    CreateRecords,
     CreateSchedules,
+    DeleteAttendees,
 } from '@/api/attendances/schema';
 
 export interface ICommonResponse<T> {
@@ -65,7 +67,7 @@ class AttendanceApiClient extends BaseApiClient {
     ) =>
         this.axios.request<AttendanceSchedulesByDate>({
             method: 'GET',
-            url: `/schedules/attendanceId/${attendanceId}/${date}`,
+            url: `/attendanceId/${attendanceId}/schedules/${date}`,
         });
 
     /** 출석 요약 */
@@ -75,7 +77,7 @@ class AttendanceApiClient extends BaseApiClient {
     ) =>
         this.axios.request({
             method: 'GET',
-            url: `/records/attendance/${attendanceId}/summary`,
+            url: `/attendance/${attendanceId}/records/summary`,
             params: {
                 attendeeIds,
             },
@@ -85,12 +87,12 @@ class AttendanceApiClient extends BaseApiClient {
     public getAttendanceSummaryByDate = (attendanceId: string, date: string) =>
         this.axios.request({
             method: 'GET',
-            url: `/records/attendance/${attendanceId}/${date}/summary`,
+            url: `/attendance/${attendanceId}/records/${date}/summary`,
         });
 
     /** 특정 출석부의 출석대상 명단 */
     public getAttendeeList = (attendanceId: string) =>
-        this.axios.request<AttendeeDetail>({
+        this.axios.request<AttendeeList>({
             method: 'GET',
             url: `/attendees/attendanceId/${attendanceId}`,
         });
@@ -135,6 +137,29 @@ class AttendanceApiClient extends BaseApiClient {
             method: 'POST',
             url: `/schedules`,
             data: parameters,
+        });
+
+    /** 출석기록 생성 및 수정 */
+    public createRecords = (parameters: CreateRecords) =>
+        this.axios.request({
+            method: 'POST',
+            url: `/records`,
+            data: parameters,
+        });
+
+    /** 출석대상 삭제 */
+    public deleteAttendees = (parameters: DeleteAttendees) =>
+        this.axios.request({
+            method: 'DELETE',
+            url: `/attendees`,
+            data: parameters,
+        });
+
+    /** 출석대상의 스케쥴 조회 */
+    public getSchedulesById = (attendeeId: string) =>
+        this.axios.request<AttendeeSchedules>({
+            method: 'GET',
+            url: `/attendee/${attendeeId}/schedules`,
         });
 }
 

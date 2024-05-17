@@ -3,6 +3,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import _ from 'lodash';
+import { compareDays } from '@/utils';
 
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
@@ -51,6 +52,8 @@ const AttendanceItem = (props: PropsType) => {
         if (!_.isEmpty(item.schedules)) {
             const attendanceDays: string[] = [];
 
+            item.schedules.sort(compareDays);
+
             item.schedules.forEach((schedule: ScheduleType) => {
                 const day = days[schedule.day];
 
@@ -77,7 +80,7 @@ const AttendanceItem = (props: PropsType) => {
                     <div className={'days'}>{attendanceDay}</div>
                     <div className={'status-container'}>
                         {statusIcons.map((item) => (
-                            <div className="status">
+                            <div className="status" key={item.icon}>
                                 <Icon
                                     icon={Icons[item.icon]}
                                     color={Colors.Gray80}

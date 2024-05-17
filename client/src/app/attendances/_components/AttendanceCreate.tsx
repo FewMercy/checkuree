@@ -2,8 +2,8 @@
 
 import {
     Box,
+    Button,
     FormControlLabel,
-    Grid,
     MenuItem,
     Radio,
     RadioGroup,
@@ -15,18 +15,28 @@ import {
 import { SetStateAction, useRef, useState } from 'react';
 
 import Image from 'next/image';
-import { QueryClient, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { CreateAttendance } from '@/api/attendances/schema';
+import Cookies from 'js-cookie';
 
 interface IProps {
     setIsCreate: React.Dispatch<SetStateAction<boolean>>;
     attendancesRefetch: () => void;
 }
-const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
+const daysOfWeek = [
+    { 월: 'MONDAY' },
+    { 화: 'TUESDAY' },
+    { 수: 'WEDNESDAY' },
+    { 목: 'THURSDAY' },
+    { 금: 'FRIDAY' },
+    { 토: 'SATURDAY' },
+    { 일: 'SUNDAY' },
+];
 
 const AttendanceCreateForm = (props: IProps) => {
     const { setIsCreate, attendancesRefetch } = props;
+    const refreshToken = Cookies.get('REFRESH_TOKEN');
     const startHours = [];
     const endHours = [];
 
@@ -50,6 +60,26 @@ const AttendanceCreateForm = (props: IProps) => {
         }
     }
 
+    // TODO: REFRESH
+    const RefreshApi = async () => {
+        const result = await fetch(
+            `${process.env.NEXT_PUBLIC_API_ROOT}/auth/refresh-token`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    refreshToken,
+                }),
+            }
+        ).then((response) => response.json());
+
+        // 쿠키 등록
+        Cookies.set('ACCESS_TOKEN', result.data.accessToken);
+        Cookies.set('REFRESH_TOKEN', result.data.refreshToken);
+    };
+
     // 출석부 생성
     const { mutate: attendanceMutaion } = useMutation({
         mutationKey: ['attendancy-list'],
@@ -72,6 +102,7 @@ const AttendanceCreateForm = (props: IProps) => {
             alert('출석부가 생성되었습니다.');
             attendancesRefetch();
             setIsCreate(false);
+            RefreshApi();
         },
     });
 
@@ -131,28 +162,18 @@ const AttendanceCreateForm = (props: IProps) => {
         const selectedDaysString = getSelectedDaysString(updatedSelectedDays);
         onChange('attendanceDays', selectedDaysString);
     };
+
     return (
         <ContainerSTForm>
-            <Image
-                src={'/images/icons/arrow-back-icon.svg'}
-                alt=""
-                width={24}
-                height={24}
-                style={{
-                    cursor: 'pointer',
-                }}
-                onClick={() => setIsCreate(false)}
-            />
-            <Typography fontSize={20} fontWeight={600} lineHeight={'27.24px'}>
+            <Typography
+                fontSize={20}
+                fontWeight={600}
+                lineHeight={'27.24px'}
+                width={340}
+            >
                 정보 입력
             </Typography>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                }}
-            >
+            <BoxSTImageWrapper sx={{}}>
                 <Typography
                     fontSize={14}
                     lineHeight={'19.07px'}
@@ -192,7 +213,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         jpg, png 형식 가능
                     </Typography>
                 </Box>
-            </Box>
+            </BoxSTImageWrapper>
             <input
                 type="file"
                 ref={fileInputRef}
@@ -258,24 +279,27 @@ const AttendanceCreateForm = (props: IProps) => {
             {/*  요일 선택 */}
             <BoxSTTitle>
                 <TypoST>요일 선택</TypoST>
-                <Grid container spacing={0} justifyContent="space-between">
+                <BoxSTday>
                     {daysOfWeek.map((day, index) => (
-                        <Grid key={index} item>
-                            <TypoSTDay
-                                align="center"
-                                sx={{
-                                    border: `1px solid ${selectedDays.has(day) ? '#59996B' : '#D5D5D5'}`,
-                                    color: selectedDays.has(day)
-                                        ? '#59996B'
-                                        : '#C9C9C9',
-                                }}
-                                onClick={() => handleSelectDay(day)}
-                            >
-                                {day}
-                            </TypoSTDay>
-                        </Grid>
+                        <Button
+                            tabIndex={index}
+                            key={index}
+                            sx={{
+                                border: `1px solid ${selectedDays.has(Object.values(day)[0]) ? '#59996B' : '#D5D5D5'}`,
+                                color: selectedDays.has(Object.values(day)[0])
+                                    ? '#59996B'
+                                    : '#C9C9C9',
+                                minWidth: '44px',
+                            }}
+                            value={Object.values(day)[0]}
+                            onClick={(e) => {
+                                handleSelectDay(e.currentTarget.value);
+                            }}
+                        >
+                            {Object.keys(day)[0]}
+                        </Button>
                     ))}
-                </Grid>
+                </BoxSTday>
             </BoxSTTitle>
 
             {/*  시간 선택 */}
@@ -286,6 +310,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         labelId="start-time-label"
                         id="start-time-select"
                         displayEmpty
+                        value={attendanceCreate?.availableFrom}
                         onChange={(e) => {
                             onChange('availableFrom', e.target.value as string);
                         }}
@@ -307,6 +332,7 @@ const AttendanceCreateForm = (props: IProps) => {
                         labelId="end-time-label"
                         id="end-time-select"
                         displayEmpty
+                        value={attendanceCreate?.availableTo}
                         disabled={attendanceCreate?.availableFrom === ''}
                         onChange={(e) => {
                             onChange('availableTo', e.target.value as string);
@@ -328,7 +354,15 @@ const AttendanceCreateForm = (props: IProps) => {
                 </Box>
             </BoxSTTitle>
 
-            <BoxSTSave onClick={() => attendanceMutaion()}>저장하기</BoxSTSave>
+            {/* <BoxSTSave onClick={() => attendanceMutaion()}>저장하기</BoxSTSave> */}
+            <BoxSTbutton>
+                <BoxSTcancel onClick={() => setIsCreate(false)}>
+                    취소
+                </BoxSTcancel>
+                <BoxSTSave onClick={() => attendanceMutaion()}>
+                    저장하기
+                </BoxSTSave>
+            </BoxSTbutton>
         </ContainerSTForm>
     );
 };
@@ -342,7 +376,8 @@ const ContainerSTForm = styled(Box)(() => {
         gap: '24px',
         flexDirection: 'column',
         flexWrap: 'wrap',
-        width: '340px',
+        width: '100%',
+        alignItems: 'center',
     };
 });
 
@@ -356,6 +391,14 @@ const TextFieldProps = {
         fontSize: '16px',
     },
 };
+const BoxSTImageWrapper = styled(Box)(() => {
+    return {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        width: 340,
+    };
+});
 
 const BoxSTImage = styled(Box)(() => {
     return {
@@ -385,15 +428,34 @@ const TypoST = styled(Typography)(() => {
 
 const BoxSTSave = styled(Box)(() => {
     return {
-        width: '340px',
-        height: '48px',
-        border: '1px solid #59996B',
+        maxWidth: '281px',
+        width: '100%',
+        height: '60px',
         background: ' #59996B',
         color: 'white',
-        borderRadius: '8px',
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
+    };
+});
+const BoxSTcancel = styled(Box)(() => {
+    return {
+        maxWidth: '112px',
+        width: '100%',
+        height: '60px',
+        background: ' #C9C9C9',
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    };
+});
+
+const BoxSTbutton = styled(Box)(() => {
+    return {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
     };
 });
 
@@ -406,12 +468,11 @@ const SelectSTTime = styled(Select)(() => {
     };
 });
 
-const TypoSTDay = styled(Typography)(() => {
+const BoxSTday = styled(Box)(() => {
     return {
-        width: 40,
-        height: 40,
-        lineHeight: '40px',
-        borderRadius: '8px',
-        cursor: 'pointer',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(7,1fr)',
+        gap: '5px',
+        width: '340px',
     };
 });

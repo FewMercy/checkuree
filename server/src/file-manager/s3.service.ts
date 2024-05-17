@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
-import * as process from 'node:process';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

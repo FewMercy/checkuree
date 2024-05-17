@@ -1,23 +1,28 @@
-export interface AttendanceData {
-    allowLateness: boolean;
-    attendanceDays: { attendanceId: string; day: string; id: number }[];
-    days: string[];
-    availableFrom: string;
-    availableTo: string;
-    createId: string;
-    createdAt: string;
-    deletedAt: string | null;
-    description: '범수교회';
-    id: string;
-    name: string;
-    title: string;
-    updateId: string | null;
-    updatedAt: string;
-}
-export interface AttendanceDetail {
-    data: AttendanceData;
+interface BaseApiResponse {
     success: boolean;
     count: number;
+}
+export interface Attendance {
+    id: string;
+    title: string;
+    description: string;
+    availableFrom: string;
+    availableTo: string;
+    allowLateness: boolean;
+    imageUrl: string;
+    userAttendance: {
+        userAttendanceId: number;
+        userId: string;
+        attendanceId: string;
+        role: 'MASTER' | 'MANAGER' | 'GENERAL' | 'READER';
+        // user*	User{...}
+    };
+    days: string[];
+    attendees: {};
+    attendanceDays: { attendanceId: string; day: string; id: number }[];
+}
+export interface AttendanceDetail extends BaseApiResponse {
+    data: Attendance;
 }
 
 export interface ScheduleType {
@@ -26,55 +31,76 @@ export interface ScheduleType {
     time: string;
 }
 
+export interface Record {
+    id: number;
+    attendeeId: string;
+    status: 'Present' | 'Late' | 'Absent';
+    date: string;
+    day:
+        | 'SUNDAY'
+        | 'MONDAY'
+        | 'TUESDAY'
+        | 'WEDNESDAY'
+        | 'THURSDAY'
+        | 'FRIDAY'
+        | 'SATURDAY';
+    etc: string | null;
+    lateTime: string | null;
+    absenceType: string | null;
+}
+
 export interface AttendeeData {
+    id: string;
     attendanceId: string;
+    name: string;
+    gender: string;
+    mobileNumber: string;
+    subMobileNumber: string | null;
     birth: string;
     course: string | null;
-    createId: string;
-    createdAt: string;
-    deletedAt: string | null;
-    description: string | null;
-    gender: string;
-    grade: string | null;
-    id: string;
-    mobileNumber: string;
-    name: string;
-    schedules: ScheduleType[];
     school: string | null;
+    grade: string | null;
+    description: string | null;
+    attendance: Attendance[];
+    schedules: ScheduleType[];
+    records: Record[];
     status?: string;
     isDetailOpen?: boolean;
-    subMobileNumber: string | null;
-    updateId: string | null;
-    updatedAt: string;
+}
+
+export interface AttendeeList extends BaseApiResponse {
+    data?: AttendeeData[];
+    items?: AttendeeData[];
 }
 
 export interface AttendeeDetail {
-    data?: AttendeeData[];
-    items?: AttendeeData[];
+    data: AttendeeData;
     success: boolean;
-    count: number;
+    message: string;
 }
 
 export interface AttendanceSchedulesByDateItem {
     attendee: AttendeeData;
     attendeeId: string;
-    createId: string;
     createdAt: string;
     day: string;
-    deletedAt: string | null;
     id: number;
     time: string;
-    updateId: string | null;
-    updatedAt: string;
     status?: string;
+    newStatus?: string; // api에서 내려온 status가 아닌 사용자가 생성/수정을 위해 선택한 status
     isDetailOpen?: boolean;
+    etc?: string;
+    lateTime?: string;
+    absenceType?: string;
 }
 
-export interface AttendanceSchedulesByDate {
-    items: AttendanceSchedulesByDateItem[];
-    count: number;
+export interface AttendanceSchedulesByDateItemObj {
+    [key: string]: AttendanceSchedulesByDateItem[];
+}
+
+export interface AttendanceSchedulesByDate extends BaseApiResponse {
+    items: AttendanceSchedulesByDateItemObj[];
     pageSize: number;
-    success: boolean;
     totalPage: number;
 }
 
@@ -106,4 +132,34 @@ export interface CreateAttendance {
     allowLateness: string;
     attendanceDays: string;
     image: File;
+}
+
+export interface SingleRecords {
+    status: string;
+    attendeeId: string;
+    date: string;
+    time: string;
+    day: string;
+    etc: string;
+    lateTime?: string;
+    absenceType?: string;
+}
+export interface CreateRecords {
+    attendanceId: string;
+    singleRecords: SingleRecords[];
+}
+
+export interface DeleteAttendees {
+    ids: string[];
+    attendanceId: string;
+}
+
+export interface AttendeeSchedules extends BaseApiResponse {
+    items: {
+        attendeeId: string;
+        createdAt: string;
+        day: string;
+        id: number;
+        time: string;
+    }[];
 }

@@ -6,7 +6,7 @@ import { Attendance } from './entities/attendance.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { UserAttendance } from './entities/user-attendance.entity';
-import { RoleType } from '../roles/entities/role-type.enum';
+import { RoleType } from '../roles/const/role-type.enum';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { AttendanceDay } from './entities/attendance-day.entity';
@@ -24,11 +24,7 @@ export class AttendancesService {
     private attendanceDayRepository: Repository<AttendanceDay>,
     private fileManagerService: FileManagerService,
   ) {}
-  async create(
-    createAttendanceDto: CreateAttendanceDto,
-    user: User,
-    image?: Express.Multer.File,
-  ): Promise<CommonResponseDto<any>> {
+  async create(createAttendanceDto: CreateAttendanceDto, user: User, image?: Express.Multer.File): Promise<CommonResponseDto<any>> {
     const attendanceDays = this.convertToAttendanceDays(createAttendanceDto.attendanceDays);
 
     if (!this.isValidDays(attendanceDays)) {
@@ -70,7 +66,7 @@ export class AttendancesService {
   async findAllByUserId(userId: string): Promise<ResponseWithoutPaginationDto<UserAttendance>> {
     const [items, count] = await this.userAttendanceRepository
       .createQueryBuilder('userAttendance')
-      .leftJoinAndSelect('userAttendance.attendance', 'attendance')
+      .innerJoinAndSelect('userAttendance.attendance', 'attendance', 'attendance.deletedAt IS NULL')
       .leftJoinAndSelect('attendance.attendanceDays', 'attendanceDays')
       .loadRelationCountAndMap('attendance.attendeeCount', 'attendance.attendees')
       .where('userAttendance.userId = :userId', { userId })
@@ -97,11 +93,7 @@ export class AttendancesService {
     return new CommonResponseDto('SUCCESS FIND ATTENDANCE', attendance);
   }
 
-  async update(
-    id: string,
-    updateAttendanceDto: UpdateAttendanceDto,
-    image?: Express.Multer.File,
-  ): Promise<CommonResponseDto<any>> {
+  async update(id: string, updateAttendanceDto: UpdateAttendanceDto, image?: Express.Multer.File): Promise<CommonResponseDto<any>> {
     const attendance = await this.attendanceRepository.findOneBy({ id });
 
     if (!attendance) {

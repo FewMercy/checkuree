@@ -10,16 +10,18 @@ import 'react-calendar/dist/Calendar.css';
 
 // Components
 import {
-    FormControl,
     TextField,
     Radio,
     RadioGroup,
     FormControlLabel,
     Modal,
+    FormControl,
 } from '@mui/material';
+import Icon from '@/components/Icon';
 
 // Utils
-import { dateFormat } from '@/utils';
+import { dateFormat, sortWeekdays } from '@/utils';
+import useFormContents from '@/app/list-management/[id]/_hooks/useFormContents';
 
 // Styles
 import { Colors, Icons } from '@/styles/globalStyles';
@@ -27,28 +29,19 @@ import {
     CalendarContainer,
     FormContentsContainer,
 } from '@/styles/app/listManagement.styles';
-import {
-    AttendanceData,
-    AttendanceDetail,
-    AttendeeData,
-    AttendeeDetail,
-    CreateAttendee,
-    CreateSchedules,
-    SingleSchedulesType,
-} from '@/api/attendances/schema';
-import Icon from '@/components/Icon';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
-import useFormContents from '@/app/list-management/_hooks/useFormContents';
 
 // Types
-interface Inputs {
+import { Attendance, SingleSchedulesType } from '@/api/attendances/schema';
+import { ScheduleModalContent } from '@/app/list-management/[id]/_components/ScheduleModalContent';
+
+export interface Inputs {
     name: string;
     gender: string;
     birth: string;
     mobileNumber: string;
     subMobileNumber: string;
     times: Record<string, string[]>;
+    schedules: SingleSchedulesType;
 }
 
 const FormContents = ({
@@ -57,41 +50,17 @@ const FormContents = ({
     attendanceId,
     onClose,
 }: {
-    data: AttendanceData;
+    data: Attendance;
     attendeeId?: string;
     attendanceId: string;
     onClose: () => void;
 }) => {
-    const queryClient = useQueryClient();
-
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const [selectedDay, setSelectedDay] = useState<string>(data?.days[0] || '');
     const [timeOptions, setTimeOptions] = useState<
         { label: string; value: string }[]
     >([]);
     const [showCalendar, setShowCalendar] = useState(false);
-
-    const { generateTimeOptions } = useFormContents();
-
-    const { data: attendeeDetail, isSuccess } = useQuery({
-        queryKey: ['attendee-detail', attendeeId],
-        queryFn: async () => {
-            const response =
-                await AttendanceApiClient.getInstance().getAttendeeDetail(
-                    attendeeId || ''
-                );
-
-            if (
-                response.status === 200 &&
-                _.has(response, 'data') &&
-                _.has(response.data, 'data')
-            ) {
-                return response.data.data;
-            }
-
-            return {};
-        },
-        enabled: attendeeId ? attendeeId.length > 0 : false,
-    });
 
     const {
         watch,
@@ -106,9 +75,23 @@ const FormContents = ({
         reValidateMode: 'onSubmit',
     });
 
+    const {
+        attendeeDetail,
+        isSuccess,
+        createAttendee,
+        updateAttendee,
+        deleteAttendees,
+        generateTimeOptions,
+    } = useFormContents({
+        watch,
+        attendeeId,
+        attendanceId,
+        onClose,
+    });
+
     const onSubmit = handleSubmit((data) => {
         // TODO: times 정보는 schedule로 보내야 함.
-        const { times, subMobileNumber, ...rest } = data;
+        const { times, schedules, ...rest } = data;
 
         if (attendanceId) {
             if (attendeeId) {
@@ -132,93 +115,18 @@ const FormContents = ({
         SUNDAY: '일',
     };
 
-    /** 출석대상 생성 */
-    const { mutate: createAttendee } = useMutation({
-        mutationFn: async (parameters: CreateAttendee) => {
-            const response =
-                await AttendanceApiClient.getInstance().createAttendee(
-                    parameters
-                );
-            return response.data;
-        },
-        onSuccess: async (data) => {
-            const selectedSchedules = watch('times');
-            const singleSchedulesList: SingleSchedulesType = [];
-
-            Object.keys(selectedSchedules).forEach((day) => {
-                const times = selectedSchedules[day];
-
-                times.forEach((time) => {
-                    singleSchedulesList.push({ day, time });
-                });
-            });
-            mutateSchedules({
-                attendanceId,
-                attendeeId: data.data.id,
-                singleSchedules: singleSchedulesList,
-            });
-        },
-    });
-
-    /** 출석대상 정보 수정 */
-    const { mutate: updateAttendee } = useMutation({
-        mutationFn: async (props: {
-            attendeeId: string;
-            parameters: CreateAttendee;
-        }) => {
-            const { attendeeId, parameters } = props;
-
-            const response =
-                await AttendanceApiClient.getInstance().updateAttendee(
-                    attendeeId,
-                    parameters
-                );
-            return response.data;
-        },
-        onSuccess: async (data) => {
-            // TODO: 스케쥴 수정 api 연동
-            const selectedSchedules = watch('times');
-            const singleSchedulesList: SingleSchedulesType = [];
-
-            Object.keys(selectedSchedules).forEach((day) => {
-                const times = selectedSchedules[day];
-
-                times.forEach((time) => {
-                    singleSchedulesList.push({ day, time });
-                });
-            });
-            mutateSchedules({
-                attendanceId,
-                attendeeId: data.data.id,
-                singleSchedules: singleSchedulesList,
-            });
-        },
-    });
-
-    /** 출석대상의 스케쥴 생성 */
-    const { mutate: mutateSchedules } = useMutation({
-        mutationFn: async (parameters: CreateSchedules) => {
-            const response =
-                await AttendanceApiClient.getInstance().createSchedules(
-                    parameters
-                );
-            return response.data;
-        },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: ['attendee-list'],
-            });
-            onClose();
-        },
-    });
-
     const handleSelectTime = (day: string, time: string) => {
-        const updatedTimes = watch('times');
+        const updatedTimes = watch('times') || {};
 
-        const index = updatedTimes[day].indexOf(time);
+        const index = _.has(updatedTimes, day)
+            ? updatedTimes[day].indexOf(time)
+            : -1;
         if (index !== -1) {
             updatedTimes[day].splice(index, 1);
         } else {
+            if (!_.has(updatedTimes, day)) {
+                Object.assign(updatedTimes, { [day]: [] });
+            }
             updatedTimes[day].push(time);
         }
         setValue('times', updatedTimes);
@@ -226,7 +134,13 @@ const FormContents = ({
 
     useEffect(() => {
         if (isSuccess && attendeeDetail) {
-            reset(attendeeDetail);
+            const initialTimes: Record<string, string[]> = {};
+            attendeeDetail.schedules.forEach(({ day, time }) => {
+                initialTimes[day] = Array.isArray(initialTimes[day])
+                    ? initialTimes[day].concat(time)
+                    : [time];
+            });
+            reset({ ...attendeeDetail, times: initialTimes } as Inputs);
         }
     }, [isSuccess, attendeeDetail]);
 
@@ -253,7 +167,7 @@ const FormContents = ({
             setTimeOptions(timeOptions);
         }
 
-        if (data && data.days) {
+        if (data && data.days && !attendeeDetail) {
             let initialDays = {};
             data.days.forEach((day) => {
                 Object.assign(initialDays, { [day]: [] });
@@ -264,6 +178,21 @@ const FormContents = ({
 
     return (
         <FormContentsContainer gender={watch('gender')}>
+            {/* 전체 스케쥴보기 모달은 수정일때만 노출 */}
+            {attendeeId && (
+                <Modal
+                    open={isScheduleModalOpen}
+                    onClose={() => setIsScheduleModalOpen(false)}
+                    aria-labelledby="전체 스케쥴보기 모달"
+                    aria-describedby="전체 스케쥴보기 모달"
+                >
+                    <ScheduleModalContent
+                        attendeeId={attendeeId}
+                        onClose={() => setIsScheduleModalOpen(false)}
+                    />
+                </Modal>
+            )}
+
             <form id="create-attendees" onSubmit={onSubmit}>
                 <div className="form-row">
                     <div className="label">이름</div>
@@ -389,13 +318,13 @@ const FormContents = ({
                     </div>
                 </div>
 
-                {/* TODO: 수정하는 경우 -> 기존 스케쥴 값 연동 필요 */}
                 <div className="days-times-container">
                     <div className="days-container">
-                        {data?.days.map((day) => (
+                        {sortWeekdays(data?.days).map((day) => (
                             <div
                                 className={`day ${selectedDay === day ? 'selected' : ''}`}
                                 onClick={() => setSelectedDay(day)}
+                                key={day}
                             >
                                 {days[day]}
                             </div>
@@ -404,6 +333,7 @@ const FormContents = ({
                     <div className="time-container">
                         <div className="selected-times">
                             {watch('times') &&
+                                _.has(watch('times'), selectedDay) &&
                                 watch('times')[selectedDay].map((item) => (
                                     <div className="selected-time">
                                         {`${item.slice(0, 2)}:${item.slice(2)}`}
@@ -425,6 +355,7 @@ const FormContents = ({
                             {timeOptions.map((item) => {
                                 const isSelected =
                                     watch('times') &&
+                                    _.has(watch('times'), selectedDay) &&
                                     watch('times')[selectedDay].includes(
                                         item.value
                                     );
@@ -464,11 +395,27 @@ const FormContents = ({
             </form>
 
             <section className="additional-button-container">
-                <div className="additional-button">전체 스케줄보기</div>
+                <div
+                    className="additional-button"
+                    onClick={() => setIsScheduleModalOpen(true)}
+                >
+                    전체 스케줄보기
+                </div>
                 <div className="additional-button">출석 히스토리</div>
             </section>
 
-            <div className="disabled-button">비활성화</div>
+            <div
+                className="disabled-button"
+                onClick={() => {
+                    if (confirm('출석대상을 삭제하시겠습니까?'))
+                        deleteAttendees({
+                            ids: attendeeId ? [attendeeId] : [''],
+                            attendanceId: attendanceId,
+                        });
+                }}
+            >
+                비활성화
+            </div>
 
             <section className="button-container">
                 <div className="button cancel" onClick={onClose}>

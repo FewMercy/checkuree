@@ -5,8 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getOrmConfig } from './common/const/orm.config';
 import { User } from './users/entities/user.entity';
 import { Attendance } from './attendances/entities/attendance.entity';
-import { RolesModule } from './roles/roles.module';
-import { Role } from './roles/entities/role.entity';
 import { AttendancesModule } from './attendances/attendances.module';
 import { UserAttendance } from './attendances/entities/user-attendance.entity';
 import { AttendeesModule } from './attendees/attendees.module';
@@ -28,11 +26,10 @@ import { FileManagerModule } from './file-manager/file-manager.module';
     }),
     TypeOrmModule.forRoot({
       ...getOrmConfig(),
-      entities: [User, Role, Attendance, UserAttendance, Schedule, Record, Invitation, LoginHistory],
+      entities: [User, Attendance, UserAttendance, Schedule, Record, Invitation, LoginHistory],
     }),
     UsersModule,
     AuthModule,
-    RolesModule,
     AttendancesModule,
     AttendeesModule,
     SchedulesModule,

@@ -68,9 +68,8 @@ export class AuthController {
 
       // res.appendHeader('Set-Cookie', `ACCESS_TOKEN=${tokenResponse.data.accessToken}; HttpOnly; Secure`);
       // res.appendHeader('Set-Cookie', `REFRESH_TOKEN=${tokenResponse.data.refreshToken}; HttpOnly; Secure`);
-      res.cookie('ACCESS_TOKEN', tokenResponse.data.accessToken, { httpOnly: true, secure: true });
+      res.cookie('ACCESS_TOKEN', tokenResponse.data.accessToken, { secure: true });
       res.cookie('REFRESH_TOKEN', tokenResponse.data.refreshToken, {
-        httpOnly: true,
         secure: true,
       });
       res.redirect(process.env.KAKAO_REDIRECT_URL);

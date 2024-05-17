@@ -16,6 +16,7 @@ import { CreateAllRecordDto } from './dto/createAll-record.dto';
 import { MultiIdsResponseDto } from '../common/response/multi-ids-response.dto';
 import { DateRecordSummaryResponseDto } from './dto/date-record-summary-response.dto';
 import { AttendeeRecordSummaryDto } from './dto/attendee-record-summary.dto';
+import { AbsenceType } from './const/absence-type.enum';
 
 @Injectable()
 export class RecordsService {
@@ -39,6 +40,10 @@ export class RecordsService {
       }
       if (record.status !== AttendanceStatus.LATE) {
         delete record.lateTime;
+      }
+
+      if (record.status === AttendanceStatus.ABSENT && !record.absenceType) {
+        record.absenceType = AbsenceType.GENERAL;
       }
     });
 
@@ -147,8 +152,6 @@ export class RecordsService {
       });
     });
 
-    console.log(summary);
-
     summary.forEach((record) => {
       const result = results.find((result) => result.attendeeId === record.attendeeId);
       const status = (record.status + '').toUpperCase();
@@ -201,10 +204,7 @@ export class RecordsService {
     return new PageResponseDto<Record>(recordFilterDto.pageSize, count, items);
   }
 
-  async findByAttendeeId(
-    attendeeId: string,
-    recordFilterDto: RecordFilterDto,
-  ): Promise<ResponseWithoutPaginationDto<Record>> {
+  async findByAttendeeId(attendeeId: string, recordFilterDto: RecordFilterDto): Promise<ResponseWithoutPaginationDto<Record>> {
     const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.id=:attendeeId', {
@@ -242,9 +242,7 @@ export class RecordsService {
     });
 
     if (filteredRecord.length !== deleteRecordDto.ids.length) {
-      throw new BadRequestException(
-        `AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`,
-      );
+      throw new BadRequestException(`AttendanceId : ${deleteRecordDto.attendanceId} 에 속한 기록만 삭제할 수 있습니다..`);
     }
 
     await this.recordRepository.softDelete({
@@ -284,8 +282,7 @@ export class RecordsService {
   }
 
   private async findByAttendeeIdForExcel(attendeeId: string, recordFilterDto: RecordFilterDto): Promise<Record[]> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.id=:attendeeId', {
         attendeeId: attendeeId,
@@ -310,8 +307,7 @@ export class RecordsService {
   }
 
   private async findByAttendanceIdForExcel(attendanceId: string, recordFilterDto: RecordFilterDto): Promise<Record[]> {
-    let queryBuilder: SelectQueryBuilder<Record>;
-    queryBuilder = this.recordRepository
+    const queryBuilder: SelectQueryBuilder<Record> = this.recordRepository
       .createQueryBuilder('record')
       .innerJoinAndSelect('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
         attendanceId: attendanceId,
@@ -341,7 +337,7 @@ export class RecordsService {
     // 레코드 분류 및 중복 제거
     const uniqueRecordsMap = new Map();
     records.forEach((record) => {
-      const key = `${record.attendeeId}-${record.date}`;
+      const key = `${record.attendeeId}-${record.date}-${record.time}`;
       uniqueRecordsMap.set(key, record); // 같은 키로 들어오는 레코드를 덮어쓰기. 마지막 레코드만 남음
     });
 

@@ -9,7 +9,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nes
 import { Attendee } from './entities/attendee.entity';
 import { RoleGuard } from '../roles/role.guard';
 import { Roles } from '../roles/role.decorator';
-import { RoleType } from '../roles/entities/role-type.enum';
+import { RoleType } from '../roles/const/role-type.enum';
 import { DeleteAttendeeDto } from './dto/delete-attendee.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';

@@ -5,7 +5,6 @@ import { Attendee } from '../../attendees/entities/attendee.entity';
 import { DayType } from '../const/day-type.enum';
 
 @Entity()
-@Unique(['attendeeId', 'day', 'time'])
 export class Schedule extends BaseTimeEntity {
   @PrimaryGeneratedColumn('increment')
   @ApiProperty({ description: '출석대상의 출석 스케쥴' })

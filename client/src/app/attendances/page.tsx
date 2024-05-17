@@ -2,15 +2,17 @@
 
 import 'dayjs/locale/ko'; // 한국어 locale 설정
 
-import { Box, Container, Typography, styled } from '@mui/material';
-import React, { useState } from 'react';
+import { Box, Fab, Typography, styled } from '@mui/material';
+import React, {  useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
-
+import Cookies from 'js-cookie';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import AttendanceCreateForm from '@/app/attendances/_components/AttendanceCreate';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
+import BottomDrawer from '@/components/BottomDrawer';
+import { DayOfWeek, sortWeekdays } from '@/utils';
 
 dayjs.locale('ko');
 
@@ -26,6 +28,7 @@ interface Attendance {
     imageUrl: string;
     updateId: string | null;
     updatedAt: string;
+    days: DayOfWeek[];
 }
 
 interface AttendanceId {
@@ -41,11 +44,26 @@ interface AttendanceId {
     userId: string;
 }
 
+function mapDaysToKorean(daysArray: DayOfWeek[]): string {
+    const dayMap: Record<DayOfWeek, string> = {
+        MONDAY: '월',
+        TUESDAY: '화',
+        WEDNESDAY: '수',
+        THURSDAY: '목',
+        FRIDAY: '금',
+        SATURDAY: '토',
+        SUNDAY: '일',
+    };
+
+    const koreanDays = sortWeekdays(daysArray).map((day) => dayMap[day]);
+
+    return koreanDays.join(', ');
+}
 const Page: React.FC = () => {
     const router = useRouter();
     const today = dayjs(); // 오늘 날짜
     const todayFormat = today.format('YYYY년 MM월 DD일 dddd');
-
+    
     // State
     const [isCreate, setIsCreate] = useState<boolean>(false);
 
@@ -59,109 +77,109 @@ const Page: React.FC = () => {
     });
 
     return (
-        <ContainerST>
-            {isCreate ? (
-                <AttendanceCreateForm
-                    setIsCreate={setIsCreate}
-                    attendancesRefetch={attendancesRefetch}
-                />
-            ) : (
-                <>
-                    {attendancyList ? (
-                        <BoxSTAttendanceWrapper>
-                            <Box>
-                                <Typography
-                                    fontSize={14}
-                                    lineHeight={'19.07px'}
-                                    color={'#797979'}
-                                >
-                                    {todayFormat}
-                                </Typography>
-                                <Typography
-                                    fontSize={20}
-                                    lineHeight={'27.24px'}
-                                    fontWeight={600}
-                                >
-                                    김범수님, 안녕하세요.
-                                </Typography>
-                            </Box>
-                            <GridST>
-                                {attendancyList?.items.map(
-                                    (item: AttendanceId) => {
-                                        return (
-                                            <BoxSTAttendance
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/attendances/${item.attendanceId}`
-                                                    )
-                                                }
+        <>
+            <ContainerST>
+                {attendancyList ? (
+                    <BoxSTAttendanceWrapper>
+                        <Box>
+                            <Typography
+                                fontSize={14}
+                                lineHeight={'19.07px'}
+                                color={'#797979'}
+                            >
+                                {todayFormat}
+                            </Typography>
+                            <Typography
+                                fontSize={20}
+                                lineHeight={'27.24px'}
+                                fontWeight={600}
+                            >
+                                김범수님, 안녕하세요.
+                            </Typography>
+                        </Box>
+                        <GridST>
+                            {attendancyList?.items.map((item: AttendanceId) => {
+                                return (
+                                    <BoxSTAttendance
+                                        onClick={() =>
+                                            router.push(
+                                                `/attendances/${item.attendanceId}`
+                                            )
+                                        }
+                                        key={`attendance-item__${item.attendanceId}`}
+                                    >
+                                        <Image
+                                            src={
+                                                item.attendance.imageUrl ||
+                                                'images/sckeleton-image.svg'
+                                            }
+                                            width={142}
+                                            height={102}
+                                            alt="스켈레톤 이미지"
+                                            style={{
+                                                objectFit: 'cover',
+                                                // objectPosition:
+                                                //     '0px -10px',
+                                            }}
+                                        />
+                                        <BoxSTAttendanceFooter>
+                                            <Box>
+                                                <TypoSTTitle>
+                                                    {item.attendance.title}
+                                                </TypoSTTitle>
+                                                <TypoSTDescription>
+                                                    {item.attendance
+                                                        .description ||
+                                                        '출석부 설명입니다.'}
+                                                </TypoSTDescription>
+                                            </Box>
+                                            <Box
+                                                display={'flex'}
+                                                alignItems={'center'}
+                                                justifyContent={'space-between'}
                                             >
-                                                <Image
-                                                    src={
+                                                <TypoSTDay>
+                                                    {mapDaysToKorean(
+                                                        item.attendance.days
+                                                    )}
+                                                </TypoSTDay>
+                                                <TypoSTAttendeCount>
+                                                    {
                                                         item.attendance
-                                                            .imageUrl ||
-                                                        'images/sckeleton-image.svg'
+                                                            .attendeeCount
                                                     }
-                                                    width={142}
-                                                    height={102}
-                                                    alt="스켈레톤 이미지"
-                                                    style={{
-                                                        objectFit: 'cover',
-                                                        // objectPosition:
-                                                        //     '0px -10px',
-                                                    }}
-                                                />
-                                                <BoxSTAttendanceFooter>
-                                                    <Box>
-                                                        <TypoSTTitle>
-                                                            {
-                                                                item.attendance
-                                                                    .title
-                                                            }
-                                                        </TypoSTTitle>
-                                                        <TypoSTDescription>
-                                                            {item.attendance
-                                                                .description ||
-                                                                '출석부 설명입니다.'}
-                                                        </TypoSTDescription>
-                                                    </Box>
-                                                    <Box
-                                                        display={'flex'}
-                                                        alignItems={'center'}
-                                                        justifyContent={
-                                                            'space-between'
-                                                        }
-                                                    >
-                                                        <TypoSTDay>
-                                                            월,화,목,금,일
-                                                        </TypoSTDay>
-                                                        <TypoSTAttendeCount>
-                                                            {
-                                                                item.attendance
-                                                                    .attendeeCount
-                                                            }
-                                                        </TypoSTAttendeCount>
-                                                    </Box>
-                                                </BoxSTAttendanceFooter>
-                                            </BoxSTAttendance>
-                                        );
-                                    }
-                                )}
-                            </GridST>
-                            <Image
-                                src={'/images/icons/add-icon.svg'}
-                                alt=""
-                                width={48}
-                                height={48}
-                                onClick={() => setIsCreate(true)}
-                            />
-                        </BoxSTAttendanceWrapper>
-                    ) : (
-                        <>...Loading</>
-                    )}
-                </>
-            )}
-        </ContainerST>
+                                                </TypoSTAttendeCount>
+                                            </Box>
+                                        </BoxSTAttendanceFooter>
+                                    </BoxSTAttendance>
+                                );
+                            })}
+                            <FabSTbutton>
+                                <Image
+                                    src={'/images/icons/add-icon.svg'}
+                                    alt=""
+                                    width={48}
+                                    height={48}
+                                    onClick={() => setIsCreate(true)}
+                                />
+                            </FabSTbutton>
+                        </GridST>
+                    </BoxSTAttendanceWrapper>
+                ) : (
+                    <>...Loading</>
+                )}
+                <BottomDrawer
+                    open={isCreate}
+                    onClose={() => {}}
+                    children={
+                        <AttendanceCreateForm
+                            setIsCreate={setIsCreate}
+                            attendancesRefetch={attendancesRefetch}
+                        />
+                    }
+                />
+            </ContainerST>
+        </>
     );
 };
 
@@ -258,5 +276,14 @@ const TypoSTDay = styled(Typography)(() => {
         fontWeight: 500,
         color: '#797979',
         lineHeight: '16.34px',
+    };
+});
+
+const FabSTbutton = styled(Fab)(() => {
+    return {
+        position: 'fixed',
+        bottom: 24,
+        right: 24,
+        background: '#59996B',
     };
 });
