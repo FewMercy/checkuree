@@ -2,14 +2,14 @@
 
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from './entities/role.entity';
+import { RoleType } from './const/role-type.enum';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<Role[]>('roles', context.getHandler());
+    const roles = this.reflector.get<RoleType[]>('roles', context.getHandler());
 
     if (!roles) {
       // roles 데코레이터가 없으면 허용

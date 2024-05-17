@@ -16,7 +16,7 @@ import { JwtPayload } from '../../../src/auth/const/jwtPayload.interface';
 import { Attendance } from '../../../src/attendances/entities/attendance.entity';
 import { UserAttendance } from '../../../src/attendances/entities/user-attendance.entity';
 import { AttendanceType } from '../../../src/attendances/const/attendance-type.enum';
-import { RoleType } from '../../../src/roles/entities/role-type.enum';
+import { RoleType } from '../../../src/roles/const/role-type.enum';
 
 describe('UserAuthService Test', function () {
   let module: TestingModule;

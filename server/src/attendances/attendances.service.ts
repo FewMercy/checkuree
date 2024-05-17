@@ -6,7 +6,7 @@ import { Attendance } from './entities/attendance.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { UserAttendance } from './entities/user-attendance.entity';
-import { RoleType } from '../roles/entities/role-type.enum';
+import { RoleType } from '../roles/const/role-type.enum';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { AttendanceDay } from './entities/attendance-day.entity';

@@ -1,7 +1,7 @@
 import { BaseTimeEntity } from '../../common/BaseTimeEntity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoleType } from '../../roles/entities/role-type.enum';
+import { RoleType } from '../../roles/const/role-type.enum';
 import { User } from '../../users/entities/user.entity';
 import { InvitationStatusType } from '../invitation-status.enum';
 

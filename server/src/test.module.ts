@@ -4,8 +4,6 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { Attendance } from './attendances/entities/attendance.entity';
-import { RolesModule } from './roles/roles.module';
-import { Role } from './roles/entities/role.entity';
 import { AttendancesModule } from './attendances/attendances.module';
 import { UserAttendance } from './attendances/entities/user-attendance.entity';
 import { Attendee } from './attendees/entities/attendee.entity';
@@ -27,11 +25,10 @@ import { LoginHistory } from './auth/entity/login-history.entity';
     }),
     TypeOrmModule.forRoot({
       ...getOrmConfig(),
-      entities: [User, Role, Attendance, UserAttendance, Attendee, Schedule, Record, Invitation, LoginHistory],
+      entities: [User, Attendance, UserAttendance, Attendee, Schedule, Record, Invitation, LoginHistory],
     }),
     UsersModule,
     AuthModule,
-    RolesModule,
     AttendancesModule,
     AttendeesModule,
     SchedulesModule,

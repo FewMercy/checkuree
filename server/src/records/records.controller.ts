@@ -7,7 +7,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nes
 import { Record } from './entities/record.entity';
 import { RoleGuard } from '../roles/role.guard';
 import { Roles } from '../roles/role.decorator';
-import { RoleType } from '../roles/entities/role-type.enum';
+import { RoleType } from '../roles/const/role-type.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { DeleteRecordDto } from './dto/delete-record.dto';
 import { CreateAllRecordDto } from './dto/createAll-record.dto';

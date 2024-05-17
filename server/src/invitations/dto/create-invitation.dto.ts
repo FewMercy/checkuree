@@ -1,7 +1,7 @@
 import { IsEnum, IsString } from 'class-validator';
 import { AttendanceStatus } from '../../records/const/record-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoleType } from '../../roles/entities/role-type.enum';
+import { RoleType } from '../../roles/const/role-type.enum';
 
 export class CreateInvitationDto {
   @IsEnum(RoleType)

@@ -9,7 +9,7 @@ import { GetUser } from '../common/decorator/user.decorator';
 import { Attendance } from './entities/attendance.entity';
 import { UserAttendance } from './entities/user-attendance.entity';
 import { RoleGuard } from '../roles/role.guard';
-import { RoleType } from '../roles/entities/role-type.enum';
+import { RoleType } from '../roles/const/role-type.enum';
 import { Roles } from '../roles/role.decorator';
 import { CommonResponseDto } from '../common/response/common-response.dto';
 import { ResponseWithoutPaginationDto } from '../common/response/responseWithoutPagination.dto';

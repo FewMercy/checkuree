@@ -7,7 +7,7 @@ import { CreateAttendanceDto } from '../../../src/attendances/dto/create-attenda
 import { User } from '../../../src/users/entities/user.entity';
 import { AttendanceType } from '../../../src/attendances/const/attendance-type.enum';
 import { TestModule } from '../../../src/test.module';
-import { RoleType } from '../../../src/roles/entities/role-type.enum';
+import { RoleType } from '../../../src/roles/const/role-type.enum';
 import { UpdateAttendanceDto } from '../../../src/attendances/dto/update-attendance.dto';
 import { Attendee } from '../../../src/attendees/entities/attendee.entity';
 import { Repository } from 'typeorm';
