@@ -40,13 +40,13 @@ export class UsersService {
   async findOneByMobileNumber(mobileNumber: string) {
     mobileNumber = mobileNumber.replaceAll('-', '');
 
-    const { id, username, ...found } = await this.userRepository.findOne({
+    const { id, name, ...found } = await this.userRepository.findOne({
       where: { mobileNumber: mobileNumber },
     });
 
     const user = new User();
     user.id = id;
-    user.username = username;
+    user.name = name;
     user.mobileNumber = mobileNumber;
     return user;
   }
