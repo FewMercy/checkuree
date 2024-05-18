@@ -3,7 +3,7 @@
 </div>
 
 
-# <img src="https://github.com/FewMercy/checkuree/assets/117077999/b559b853-dbf8-411f-9c6a-ea07f36a42fe" width="25"/> Hello, Checkuree!
+# <img src="https://github.com/FewMercy/checkuree/assets/117077999/62db60ab-a7bd-410d-88de-553b82ba45fa" width="25"/> Hello, Checkuree!
 * 안녕하세요 ! 우리의 출석 체크를 도와줄 개구리, **체쿠리**입니다.
 * 체쿠리는 소규모 학원이나 학교에서 사용할 수 있는 출석 관리 서비스입니다.
 * 여러분이 필요한 요일,시간대의 출석부를 생성해서 출석 관리를 해보세요 !
