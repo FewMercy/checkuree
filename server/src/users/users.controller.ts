@@ -16,17 +16,17 @@ import { CommonResponseDto } from '../common/response/common-response.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  @ApiOperation({ summary: '회원 전체 검색' })
-  @ApiResponse({
-    status: 201,
-    description: '회원 전체 검색',
-    type: User,
-  })
-  findAll(pagination: Pagination) {
-    //: Promise<CommonResponseDto<User[]>>
-    return this.usersService.findAll(pagination);
-  }
+  // @Get()
+  // @ApiOperation({ summary: '회원 전체 검색' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: '회원 전체 검색',
+  //   type: User,
+  // })
+  // findAll(pagination: Pagination) {
+  //   //: Promise<CommonResponseDto<User[]>>
+  //   return this.usersService.findAll(pagination);
+  // }
 
   @Get('/mobile/:mobileNumber')
   @ApiOperation({ summary: '휴대전화 번호로 회원 검색' })
@@ -41,16 +41,15 @@ export class UsersController {
     return this.usersService.findOneByMobileNumber(mobileNumber);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'ID로 회원 검색' })
+  @Get()
+  @ApiOperation({ summary: '로그인한 회원 정보 조회' })
   @ApiResponse({
     status: 201,
-    description: '회원 검색',
+    description: '로그인한 회원 정보 조회',
     type: User,
   })
-  findOneId(@Param('id') id: string) {
-    //: Promise<CommonResponseDto<User>>
-    return this.usersService.findOne(+id);
+  findOneId(@GetUser() user: User) {
+    return this.usersService.findOne(user.id);
   }
 
   @Patch(':id')

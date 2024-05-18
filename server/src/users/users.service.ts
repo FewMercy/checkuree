@@ -22,8 +22,15 @@ export class UsersService {
     };
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    delete user.password;
+    delete user.refreshToken;
+    delete user.loginType;
+    delete user.isAutoLogin;
+
+    return user;
   }
 
   async findOneById(id: string) {
@@ -33,13 +40,13 @@ export class UsersService {
   async findOneByMobileNumber(mobileNumber: string) {
     mobileNumber = mobileNumber.replaceAll('-', '');
 
-    const { id, username, ...found } = await this.userRepository.findOne({
+    const { id, name, ...found } = await this.userRepository.findOne({
       where: { mobileNumber: mobileNumber },
     });
 
     const user = new User();
     user.id = id;
-    user.username = username;
+    user.name = name;
     user.mobileNumber = mobileNumber;
     return user;
   }
