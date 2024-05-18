@@ -22,8 +22,15 @@ export class UsersService {
     };
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    delete user.password;
+    delete user.refreshToken;
+    delete user.loginType;
+    delete user.isAutoLogin;
+
+    return user;
   }
 
   async findOneById(id: string) {
