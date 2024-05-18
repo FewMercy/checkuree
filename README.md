@@ -15,7 +15,7 @@
 # 🖥️ Example Screens
 |                                                             출석부 목록 화면                                                             |                                                             출석부 생성 화면                                                             |                                                             출석체크 화면                                                              |                                                                                                               
 |:---------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------:| 
-| <img width="160px" src="https://github.com/FewMercy/checkuree/assets/117077999/3e8bb321-bed5-405f-a631-6ad1c66e4f01" /> | <img width="160px" src="https://github.com/FewMercy/checkuree/assets/117077999/92a62623-e2e7-429b-9542-7ffb4e33d1ec" /> | <img width="160px" src="https://github.com/FewMercy/checkuree/assets/117077999/7242233f-0363-46fb-bc10-b49fa805710d"/> |
+| <img width="200px" src="https://github.com/FewMercy/checkuree/assets/117077999/3e8bb321-bed5-405f-a631-6ad1c66e4f01" /> | <img width="200px" src="https://github.com/FewMercy/checkuree/assets/117077999/92a62623-e2e7-429b-9542-7ffb4e33d1ec" /> | <img width="200px" src="https://github.com/FewMercy/checkuree/assets/117077999/7242233f-0363-46fb-bc10-b49fa805710d"/> |
 
 # ⚙️ How to Start
 ## 0️⃣ Prerequisites
