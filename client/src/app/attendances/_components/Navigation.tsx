@@ -146,7 +146,8 @@ export default Navigation;
 
 const BoxSTNavigation = styled(Box)(() => {
     return {
-        width: '359px',
+        minWidth: '330px',
+        maxWidth: '359px',
         height: '60px',
         backgroundColor: '#59996B',
         borderRadius: '30px',
@@ -155,10 +156,9 @@ const BoxSTNavigation = styled(Box)(() => {
         alignItems: 'center',
         justifyContent: 'space-around',
         position: 'fixed',
-        bottom: '0',
+        bottom: '48px',
         zIndex: '9999',
         left: '50%',
-        top: '90%',
         transform: 'translateX(-50%)',
     };
 });
@@ -176,16 +176,16 @@ const BoxSTMenu = styled(Box)(() => {
 
 const BoxSTNavigationActivate = styled(Box)(() => {
     return {
-        width: '359px',
+        minWidth: '330px',
+        maxWidth: '359px',
         height: '60px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         position: 'fixed',
-        bottom: '0',
+        bottom: '48px',
         zIndex: '9999',
         left: '50%',
-        top: '90%',
         transform: 'translateX(-50%)',
     };
 });

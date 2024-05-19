@@ -62,6 +62,12 @@ class AuthApiClient extends BaseApiClient {
             url: `/auth/check-username?username=${request}`,
             data: request,
         });
+
+    public userInfo = () =>
+        this.axios.request({
+            method: 'GET',
+            url: `/users`,
+        });
 }
 
 export default AuthApiClient;

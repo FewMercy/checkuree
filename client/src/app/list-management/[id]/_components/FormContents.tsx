@@ -262,7 +262,7 @@ const FormContents = ({
                                             }}
                                         />
                                     }
-                                    label="녀"
+                                    label="여"
                                 />
                             </RadioGroup>
                         </FormControl>
@@ -335,18 +335,17 @@ const FormContents = ({
                             {watch('times') &&
                                 _.has(watch('times'), selectedDay) &&
                                 watch('times')[selectedDay].map((item) => (
-                                    <div className="selected-time">
+                                    <div
+                                        className="selected-time"
+                                        onClick={() =>
+                                            handleSelectTime(selectedDay, item)
+                                        }
+                                    >
                                         {`${item.slice(0, 2)}:${item.slice(2)}`}
                                         <Icon
                                             icon={Icons.highlight_off}
                                             size={20}
                                             color={Colors.CheckureeGreen}
-                                            onClick={() =>
-                                                handleSelectTime(
-                                                    selectedDay,
-                                                    item
-                                                )
-                                            }
                                         />
                                     </div>
                                 ))}
@@ -392,30 +391,36 @@ const FormContents = ({
                         </div>
                     </div>
                 </div>
+
+                {attendeeId && (
+                    <>
+                        <section className="additional-button-container">
+                            <div
+                                className="additional-button"
+                                onClick={() => setIsScheduleModalOpen(true)}
+                            >
+                                전체 스케줄보기
+                            </div>
+                            <div className="additional-button">
+                                출석 히스토리
+                            </div>
+                        </section>
+
+                        <div
+                            className="disabled-button"
+                            onClick={() => {
+                                if (confirm('출석대상을 삭제하시겠습니까?'))
+                                    deleteAttendees({
+                                        ids: attendeeId ? [attendeeId] : [''],
+                                        attendanceId: attendanceId,
+                                    });
+                            }}
+                        >
+                            비활성화
+                        </div>
+                    </>
+                )}
             </form>
-
-            <section className="additional-button-container">
-                <div
-                    className="additional-button"
-                    onClick={() => setIsScheduleModalOpen(true)}
-                >
-                    전체 스케줄보기
-                </div>
-                <div className="additional-button">출석 히스토리</div>
-            </section>
-
-            <div
-                className="disabled-button"
-                onClick={() => {
-                    if (confirm('출석대상을 삭제하시겠습니까?'))
-                        deleteAttendees({
-                            ids: attendeeId ? [attendeeId] : [''],
-                            attendanceId: attendanceId,
-                        });
-                }}
-            >
-                비활성화
-            </div>
 
             <section className="button-container">
                 <div className="button cancel" onClick={onClose}>

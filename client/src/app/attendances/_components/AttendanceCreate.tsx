@@ -428,24 +428,24 @@ const TypoST = styled(Typography)(() => {
 
 const BoxSTSave = styled(Box)(() => {
     return {
-        maxWidth: '281px',
         width: '100%',
         height: '60px',
         background: ' #59996B',
         color: 'white',
         display: 'flex',
+        flex: 2.5,
         justifyContent: 'space-around',
         alignItems: 'center',
     };
 });
 const BoxSTcancel = styled(Box)(() => {
     return {
-        maxWidth: '112px',
         width: '100%',
         height: '60px',
         background: ' #C9C9C9',
         color: 'white',
         display: 'flex',
+        flex: 1,
         justifyContent: 'space-around',
         alignItems: 'center',
     };
@@ -456,6 +456,8 @@ const BoxSTbutton = styled(Box)(() => {
         display: 'flex',
         width: '100%',
         justifyContent: 'center',
+        position: 'absolute',
+        bottom: 0,
     };
 });
 
