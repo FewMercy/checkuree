@@ -79,7 +79,7 @@ const Index = () => {
 
     return (
         <ContainerST>
-            {/* <StyledBoxST>
+            <StyledBoxST>
                 <LoginTypographyST>로그인</LoginTypographyST>
                 <Box
                     component="form"
@@ -103,8 +103,8 @@ const Index = () => {
                         inputProps={TextFiledInputProps}
                     />
                 </Box>
-            </StyledBoxST> */}
-            {/* <BoxSTLoginCommon gap={'38px'}>
+            </StyledBoxST>
+            <BoxSTLoginCommon gap={'38px'}>
                 <BoxSTLoginCommon gap={'4px'}>
                     <BoxSTLoginMaintain>
                         <StyledCheckbox
@@ -130,7 +130,7 @@ const Index = () => {
                         >
                             로그인 하기
                         </BoxSTLogin>
-                        <Box
+                        {/* <Box
                             display={'flex'}
                             justifyContent={'space-between'}
                             padding={'0px 4px'}
@@ -145,11 +145,21 @@ const Index = () => {
                             >
                                 아이디/비밀번호 찾기
                             </StyledLinkTypography>
-                        </Box>
+                        </Box> */}
                     </BoxSTLoginCommon>
                 </BoxSTLoginCommon>
-          
-            </BoxSTLoginCommon> */}
+
+                {/* <Box display={'flex'} justifyContent={'space-between'}>
+                 
+                    <StyledNaverLoginButton
+                        onClick={() => {
+                            alert('준비중인 기능입니다.');
+                        }}
+                    >
+                        네이버 로그인
+                    </StyledNaverLoginButton>
+                </Box> */}
+            </BoxSTLoginCommon>
 
             <StyledKakaoLoginButton
                 onClick={() => {
