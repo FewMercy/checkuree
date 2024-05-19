@@ -116,7 +116,7 @@ export class RecordsController {
   @Get('attendance/:attendanceId/records/:date/summary')
   @ApiOperation({
     description: '선택한 날짜의 전체 출석기록 요약 조회',
-    summary: '출석부에 속한 출석기록 요약 조회',
+    summary: '선택한 날짜의 전체 출석기록 요약 조회',
   })
   @ApiResponse({
     status: 200,
