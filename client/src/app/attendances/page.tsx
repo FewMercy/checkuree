@@ -98,7 +98,7 @@ const Page: React.FC = () => {
                                 lineHeight={'27.24px'}
                                 fontWeight={600}
                             >
-                                {user.name}님, 안녕하세요.
+                                {user?.name || ''}님, 안녕하세요.
                             </Typography>
                         </Box>
                         <GridST>

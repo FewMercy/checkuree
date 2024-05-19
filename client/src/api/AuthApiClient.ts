@@ -14,6 +14,18 @@ export interface RegisterData {
     email: string;
 }
 
+export interface userUser {
+    birthYear: string;
+    birthday: string;
+    createdAt: string;
+    email: string;
+    id: string;
+    mobileNumber: string;
+    name: string;
+    type: string;
+    username: string;
+}
+
 class AuthApiClient extends BaseApiClient {
     private static instance: AuthApiClient;
 
@@ -64,7 +76,7 @@ class AuthApiClient extends BaseApiClient {
         });
 
     public userInfo = () =>
-        this.axios.request({
+        this.axios.request<userUser>({
             method: 'GET',
             url: `/users`,
         });
