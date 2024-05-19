@@ -237,7 +237,7 @@ const Index = () => {
             })
         );
 
-        // createRecords(parameters);
+        createRecords(parameters);
     };
 
     useEffect(() => {
