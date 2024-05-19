@@ -155,10 +155,9 @@ const BoxSTNavigation = styled(Box)(() => {
         alignItems: 'center',
         justifyContent: 'space-around',
         position: 'fixed',
-        bottom: '0',
+        bottom: '48px',
         zIndex: '9999',
         left: '50%',
-        top: '90%',
         transform: 'translateX(-50%)',
     };
 });
@@ -182,10 +181,9 @@ const BoxSTNavigationActivate = styled(Box)(() => {
         alignItems: 'center',
         justifyContent: 'space-around',
         position: 'fixed',
-        bottom: '0',
+        bottom: '48px',
         zIndex: '9999',
         left: '50%',
-        top: '90%',
         transform: 'translateX(-50%)',
     };
 });
