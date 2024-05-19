@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { Colors } from '@/styles/globalStyles';
 
 export const ListManagementContainer = styled.section`
-    min-width: 393px;
     width: 100%;
     padding: 0 27px;
     position: relative;
@@ -43,12 +42,12 @@ export const ListManagementContainer = styled.section`
     & > .MuiFab-root {
         width: 48px;
         height: 48px;
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: absolute;
-        right: 29px;
-        bottom: 84px;
         border-radius: 24px;
         box-sizing: border-box;
         background-color: ${Colors.CheckureeGreen};
@@ -116,7 +115,8 @@ export const FormContentsContainer = styled.section<{ gender: string }>`
         display: flex;
         flex-direction: column;
         gap: 24px;
-        padding: 32px 27px 0;
+        padding: 32px 27px 36px;
+        margin-bottom: 60px;
 
         & > .form-row {
             & > .label {
@@ -246,44 +246,44 @@ export const FormContentsContainer = styled.section<{ gender: string }>`
                 }
             }
         }
-    }
 
-    & > .additional-button-container {
-        display: flex;
-        justify-content: space-between;
-        margin: 24px 27px 12px;
+        & > .additional-button-container {
+            display: flex;
+            justify-content: space-between;
 
-        & > .additional-button {
-            height: 28px;
+            & > .additional-button {
+                height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 12px;
+                box-sizing: border-box;
+                border-radius: 4px;
+                border: 1px solid ${Colors.CheckureeGreen};
+                font-weight: 500;
+                color: ${Colors.CheckureeGreen};
+                background: ${Colors.CheckureeGreen10};
+            }
+        }
+
+        & > .disabled-button {
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 12px;
-            box-sizing: border-box;
             border-radius: 4px;
-            border: 1px solid ${Colors.CheckureeGreen};
-            font-weight: 500;
-            color: ${Colors.CheckureeGreen};
-            background: ${Colors.CheckureeGreen10};
+            font-weight: 600;
+            color: ${Colors.White};
+            background: ${Colors.WarningRed};
         }
-    }
-
-    & > .disabled-button {
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-        font-weight: 600;
-        color: ${Colors.White};
-        background: ${Colors.WarningRed};
-        margin: 0 27px 36px;
     }
 
     & > .button-container {
         width: 100%;
         height: 60px;
         display: flex;
+        position: absolute;
+        bottom: 0;
 
         & > .button {
             display: flex;
