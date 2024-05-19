@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 const Index = () => {
     const router = useRouter();
     const [mounted, setMounted] = useState<boolean>(false);
-    const accessToken = Cookies.get("ACCESS_TOKEN");
+    const accessToken = Cookies.get('ACCESS_TOKEN');
     const [login, setLogin] = useState<LoginData>({
         username: '',
         password: '',
@@ -71,14 +71,15 @@ const Index = () => {
 
     useEffect(() => {
         setMounted(true);
-        if(accessToken){
-            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        if (accessToken) {
+            axios.defaults.headers.common['Authorization'] =
+                `Bearer ${accessToken}`;
         }
     }, []);
 
     return (
         <ContainerST>
-            <StyledBoxST>
+            {/* <StyledBoxST>
                 <LoginTypographyST>로그인</LoginTypographyST>
                 <Box
                     component="form"
@@ -102,8 +103,8 @@ const Index = () => {
                         inputProps={TextFiledInputProps}
                     />
                 </Box>
-            </StyledBoxST>
-            <BoxSTLoginCommon gap={'38px'}>
+            </StyledBoxST> */}
+            {/* <BoxSTLoginCommon gap={'38px'}>
                 <BoxSTLoginCommon gap={'4px'}>
                     <BoxSTLoginMaintain>
                         <StyledCheckbox
@@ -147,25 +148,16 @@ const Index = () => {
                         </Box>
                     </BoxSTLoginCommon>
                 </BoxSTLoginCommon>
-                <StyledKakaoLoginButton
-                    onClick={() => {
-                        router.push('https://checkuree.com/api/v1/auth/kakao');
-                    }}
-                >
-                    카카오 로그인
-                </StyledKakaoLoginButton>
-                {/* <Box display={'flex'} justifyContent={'space-between'}>
-                 
-                    <StyledNaverLoginButton
-                        onClick={() => {
-                            alert('준비중인 기능입니다.');
-                        }}
-                    >
-                        네이버 로그인
-                    </StyledNaverLoginButton>
-                </Box> */}
-            </BoxSTLoginCommon>
+          
+            </BoxSTLoginCommon> */}
 
+            <StyledKakaoLoginButton
+                onClick={() => {
+                    router.push('https://checkuree.com/api/v1/auth/kakao');
+                }}
+            >
+                카카오 로그인
+            </StyledKakaoLoginButton>
             <Image
                 src={'/images/logos/checkuree_logo.svg'}
                 width={100}
