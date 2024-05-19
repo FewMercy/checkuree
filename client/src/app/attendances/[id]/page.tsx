@@ -61,6 +61,7 @@ const Index = () => {
 
     const today = dateFormat(new Date(), 'dash');
 
+    const [totalCount, setTotalCount] = useState(0);
     const [selectedDate, setSelectedDate] = useState(today);
     const [attendeeList, setAttendeeList] = useState<ParsedAttendeeListType>(
         {}
@@ -85,6 +86,8 @@ const Index = () => {
             ) {
                 const result: AttendanceSchedulesByDateItemObj =
                     response.data.items[0];
+
+                setTotalCount(response.data.count);
 
                 for (const key in result) {
                     if (result.hasOwnProperty(key)) {
@@ -157,9 +160,7 @@ const Index = () => {
     const statusIcons: { icon: string; count: number }[] = [
         {
             icon: 'groups',
-            count:
-                Object.keys(attendeeList).flatMap((key) => attendeeList[key])
-                    ?.length || 0,
+            count: totalCount,
         },
         {
             icon: 'sentiment_satisfied_alt',
