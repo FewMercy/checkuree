@@ -12,6 +12,7 @@
     "start:dev": "cross-env NODE_ENV=development nest start --watch",
     "start:test": "cross-env NODE_ENV=test nest start --watch",
     "start:local": "cross-env NODE_ENV=local nest start --watch",
+    "start:docker": "cross-env NODE_ENV=docker nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=production pm2 start dist/main.js --name checkuree-server",
     "start:prodTest": "cross-env NODE_ENV=production nest start --watch",
