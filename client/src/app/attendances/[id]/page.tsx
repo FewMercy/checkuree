@@ -220,8 +220,17 @@ const Index = () => {
                         time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
-                        lateTime: item.lateTime || '',
                     });
+
+                    if (item.lateTime) {
+                        const index = parameters.singleRecords.findIndex(
+                            (el) => el.attendeeId === item.attendeeId
+                        );
+
+                        Object.assign(parameters.singleRecords[index], {
+                            lateTime: item.lateTime,
+                        });
+                    }
                 }
                 if (item.newStatus === 'Absent') {
                     parameters.singleRecords.push({
@@ -231,8 +240,17 @@ const Index = () => {
                         time: item.time,
                         day: day.toUpperCase(),
                         etc: item.etc || '',
-                        absenceType: item.absenceType ?? '',
                     });
+
+                    if (item.absenceType) {
+                        const index = parameters.singleRecords.findIndex(
+                            (el) => el.attendeeId === item.attendeeId
+                        );
+
+                        Object.assign(parameters.singleRecords[index], {
+                            absenceType: item.absenceType,
+                        });
+                    }
                 }
             })
         );

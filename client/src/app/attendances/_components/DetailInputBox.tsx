@@ -49,8 +49,6 @@ const DetailInputBox = ({ item, time, index, handleListItem }: PropsType) => {
             ? item.newStatus
             : item.status;
 
-    console.log('item', item);
-
     return (
         <div className="detail-box">
             {status === 'Late' ? (
