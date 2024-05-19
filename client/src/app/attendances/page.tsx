@@ -3,7 +3,7 @@
 import 'dayjs/locale/ko'; // 한국어 locale 설정
 
 import { Box, Fab, Typography, styled } from '@mui/material';
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
 import Cookies from 'js-cookie';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import BottomDrawer from '@/components/BottomDrawer';
 import { DayOfWeek, sortWeekdays } from '@/utils';
+import useUser from '@/hook/useUser';
 
 dayjs.locale('ko');
 
@@ -63,7 +64,10 @@ const Page: React.FC = () => {
     const router = useRouter();
     const today = dayjs(); // 오늘 날짜
     const todayFormat = today.format('YYYY년 MM월 DD일 dddd');
-    
+
+    // 사용자 정보
+    const user = useUser();
+
     // State
     const [isCreate, setIsCreate] = useState<boolean>(false);
 
@@ -94,7 +98,7 @@ const Page: React.FC = () => {
                                 lineHeight={'27.24px'}
                                 fontWeight={600}
                             >
-                                김범수님, 안녕하세요.
+                                {user.name}님, 안녕하세요.
                             </Typography>
                         </Box>
                         <GridST>
