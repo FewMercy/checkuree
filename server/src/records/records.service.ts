@@ -98,6 +98,7 @@ export class RecordsService {
       .innerJoin('record.attendee', 'attendee', 'attendee.attendanceId = :attendanceId', {
         attendanceId: attendanceId,
       })
+      .andWhere('record.date = :date', { date: date })
       .groupBy('record.status')
       .getRawMany();
 
@@ -105,7 +106,7 @@ export class RecordsService {
       absenceCount = 0,
       lateCount = 0;
     summary.forEach((record) => {
-      switch (record.status) {
+      switch (record.status.toUpperCase()) {
         case 'PRESENT':
           presentCount = parseInt(record.count);
           break;
