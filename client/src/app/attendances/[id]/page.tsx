@@ -23,11 +23,10 @@ import { AttendanceIdContainer } from '@/styles/app/attendancesId.styles';
 
 // Api
 import {
-    QueryClient,
-    dehydrate,
     useQuery,
     useMutation,
     useQueryClient,
+    useInfiniteQuery,
 } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 
@@ -35,6 +34,7 @@ import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import Icon from '@/components/Icon';
 import Navigation from '@/app/attendances/_components/Navigation';
 import AttendanceItem from '@/app/attendances/_components/AttendanceItem';
+import InfiniteCheckComp from '@/components/InfiniteCheckComp';
 
 // Types
 import {
@@ -70,13 +70,25 @@ const Index = () => {
     const queryClient = useQueryClient();
 
     // 출석대상 명단 조회
-    const { data: attendance, isSuccess } = useQuery({
+    const {
+        data: attendance,
+        isLoading,
+        isSuccess,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useInfiniteQuery({
         queryKey: ['attendanceToday', attendanceId, selectedDate],
-        queryFn: async (): Promise<AttendanceSchedulesByDateItemObj> => {
+        queryFn: async ({
+            pageParam,
+        }): Promise<AttendanceSchedulesByDateItemObj> => {
             const response =
                 await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
-                    attendanceId,
-                    selectedDate
+                    {
+                        attendanceId,
+                        date: selectedDate,
+                        pageNo: pageParam.pageNo,
+                    }
                 );
 
             if (
@@ -108,6 +120,14 @@ const Index = () => {
             }
 
             return {} as AttendanceSchedulesByDateItemObj;
+        },
+        initialPageParam: { pageNo: 1 },
+        getNextPageParam: (attendeeList, allPages, lastPageParam) => {
+            if (!attendeeList || _.isEmpty(attendeeList)) {
+                return undefined;
+            }
+
+            return { pageNo: lastPageParam.pageNo + 1 };
         },
     });
 
@@ -260,8 +280,12 @@ const Index = () => {
     };
 
     useEffect(() => {
-        if (isSuccess && attendance) {
-            setAttendeeList(attendance);
+        if (isSuccess && attendance && attendance.pages) {
+            const attendeeLists = attendance.pages.reduce((acc, obj) => {
+                return { ...acc, ...obj };
+            }, {});
+
+            setAttendeeList(attendeeLists);
         }
     }, [attendance]);
 
@@ -296,6 +320,7 @@ const Index = () => {
                                             'dash'
                                         );
                                         setSelectedDate(formattedDate);
+                                        window.scrollTo(0, 0);
                                     }
                                 }}
                                 customInput={
@@ -358,6 +383,18 @@ const Index = () => {
                         </section>
                     );
                 })}
+
+                <InfiniteCheckComp
+                    initialDataLoading={!isLoading && !_.isEmpty(attendeeList)}
+                    isFetchingNextPage={isFetchingNextPage}
+                    hasNextPage={hasNextPage}
+                    callNextPage={async () => {
+                        if (isFetchingNextPage) {
+                            return;
+                        }
+                        await fetchNextPage();
+                    }}
+                />
             </section>
 
             <Navigation
@@ -370,27 +407,3 @@ const Index = () => {
 };
 
 export default Index;
-
-// TODO: 좀 더 작업 해야 함
-
-Index.GetServerSideProps = async (context: any) => {
-    const queryClient = new QueryClient();
-    const id = context.params!.id as string;
-    const today = context.params!.today as string;
-    await queryClient.prefetchQuery({
-        queryKey: ['attendance', id],
-        queryFn: async () => {
-            const response =
-                await AttendanceApiClient.getInstance().getAttendanceSchedulesByDate(
-                    id,
-                    today
-                );
-            return response.data;
-        },
-    });
-    return {
-        props: {
-            dehydratedState: dehydrate(queryClient),
-        },
-    };
-};
