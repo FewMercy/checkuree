@@ -1,0 +1,11 @@
+{
+  "/attendances/page": "app/attendances/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/attendances/[id]/page": "app/attendances/[id]/page.js",
+  "/auth/signin/page": "app/auth/signin/page.js",
+  "/_not-found": "app/_not-found.js",
+  "/auth/signup/page": "app/auth/signup/page.js",
+  "/list-management/[id]/page": "app/list-management/[id]/page.js",
+  "/page": "app/page.js"
+}
