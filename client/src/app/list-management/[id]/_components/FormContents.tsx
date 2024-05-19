@@ -335,18 +335,17 @@ const FormContents = ({
                             {watch('times') &&
                                 _.has(watch('times'), selectedDay) &&
                                 watch('times')[selectedDay].map((item) => (
-                                    <div className="selected-time">
+                                    <div
+                                        className="selected-time"
+                                        onClick={() =>
+                                            handleSelectTime(selectedDay, item)
+                                        }
+                                    >
                                         {`${item.slice(0, 2)}:${item.slice(2)}`}
                                         <Icon
                                             icon={Icons.highlight_off}
                                             size={20}
                                             color={Colors.CheckureeGreen}
-                                            onClick={() =>
-                                                handleSelectTime(
-                                                    selectedDay,
-                                                    item
-                                                )
-                                            }
                                         />
                                     </div>
                                 ))}
