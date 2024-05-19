@@ -146,7 +146,8 @@ export default Navigation;
 
 const BoxSTNavigation = styled(Box)(() => {
     return {
-        width: '359px',
+        minWidth: '330px',
+        maxWidth: '359px',
         height: '60px',
         backgroundColor: '#59996B',
         borderRadius: '30px',
@@ -175,11 +176,12 @@ const BoxSTMenu = styled(Box)(() => {
 
 const BoxSTNavigationActivate = styled(Box)(() => {
     return {
-        width: '359px',
+        minWidth: '330px',
+        maxWidth: '359px',
         height: '60px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         position: 'fixed',
         bottom: '48px',
         zIndex: '9999',
