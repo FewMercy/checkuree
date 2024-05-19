@@ -380,7 +380,6 @@ const Index = () => {
                                     />
                                 ))}
                             </div>
-                            용
                         </section>
                     );
                 })}

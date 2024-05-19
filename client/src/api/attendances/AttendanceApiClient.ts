@@ -85,7 +85,7 @@ class AttendanceApiClient extends BaseApiClient {
     ) =>
         this.axios.request({
             method: 'GET',
-            url: `/attendance/${attendanceId}/records/summary`,
+            url: `/attendance/${attendanceId}/attendees/records/summary`,
             params: {
                 attendeeIds,
             },
