@@ -454,10 +454,9 @@ const BoxSTcancel = styled(Box)(() => {
 const BoxSTbutton = styled(Box)(() => {
     return {
         display: 'flex',
+        maxWidth: 340,
         width: '100%',
         justifyContent: 'center',
-        position: 'absolute',
-        bottom: 0,
     };
 });
 
