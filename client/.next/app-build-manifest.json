@@ -1,5 +1,10 @@
 {
   "pages": {
+    "/auth/signin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/signin/page.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -11,10 +16,16 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/auth/signin/page": [
+    "/attendances/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/signin/page.js"
+      "static/chunks/app/attendances/page.js"
+    ],
+    "/attendances/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/attendances/[id]/page.css",
+      "static/chunks/app/attendances/[id]/page.js"
     ]
   }
 }
