@@ -20,7 +20,6 @@ import { useRouter } from 'next/navigation';
 
 const Index = () => {
     const router = useRouter();
-    const [mounted, setMounted] = useState<boolean>(false);
     const accessToken = Cookies.get('ACCESS_TOKEN');
     const [login, setLogin] = useState<LoginData>({
         username: '',
@@ -70,7 +69,6 @@ const Index = () => {
     };
 
     useEffect(() => {
-        setMounted(true);
         if (accessToken) {
             axios.defaults.headers.common['Authorization'] =
                 `Bearer ${accessToken}`;
@@ -80,7 +78,14 @@ const Index = () => {
     return (
         <ContainerST>
             <StyledBoxST>
-                <LoginTypographyST>로그인</LoginTypographyST>
+                <LoginTypographyST>
+                    <Image
+                        src={'/images/logos/checkuree_logo.svg'}
+                        width={300}
+                        height={50}
+                        alt=""
+                    />
+                </LoginTypographyST>
                 <Box
                     component="form"
                     display={'flex'}
@@ -104,70 +109,25 @@ const Index = () => {
                     />
                 </Box>
             </StyledBoxST>
-            <BoxSTLoginCommon gap={'38px'}>
-                <BoxSTLoginCommon gap={'4px'}>
-                    <BoxSTLoginMaintain>
-                        <StyledCheckbox
-                            inputProps={{
-                                style: {
-                                    padding: 0,
-                                },
-                            }}
-                            onChange={(e) =>
-                                onChange('isAutoLogin', e.target?.checked)
-                            }
-                        />
-                        <StyledLoginMaintainTypography>
-                            로그인 유지
-                        </StyledLoginMaintainTypography>
-                    </BoxSTLoginMaintain>
-
-                    <BoxSTLoginCommon gap={'10px'}>
-                        <BoxSTLogin
-                            onClick={() => {
-                                loginMutation(login);
-                            }}
-                        >
-                            로그인 하기
-                        </BoxSTLogin>
-                        {/* <Box
-                            display={'flex'}
-                            justifyContent={'space-between'}
-                            padding={'0px 4px'}
-                        >
-                            <StyledLinkTypography
-                                onClick={() => router.push('/auth/signup')}
-                            >
-                                회원가입
-                            </StyledLinkTypography>
-                            <StyledLinkTypography
-                                onClick={() => alert('준비중인 기능입니다.')}
-                            >
-                                아이디/비밀번호 찾기
-                            </StyledLinkTypography>
-                        </Box> */}
-                    </BoxSTLoginCommon>
-                </BoxSTLoginCommon>
-
-                {/* <Box display={'flex'} justifyContent={'space-between'}>
-                 
-                    <StyledNaverLoginButton
-                        onClick={() => {
-                            alert('준비중인 기능입니다.');
-                        }}
-                    >
-                        네이버 로그인
-                    </StyledNaverLoginButton>
-                </Box> */}
+            <BoxSTLoginCommon gap={'10px'}>
+                <StyledLoginButton
+                    onClick={() => {
+                        loginMutation(login);
+                    }}
+                    backgroundcolor="#59996B"
+                >
+                    체쿠리 로그인
+                </StyledLoginButton>
+                <StyledKakaoLoginButton
+                    onClick={() => {
+                        router.push('https://checkuree.com/api/v1/auth/kakao');
+                    }}
+                    backgroundcolor=""
+                >
+                    카카오 로그인
+                </StyledKakaoLoginButton>
             </BoxSTLoginCommon>
 
-            <StyledKakaoLoginButton
-                onClick={() => {
-                    router.push('https://checkuree.com/api/v1/auth/kakao');
-                }}
-            >
-                카카오 로그인
-            </StyledKakaoLoginButton>
             <Image
                 src={'/images/logos/checkuree_logo.svg'}
                 width={100}
@@ -238,28 +198,6 @@ const StyledCheckbox = styled(Checkbox)(() => {
     };
 });
 
-// 회원가입 및 아이디/비밀번호 찾기 텍스트 스타일
-const StyledLinkTypography = styled(Typography)(() => {
-    return {
-        cursor: 'pointer',
-        fontSize: '14px',
-        color: '#222222',
-        lineHeight: '19.07px',
-        fontWeight: 500,
-    };
-});
-
-// 회원가입 및 아이디/비밀번호 찾기 텍스트 스타일
-const StyledLoginMaintainTypography = styled(Typography)(() => {
-    return {
-        fontSize: '12.5px',
-        color: '#D9D9D9',
-        lineHeight: '16.34px',
-        fontWeight: 500,
-        verticalAlign: 'middle',
-    };
-});
-
 const BoxSTLoginCommon = styled(Box)(() => {
     return {
         display: 'flex',
@@ -267,31 +205,12 @@ const BoxSTLoginCommon = styled(Box)(() => {
     };
 });
 
-const BoxSTLogin = styled(Box)(() => {
-    return {
-        width: '318px',
-        height: '48px',
-        color: 'white',
-        backgroundColor: '#59996B',
-        borderRadius: '8px',
-        display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    };
-});
-
-const BoxSTLoginMaintain = styled(Box)(() => {
-    return {
-        marginTop: '10px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '5px',
-        paddingLeft: '5px',
-    };
-});
-
 // 카카오 및 네이버 로그인 버튼 스타일
-const StyledLoginButton = styled(Box)(() => {
+const StyledLoginButton = styled(Box)(({
+    backgroundcolor,
+}: {
+    backgroundcolor: string;
+}) => {
     return {
         width: '313px',
         height: '39px',
@@ -301,8 +220,11 @@ const StyledLoginButton = styled(Box)(() => {
         fontWeight: 600,
         textTransform: 'none',
         display: 'flex',
+        color: 'white',
         alignItems: 'center',
+        cursor: 'pointer',
         justifyContent: 'center',
+        background: backgroundcolor,
     };
 });
 
