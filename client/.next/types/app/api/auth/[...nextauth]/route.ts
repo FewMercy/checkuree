@@ -1,4 +1,4 @@
-// File: /Users/gimbeomsu/Desktop/checkuree/client/src/app/api/auth/[...nextauth]/route.ts
+// File: /Users/sanghoopark/IdeaProjects/checkuree/client/src/app/api/auth/[...nextauth]/route.ts
 import * as entry from '../../../../../../src/app/api/auth/[...nextauth]/route.js'
 import type { NextRequest } from 'next/server.js'
 

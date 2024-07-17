@@ -1,7 +1,10 @@
 {
-  "/auth/signin/page": "app/auth/signin/page.js",
-  "/attendances/page": "app/attendances/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/attendances/[id]/page": "app/attendances/[id]/page.js",
-  "/not-found": "app/not-found.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
+  "/_not-found": "app/_not-found.js",
+  "/attendances/page": "app/attendances/page.js",
+  "/page": "app/page.js",
+  "/auth/signin/page": "app/auth/signin/page.js",
+  "/list-management/[id]/page": "app/list-management/[id]/page.js",
+  "/auth/signup/page": "app/auth/signup/page.js"
 }
