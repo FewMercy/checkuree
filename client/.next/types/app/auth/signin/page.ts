@@ -1,4 +1,4 @@
-// File: /Users/sanghoopark/IdeaProjects/checkuree/client/src/app/auth/signin/page.tsx
+// File: /Users/sanghoo/IdeaProjects/checkuree/client/src/app/auth/signin/page.tsx
 import * as entry from '../../../../../src/app/auth/signin/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
