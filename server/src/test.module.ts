@@ -17,15 +17,18 @@ import { getOrmConfig } from './common/const/orm.config';
 import { Invitation } from './invitations/entities/invitation.entity';
 import { InvitationsModule } from './invitations/invitations.module';
 import { LoginHistory } from './auth/entity/login-history.entity';
+import { FileManagerService } from './file-manager/file-manager.service';
+import { FileManagerModule } from './file-manager/file-manager.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: `.env.test`,
     }),
     TypeOrmModule.forRoot({
       ...getOrmConfig(),
-      entities: [User, Attendance, UserAttendance, Attendee, Schedule, Record, Invitation, LoginHistory],
+      entities: [User, Attendance, UserAttendance, Schedule, Record, Invitation, LoginHistory],
     }),
     UsersModule,
     AuthModule,
@@ -34,6 +37,7 @@ import { LoginHistory } from './auth/entity/login-history.entity';
     SchedulesModule,
     RecordsModule,
     InvitationsModule,
+    FileManagerModule,
   ],
 })
 export class TestModule {}
