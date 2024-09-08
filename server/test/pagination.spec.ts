@@ -7,8 +7,8 @@ describe('Pagination', () => {
     pagination = new TestPagination();
   });
 
-  it('pageNo, pageSize는 각각 디폴트 값으로 0과 10을 가진다', () => {
-    expect(pagination.pageNo).toBe(0);
+  it('pageNo, pageSize는 각각 디폴트 값으로 1과 10을 가진다', () => {
+    expect(pagination.pageNo).toBe(1);
     expect(pagination.pageSize).toBe(10);
   });
 
