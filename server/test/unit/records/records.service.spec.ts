@@ -19,6 +19,7 @@ import { RecordFilterDto } from '../../../src/records/dto/record-filter.dto';
 import { ExcelService } from '../../../src/common/excel.service';
 import { SingleRecord } from '../../../src/records/const/singleRecord.class';
 import { Gender } from '../../../src/attendees/const/gender.enum';
+import { HhMm, YyMmDd } from '../../../src/common/contracts';
 
 describe('RecordsService', () => {
   let module: TestingModule;
@@ -61,7 +62,7 @@ describe('RecordsService', () => {
   });
 
   describe('Create Record Test', () => {
-    it('출석기록 생성시 success,message,id를 리턴한다.', async () => {
+    it('출석기록 생성시 success, message, id를 리턴한다.', async () => {
       // Given
       const user = new User();
       user.id = 'user id 1';
@@ -69,7 +70,7 @@ describe('RecordsService', () => {
       const attendee = new Attendee();
       attendee.id = 'Attendee Id 1';
 
-      const recordDto = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, attendee.id);
+      const recordDto = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, '1200', attendee.id);
 
       // When
       const sut = await service.create(recordDto, user);
@@ -88,7 +89,7 @@ describe('RecordsService', () => {
       const attendee = new Attendee();
       attendee.id = 'Attendee Id 1';
 
-      const recordDto = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, attendee.id);
+      const recordDto = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, '1200', attendee.id);
 
       // When
       const createResponse = await service.create(recordDto, user);
@@ -115,9 +116,9 @@ describe('RecordsService', () => {
 
       const recordDto = new CreateRecordDto();
       recordDto.singleRecords = [
-        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, attendee_1.id),
-        createSingleRecord('2024-01-16', DayType.TUESDAY, AttendanceStatus.ABSENT, attendee_1.id),
-        createSingleRecord('2024-01-17', DayType.WEDNESDAY, AttendanceStatus.PRESENT, attendee_2.id),
+        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, '1200', attendee_1.id),
+        createSingleRecord('2024-01-16', DayType.TUESDAY, AttendanceStatus.ABSENT, '1200', attendee_1.id),
+        createSingleRecord('2024-01-17', DayType.WEDNESDAY, AttendanceStatus.PRESENT, '1200', attendee_2.id),
       ];
       // When
       const createResponse = await service.create(recordDto, user);
@@ -152,9 +153,9 @@ describe('RecordsService', () => {
 
       const recordDto = new CreateRecordDto();
       recordDto.singleRecords = [
-        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, attendee.id),
-        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.LATE, attendee.id),
-        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.ABSENT, attendee.id),
+        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, '1200', attendee.id),
+        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.LATE, '1200', attendee.id),
+        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.ABSENT, '1200', attendee.id),
       ];
       // When
       const createResponse = await service.create(recordDto, user);
@@ -179,9 +180,9 @@ describe('RecordsService', () => {
 
       const recordDto = new CreateRecordDto();
       recordDto.singleRecords = [
-        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, attendee.id),
-        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.LATE, attendee.id),
-        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.ABSENT, attendee.id),
+        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, '1200', attendee.id),
+        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.LATE, '1200', attendee.id),
+        createSingleRecord('2024-01-15', DayType.MONDAY, AttendanceStatus.ABSENT, '1200', attendee.id),
       ];
 
       const spyUpsert = jest.spyOn(recordRepository, 'upsert');
@@ -215,7 +216,7 @@ describe('RecordsService', () => {
       attendee.id = 'Attendee Id 1';
 
       // 실제 2024-01-15는 월요일
-      const recordDto = createRecordDto('2024-01-15', DayType.FRIDAY, AttendanceStatus.PRESENT, attendee.id);
+      const recordDto = createRecordDto('2024-01-15', DayType.FRIDAY, AttendanceStatus.PRESENT, '1200', attendee.id);
 
       // When / Then
       expect(async () => {
@@ -259,7 +260,7 @@ describe('RecordsService', () => {
 
       const now = new Date();
 
-      const recordDto = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, attendee.id);
+      const recordDto = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, '1200', attendee.id);
       recordDto.createdAt = now;
 
       // When
@@ -280,11 +281,11 @@ describe('RecordsService', () => {
       const attendee = new Attendee();
       attendee.id = 'Attendee Id 1';
 
-      const recordDto_1 = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, attendee.id);
+      const recordDto_1 = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.PRESENT, '1200', attendee.id);
 
       await service.create(recordDto_1, user);
 
-      const recordDto_2 = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.ABSENT, attendee.id);
+      const recordDto_2 = createRecordDto('2024-01-15', DayType.MONDAY, AttendanceStatus.ABSENT, '1200', attendee.id);
 
       // When
       const createResponse = await service.create(recordDto_2, user);
@@ -1153,17 +1154,18 @@ describe('RecordsService', () => {
   }
 });
 
-function createSingleRecord(date: string, day: DayType, status: AttendanceStatus, attendeeId: string) {
+function createSingleRecord(date: YyMmDd, day: DayType, status: AttendanceStatus, time: HhMm, attendeeId: string) {
   const singleRecord = new SingleRecord();
   singleRecord.date = date;
   singleRecord.day = day;
   singleRecord.status = status;
+  singleRecord.time = time;
   singleRecord.attendeeId = attendeeId;
   return singleRecord;
 }
 
-function createRecordDto(date, day: DayType, status: AttendanceStatus, attendeeId) {
-  const singleRecord = createSingleRecord(date, day, status, attendeeId);
+function createRecordDto(date: YyMmDd, day: DayType, status: AttendanceStatus, time: HhMm, attendeeId: string) {
+  const singleRecord = createSingleRecord(date, day, status, time, attendeeId);
 
   const recordDto = new CreateRecordDto();
   recordDto.singleRecords = [singleRecord];
@@ -1171,7 +1173,7 @@ function createRecordDto(date, day: DayType, status: AttendanceStatus, attendeeI
   return recordDto;
 }
 
-function createRecord(date, day: DayType, status: AttendanceStatus, attendeeId, userId) {
+function createRecord(date: YyMmDd, day: DayType, status: AttendanceStatus, attendeeId, userId) {
   const record = new Record();
   record.date = date;
   record.day = day;

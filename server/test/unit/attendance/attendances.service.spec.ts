@@ -14,8 +14,8 @@ import { FileManagerService } from '../../../src/file-manager/file-manager.servi
 import { AttendanceDay } from '../../../src/attendances/entities/attendance-day.entity';
 import { S3Service } from '../../../src/file-manager/s3.service';
 import { ImageProcessorService } from '../../../src/file-manager/image-processor.service';
-import { Hhmm } from '../../../src/attendances/const/contract';
 import { Gender } from '../../../src/attendees/const/gender.enum';
+import { HhMm } from '../../../src/common/contracts';
 
 describe('AttendancesService', () => {
   let module: TestingModule;
@@ -289,7 +289,7 @@ describe('AttendancesService', () => {
   }
 });
 
-function createAttendanceDto(title: string, description: string, availableFrom: Hhmm, availableTo: Hhmm): CreateAttendanceDto {
+function createAttendanceDto(title: string, description: string, availableFrom: HhMm, availableTo: HhMm): CreateAttendanceDto {
   const createAttendanceDto = new CreateAttendanceDto();
   createAttendanceDto.title = title;
   createAttendanceDto.description = description;

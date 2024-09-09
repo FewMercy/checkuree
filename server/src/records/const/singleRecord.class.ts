@@ -14,6 +14,7 @@ export class SingleRecord {
   })
   attendeeId: string;
 
+  // TODO : YYMMDD 형식으로 통일하는 건에 대해 건의
   @IsDateString()
   @ApiProperty({
     description: '출석날짜',
