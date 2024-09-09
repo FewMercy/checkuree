@@ -5,29 +5,36 @@ import { UserAttendance } from '../../../src/attendances/entities/user-attendanc
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { CreateAttendanceDto } from '../../../src/attendances/dto/create-attendance.dto';
 import { User } from '../../../src/users/entities/user.entity';
-import { AttendanceType } from '../../../src/attendances/const/attendance-type.enum';
 import { TestModule } from '../../../src/test.module';
 import { RoleType } from '../../../src/roles/const/role-type.enum';
 import { UpdateAttendanceDto } from '../../../src/attendances/dto/update-attendance.dto';
 import { Attendee } from '../../../src/attendees/entities/attendee.entity';
 import { Repository } from 'typeorm';
+import { FileManagerService } from '../../../src/file-manager/file-manager.service';
+import { AttendanceDay } from '../../../src/attendances/entities/attendance-day.entity';
+import { S3Service } from '../../../src/file-manager/s3.service';
+import { ImageProcessorService } from '../../../src/file-manager/image-processor.service';
+import { Hhmm } from '../../../src/attendances/const/contract';
+import { Gender } from '../../../src/attendees/const/gender.enum';
 
 describe('AttendancesService', () => {
   let module: TestingModule;
   let service: AttendancesService;
   let attendanceRepository: Repository<Attendance>;
+  let attendanceDayRepository: Repository<AttendanceDay>;
   let attendeeRepository: Repository<Attendee>;
   let userAttendanceRepository: Repository<UserAttendance>;
   let userRepository: Repository<User>;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [TestModule, TypeOrmModule.forFeature([Attendance, UserAttendance, User])],
-      providers: [AttendancesService],
+      imports: [TestModule, TypeOrmModule.forFeature([Attendance, AttendanceDay, UserAttendance, User])],
+      providers: [AttendancesService, FileManagerService, S3Service, ImageProcessorService],
     }).compile();
 
     service = module.get<AttendancesService>(AttendancesService);
     attendanceRepository = module.get(getRepositoryToken(Attendance));
+    attendanceDayRepository = module.get(getRepositoryToken(AttendanceDay));
     userAttendanceRepository = module.get(getRepositoryToken(UserAttendance));
     userRepository = module.get(getRepositoryToken(User));
     attendeeRepository = module.get(getRepositoryToken(Attendee));
@@ -53,7 +60,7 @@ describe('AttendancesService', () => {
   describe('createAttendance Test', () => {
     it('출석부 생성 성공시 success,message,data.id를 반환한다.', async () => {
       // given
-      const attendanceDto = createAttendanceDto('test title', 'test description', AttendanceType.WEEKDAY);
+      const attendanceDto = createAttendanceDto('test title', 'test description', '1200', '2000');
 
       const user = new User();
       user.id = 'user id 1';
@@ -71,7 +78,7 @@ describe('AttendancesService', () => {
 
     it('출석부 테이블에 출석부를 생성한다.', async () => {
       // given
-      const attendanceDto = createAttendanceDto('test title', 'test description', AttendanceType.WEEKDAY);
+      const attendanceDto = createAttendanceDto('test title', 'test description', '1200', '2000');
 
       const user = new User();
       user.id = 'user id 1';
@@ -84,12 +91,11 @@ describe('AttendancesService', () => {
       // then
       expect(newAttendance.data.title).toBe('test title');
       expect(newAttendance.data.description).toBe('test description');
-      expect(newAttendance.data.type).toBe(AttendanceType.WEEKDAY);
     });
 
     it('UserAttendance 테이블에 MASTER 권한으로 데이터가 생성된다.', async () => {
       // given
-      const attendanceDto = createAttendanceDto('test title 1', 'test description', AttendanceType.WEEKDAY);
+      const attendanceDto = createAttendanceDto('test title 1', 'test description', '1200', '2000');
 
       const user = new User();
       user.id = 'user id 1';
@@ -113,26 +119,26 @@ describe('AttendancesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', AttendanceType.WEEKDAY);
+      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', '1200', '2000');
 
       const createdResponse = await service.create(createAttendanceDto_1, user_1);
 
       const attendee_1 = new Attendee();
       attendee_1.attendanceId = createdResponse.data.id;
       attendee_1.name = '박우현';
-      attendee_1.age = 30;
+      attendee_1.gender = Gender.MALE;
       attendee_1.createId = user_1.id;
 
       const attendee_2 = new Attendee();
       attendee_2.attendanceId = createdResponse.data.id;
       attendee_2.name = '김우빈';
-      attendee_2.age = 37;
+      attendee_2.gender = Gender.MALE;
       attendee_2.createId = user_1.id;
 
       const attendee_3 = new Attendee();
       attendee_3.attendanceId = createdResponse.data.id;
       attendee_3.name = '방정숙';
-      attendee_3.age = 45;
+      attendee_3.gender = Gender.FEMALE;
       attendee_3.createId = user_1.id;
 
       await attendeeRepository.save([attendee_1, attendee_2, attendee_3]);
@@ -155,9 +161,9 @@ describe('AttendancesService', () => {
       const user_2 = new User();
       user_2.id = 'user id 2';
 
-      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', AttendanceType.WEEKDAY);
-      const createAttendanceDto_2 = createAttendanceDto('test title 2', 'test description', AttendanceType.WEEKDAY);
-      const createAttendanceDto_3 = createAttendanceDto('test title 3', 'test description', AttendanceType.WEEKDAY);
+      const createAttendanceDto_1 = createAttendanceDto('title 1', 'description', '1200', '2000');
+      const createAttendanceDto_2 = createAttendanceDto('title 2', 'description', '1200', '2000');
+      const createAttendanceDto_3 = createAttendanceDto('title 3', 'description', '1200', '2000');
 
       await service.create(createAttendanceDto_1, user_1);
       await service.create(createAttendanceDto_2, user_1);
@@ -165,13 +171,10 @@ describe('AttendancesService', () => {
 
       // when
       const sut = await service.findAllByUserId(user_1.id);
+
       // then
       expect(sut.success).toBe(true);
       expect(sut.count).toBe(2);
-      sut.items.forEach((data) => {
-        expect(data.attendance.createId).not.toBe(user_2.id);
-        expect(data.attendance.createId).toBe(user_1.id);
-      });
     });
   });
 
@@ -181,14 +184,13 @@ describe('AttendancesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', AttendanceType.WEEKDAY);
+      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', '1200', '2000');
 
       const createdResponse = await service.create(createAttendanceDto_1, user_1);
 
       const updateAttendanceDto = new UpdateAttendanceDto();
       updateAttendanceDto.title = 'updated Title';
       updateAttendanceDto.description = 'updated description';
-      updateAttendanceDto.type = AttendanceType.WEEKEND;
 
       // When
       await service.update(createdResponse.data.id, updateAttendanceDto);
@@ -199,7 +201,6 @@ describe('AttendancesService', () => {
       expect(sut.success).toBe(true);
       expect(sut.data?.title).toBe('updated Title');
       expect(sut.data?.description).toBe('updated description');
-      expect(sut.data?.type).toBe(AttendanceType.WEEKEND);
     });
   });
 
@@ -209,7 +210,7 @@ describe('AttendancesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', AttendanceType.WEEKDAY);
+      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', '1200', '2000');
 
       const createdResponse = await service.create(createAttendanceDto_1, user_1);
 
@@ -226,7 +227,7 @@ describe('AttendancesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', AttendanceType.WEEKDAY);
+      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', '1200', '2000');
 
       const createdResponse = await service.create(createAttendanceDto_1, user_1);
 
@@ -244,7 +245,7 @@ describe('AttendancesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', AttendanceType.WEEKDAY);
+      const createAttendanceDto_1 = createAttendanceDto('test title 1', 'test description', '1200', '2000');
 
       const createdResponse = await service.create(createAttendanceDto_1, user_1);
 
@@ -288,10 +289,11 @@ describe('AttendancesService', () => {
   }
 });
 
-function createAttendanceDto(title, description, type): CreateAttendanceDto {
+function createAttendanceDto(title: string, description: string, availableFrom: Hhmm, availableTo: Hhmm): CreateAttendanceDto {
   const createAttendanceDto = new CreateAttendanceDto();
   createAttendanceDto.title = title;
   createAttendanceDto.description = description;
-  createAttendanceDto.type = type;
+  createAttendanceDto.availableFrom = availableFrom;
+  createAttendanceDto.availableTo = availableTo;
   return createAttendanceDto;
 }
