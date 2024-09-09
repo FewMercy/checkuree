@@ -18,6 +18,7 @@ import { Schedule } from '../../../src/schedules/entities/schedule.entity';
 import { RecordFilterDto } from '../../../src/records/dto/record-filter.dto';
 import { ExcelService } from '../../../src/common/excel.service';
 import { SingleRecord } from '../../../src/records/const/singleRecord.class';
+import { Gender } from '../../../src/attendees/const/gender.enum';
 
 describe('RecordsService', () => {
   let module: TestingModule;
@@ -234,7 +235,6 @@ describe('RecordsService', () => {
       singleRecord.date = '2024-01-15';
       singleRecord.status = AttendanceStatus.PRESENT;
       singleRecord.attendeeId = attendee.id;
-      singleRecord.lateReason = '입력이 되지 않을 겁니다.';
 
       const recordDto = new CreateRecordDto();
       recordDto.singleRecords = [singleRecord];
@@ -243,7 +243,6 @@ describe('RecordsService', () => {
 
       const sut = await recordRepository.findOneBy({ id: createResponse.data.ids[0] });
 
-      expect(sut.lateReason).toBeNull();
       expect(sut.attendeeId).toBe('Attendee Id 1');
       expect(sut.date).toBe('2024-01-15');
       expect(sut.day).toBe('MONDAY');
@@ -1108,7 +1107,8 @@ describe('RecordsService', () => {
     attendance_1.id = 'testAttendanceId';
     attendance_1.title = 'testAttendanceTitle';
     attendance_1.description = 'description';
-    attendance_1.type = AttendanceType.WEEKDAY;
+    attendance_1.availableFrom = '1200';
+    attendance_1.availableTo = '2000';
     attendance_1.createId = 'user id 1';
     attendance_1.createdAt = new Date();
 
@@ -1116,7 +1116,8 @@ describe('RecordsService', () => {
     attendance_2.id = 'notTestAttendanceId';
     attendance_2.title = 'testAttendanceTitle2';
     attendance_2.description = 'description';
-    attendance_2.type = AttendanceType.WEEKDAY;
+    attendance_2.availableFrom = '1200';
+    attendance_2.availableTo = '2000';
     attendance_2.createId = 'user id 1';
     attendance_2.createdAt = new Date();
 
@@ -1127,16 +1128,16 @@ describe('RecordsService', () => {
     attendee_1.id = 'Attendee Id 1';
     attendee_1.name = 'Attendee Name 1';
     attendee_1.attendanceId = attendance_1.id;
+    attendee_1.gender = Gender.MALE;
     attendee_1.description = 'Attendee 1 description';
-    attendee_1.age = 10;
     attendee_1.createId = user_1.id;
 
     const attendee_2 = new Attendee();
     attendee_2.id = 'Attendee Id 2';
     attendee_2.name = 'Attendee Name 2';
+    attendee_2.gender = Gender.FEMALE;
     attendee_2.attendanceId = attendance_2.id;
     attendee_2.description = 'Attendee 2 description';
-    attendee_2.age = 20;
     attendee_2.createId = user_1.id;
 
     await attendeeRepository.save(attendee_1);
