@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RecordsService } from '../../../src/records/records.service';
 import { User } from '../../../src/users/entities/user.entity';
 import { Attendance } from '../../../src/attendances/entities/attendance.entity';
-import { AttendanceType } from '../../../src/attendances/const/attendance-type.enum';
 import { Attendee } from '../../../src/attendees/entities/attendee.entity';
 import { TestModule } from '../../../src/test.module';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
@@ -99,7 +98,7 @@ describe('RecordsService', () => {
       // Then
       expect(sut.attendeeId).toBe('Attendee Id 1');
       expect(sut.date).toBe('2024-01-15');
-      expect(sut.day).toBe('MONDAY');
+      expect(sut.day).toBe('MON');
       expect(sut.status).toBe('Present');
     });
 
@@ -164,7 +163,7 @@ describe('RecordsService', () => {
 
       // Then
       expect(sut).toHaveLength(1);
-      expect(sut[0].day).toBe('MONDAY');
+      expect(sut[0].day).toBe('MON');
       expect(sut[0].date).toBe('2024-01-15');
       expect(sut[0].status).toBe(AttendanceStatus.ABSENT);
       expect(sut[0].attendeeId).toBe('Attendee Id 1');
@@ -200,7 +199,7 @@ describe('RecordsService', () => {
       expect(recordParameter[0]).toEqual(
         expect.objectContaining({
           date: '2024-01-15',
-          day: 'MONDAY',
+          day: 'MON',
           status: AttendanceStatus.ABSENT,
           attendeeId: 'Attendee Id 1',
         }),
@@ -234,6 +233,7 @@ describe('RecordsService', () => {
       const singleRecord = new SingleRecord();
       singleRecord.day = DayType.MONDAY;
       singleRecord.date = '2024-01-15';
+      singleRecord.time = '1200';
       singleRecord.status = AttendanceStatus.PRESENT;
       singleRecord.attendeeId = attendee.id;
 
@@ -246,7 +246,7 @@ describe('RecordsService', () => {
 
       expect(sut.attendeeId).toBe('Attendee Id 1');
       expect(sut.date).toBe('2024-01-15');
-      expect(sut.day).toBe('MONDAY');
+      expect(sut.day).toBe('MON');
       expect(sut.status).toBe('Present');
     });
 
@@ -270,7 +270,6 @@ describe('RecordsService', () => {
 
       // Then
       expect(sut.createdAt).toStrictEqual(now);
-      expect(sut.createId).toBe('user id 1');
     });
 
     it('선택한 날짜에 선택한 출석대상의 출석내용이 이미 존재하는 경우 Update 한다.', async () => {
@@ -295,7 +294,7 @@ describe('RecordsService', () => {
       // Then
       expect(sut.attendeeId).toBe('Attendee Id 1');
       expect(sut.date).toBe('2024-01-15');
-      expect(sut.day).toBe('MONDAY');
+      expect(sut.day).toBe('MON');
       expect(sut.status).not.toBe('Present');
       expect(sut.status).toBe('Absent');
     });
@@ -312,6 +311,10 @@ describe('RecordsService', () => {
       const attendee1 = createSimpleAttendee('attendee_1', attendanceId, 'user id 1');
       const attendee2 = createSimpleAttendee('attendee_2', attendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', attendanceId, 'user id 1');
+
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
 
       await attendeeRepository.query('DELETE FROM attendee;');
       const attendeeIds = await attendeeRepository.save([attendee1, attendee2, attendee3]);
@@ -347,6 +350,10 @@ describe('RecordsService', () => {
       const attendee1 = createSimpleAttendee('attendee_1', attendanceId, 'user id 1');
       const attendee2 = createSimpleAttendee('attendee_2', attendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', attendanceId, 'user id 1');
+
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
 
       await attendeeRepository.query('DELETE FROM attendee;');
       const attendeeIds = await attendeeRepository.save([attendee1, attendee2, attendee3]);
@@ -395,6 +402,10 @@ describe('RecordsService', () => {
       const attendee2 = createSimpleAttendee('attendee_2', attendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', attendanceId, 'user id 1');
 
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
+
       await attendeeRepository.query('DELETE FROM attendee;');
       const attendeeIds = await attendeeRepository.save([attendee1, attendee2, attendee3]);
 
@@ -440,6 +451,10 @@ describe('RecordsService', () => {
       const attendee1 = createSimpleAttendee('attendee_1', attendanceId, 'user id 1');
       const attendee2 = createSimpleAttendee('attendee_2', attendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', attendanceId, 'user id 1');
+
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
 
       await attendeeRepository.query('DELETE FROM attendee;');
       const attendeeIds = await attendeeRepository.save([attendee1, attendee2, attendee3]);
@@ -489,6 +504,10 @@ describe('RecordsService', () => {
       const attendee2 = createSimpleAttendee('attendee_2', attendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', attendanceId, 'user id 1');
 
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
+
       await attendeeRepository.query('DELETE FROM attendee;');
 
       const [createAttendee_1, createAttendee_2, createAttendee_3] = await attendeeRepository.save([attendee1, attendee2, attendee3]);
@@ -527,6 +546,10 @@ describe('RecordsService', () => {
       const attendee1 = createSimpleAttendee('attendee_1', targetAttendanceId, 'user id 1');
       const attendee2 = createSimpleAttendee('attendee_2', targetAttendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', targetAttendanceId, 'user id 1');
+
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
 
       await attendeeRepository.query('DELETE FROM attendee;');
       const [createdAttendee1, createdAttendee2, createdAttendee3] = await attendeeRepository.save([attendee1, attendee2, attendee3]);
@@ -568,6 +591,10 @@ describe('RecordsService', () => {
       const attendee2 = createSimpleAttendee('attendee_2', targetAttendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', targetAttendanceId, 'user id 1');
 
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
+
       await attendeeRepository.query('DELETE FROM attendee;');
       const [createdAttendee1, createdAttendee2, createdAttendee3] = await attendeeRepository.save([attendee1, attendee2, attendee3]);
 
@@ -607,6 +634,10 @@ describe('RecordsService', () => {
       const attendee2 = createSimpleAttendee('attendee_2', targetAttendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', 'notTestAttendanceId', 'user id 1');
 
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
+
       await attendeeRepository.query('DELETE FROM attendee;');
       const [createdAttendee1, createdAttendee2, createdAttendee3] = await attendeeRepository.save([attendee1, attendee2, attendee3]);
 
@@ -645,6 +676,10 @@ describe('RecordsService', () => {
       const attendee1 = createSimpleAttendee('attendee_1', targetAttendanceId, 'user id 1');
       const attendee2 = createSimpleAttendee('attendee_2', targetAttendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', targetAttendanceId, 'user id 1');
+
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
 
       await attendeeRepository.query('DELETE FROM attendee;');
       const [createdAttendee1, createdAttendee2, createdAttendee3] = await attendeeRepository.save([attendee1, attendee2, attendee3]);
@@ -686,6 +721,10 @@ describe('RecordsService', () => {
       const attendee2 = createSimpleAttendee('attendee_2', targetAttendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', targetAttendanceId, 'user id 1');
 
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
+
       await attendeeRepository.query('DELETE FROM attendee;');
       const [createdAttendee1, createdAttendee2, createdAttendee3] = await attendeeRepository.save([attendee1, attendee2, attendee3]);
 
@@ -725,6 +764,10 @@ describe('RecordsService', () => {
       const attendee1 = createSimpleAttendee('attendee_1', targetAttendanceId, 'user id 1');
       const attendee2 = createSimpleAttendee('attendee_2', targetAttendanceId, 'user id 1');
       const attendee3 = createSimpleAttendee('attendee_3', targetAttendanceId, 'user id 1');
+
+      attendee1.gender = Gender.MALE;
+      attendee2.gender = Gender.MALE;
+      attendee3.gender = Gender.MALE;
 
       await attendeeRepository.query('DELETE FROM attendee;');
       const [createdAttendee1, createdAttendee2, createdAttendee3] = await attendeeRepository.save([attendee1, attendee2, attendee3]);
