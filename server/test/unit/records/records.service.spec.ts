@@ -18,7 +18,7 @@ import { RecordFilterDto } from '../../../src/records/dto/record-filter.dto';
 import { ExcelService } from '../../../src/common/excel.service';
 import { SingleRecord } from '../../../src/records/const/singleRecord.class';
 import { Gender } from '../../../src/attendees/const/gender.enum';
-import { HhMm, YyMmDd } from '../../../src/common/contracts';
+import { HhMm, YyyyMmDd } from '../../../src/common/contracts';
 
 describe('RecordsService', () => {
   let module: TestingModule;
@@ -1197,7 +1197,7 @@ describe('RecordsService', () => {
   }
 });
 
-function createSingleRecord(date: YyMmDd, day: DayType, status: AttendanceStatus, time: HhMm, attendeeId: string) {
+function createSingleRecord(date: YyyyMmDd, day: DayType, status: AttendanceStatus, time: HhMm, attendeeId: string) {
   const singleRecord = new SingleRecord();
   singleRecord.date = date;
   singleRecord.day = day;
@@ -1207,7 +1207,7 @@ function createSingleRecord(date: YyMmDd, day: DayType, status: AttendanceStatus
   return singleRecord;
 }
 
-function createRecordDto(date: YyMmDd, day: DayType, status: AttendanceStatus, time: HhMm, attendeeId: string) {
+function createRecordDto(date: YyyyMmDd, day: DayType, status: AttendanceStatus, time: HhMm, attendeeId: string) {
   const singleRecord = createSingleRecord(date, day, status, time, attendeeId);
 
   const recordDto = new CreateRecordDto();
@@ -1216,7 +1216,7 @@ function createRecordDto(date: YyMmDd, day: DayType, status: AttendanceStatus, t
   return recordDto;
 }
 
-function createRecord(date: YyMmDd, day: DayType, status: AttendanceStatus, attendeeId, userId) {
+function createRecord(date: YyyyMmDd, day: DayType, status: AttendanceStatus, attendeeId, userId) {
   const record = new Record();
   record.date = date;
   record.day = day;
