@@ -1,10 +1,10 @@
 import './globals.css';
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 
 // Provider
-import { ThemeProvider } from '@mui/material';
+import { CircularProgress, ThemeProvider } from '@mui/material';
 import theme from '@/styles/theme';
 import { NextAuthProvider } from './providers/NextAuthProvider';
 import QueryClientProviders from './providers/QueryClientProvider';
@@ -24,12 +24,24 @@ export default function RootLayout({
     return (
         <html lang="en">
             <head>
-            <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
-            <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
-            <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
-            <link rel="manifest" href="/site.webmanifest" />
-            <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5" />
-            <meta name="theme-color" content="#ffffff" />
+                <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+                <link
+                    rel="icon"
+                    type="image/png"
+                    href="/favicon/favicon-32x32.png"
+                    sizes="32x32"
+                />
+                <link
+                    rel="apple-touch-icon"
+                    href="/favicon/apple-touch-icon.png"
+                />
+                <link rel="manifest" href="/site.webmanifest" />
+                <link
+                    rel="mask-icon"
+                    href="/favicon/safari-pinned-tab.svg"
+                    color="#5bbad5"
+                />
+                <meta name="theme-color" content="#ffffff" />
                 <link
                     href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined&display=block"
                     rel="stylesheet"
@@ -38,7 +50,11 @@ export default function RootLayout({
             <body className={notoSans.className}>
                 <QueryClientProviders>
                     <NextAuthProvider>
-                        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                        <ThemeProvider theme={theme}>
+                            <Suspense fallback={<CircularProgress />}>
+                                {children}
+                            </Suspense>
+                        </ThemeProvider>
                     </NextAuthProvider>
                 </QueryClientProviders>
             </body>
