@@ -4,54 +4,51 @@
 import AuthApiClient, { LoginData } from '@/api/AuthApiClient';
 import {
     Box,
-    Checkbox,
+    Button,
     Container,
     TextField,
     Typography,
     styled,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import axios from 'axios';
 import { setTokens } from '@/libs/auth';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useFormik } from 'formik';
+import { z } from 'zod';
+import { toFormikValidationSchema } from 'zod-formik-adapter';
+
+const LoginSchema = z.object({
+    username: z.string(),
+    password: z.string(),
+    isAutoLogin: z.boolean(),
+});
+
+const initailValues = {
+    username: '',
+    password: '',
+    isAutoLogin: false,
+};
 
 const Index = () => {
     const router = useRouter();
     const accessToken = Cookies.get('ACCESS_TOKEN');
-    const [login, setLogin] = useState<LoginData>({
-        username: '',
-        password: '',
-        isAutoLogin: false,
-    });
 
-    const fetchLogin = async (params: LoginData) => {
-        try {
-            const response =
-                await AuthApiClient.getInstance().userLogin(params);
-
+    const { mutate: loginMutation } = useMutation({
+        mutationKey: ['user'],
+        mutationFn: async (params: LoginData) =>
+            await AuthApiClient.getInstance().userLogin(params),
+        onSuccess: (response) => {
+            console.log(response);
             const token = response.data.data!.accessToken;
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setTokens({
                 accessToken: response.data.data!.accessToken,
                 refreshToken: response.data.data!.refreshToken,
             });
-
-            return response;
-        } catch (error) {
-            //
-            // 오류 처리
-            console.error('Error occurred during login:', error);
-            throw error;
-        }
-    };
-
-    const { mutate: loginMutation } = useMutation({
-        mutationKey: ['user'],
-        mutationFn: fetchLogin,
-        onSuccess: () => {
             alert('로그인 되었습니다.');
             router.push('/attendances');
         },
@@ -60,13 +57,13 @@ const Index = () => {
         },
     });
 
-    // Hook
-    const onChange = (field: keyof LoginData, value: string | boolean) => {
-        setLogin((prevState) => ({
-            ...prevState!,
-            [field]: value,
-        }));
-    };
+    const { handleSubmit, getFieldProps, isValid, dirty } = useFormik({
+        initialValues: initailValues,
+        validationSchema: toFormikValidationSchema(LoginSchema),
+        onSubmit: (values: LoginData) => {
+            loginMutation(values);
+        },
+    });
 
     useEffect(() => {
         if (accessToken) {
@@ -83,50 +80,53 @@ const Index = () => {
                         src={'/images/logos/checkuree_logo.svg'}
                         width={300}
                         height={50}
-                        alt=""
+                        alt="로고 이미지"
                     />
                 </LoginTypographyST>
-                <Box
+                <LoginFormBox
                     component="form"
-                    display={'flex'}
-                    flexDirection={'column'}
-                    gap={'12px'}
+                    onSubmit={(e) => {
+                        handleSubmit();
+                        e.preventDefault();
+                    }}
                 >
-                    <TextField
-                        value={login.username || ''}
-                        placeholder="아이디를 입력해주세요."
-                        onChange={(e) => onChange('username', e.target.value)}
-                        inputProps={TextFiledInputProps}
-                        sx={{
-                            borderRadius: '8px',
-                        }}
-                    />
-                    <TextField
-                        type="password"
-                        placeholder="비밀번호를 입력해주세요."
-                        onChange={(e) => onChange('password', e.target.value)}
-                        inputProps={TextFiledInputProps}
-                    />
-                </Box>
+                    <LoginFormTextBox>
+                        <TextField
+                            {...getFieldProps('username')}
+                            placeholder="아이디를 입력해주세요."
+                            inputProps={TextFiledInputProps}
+                        />
+                        <TextField
+                            {...getFieldProps('password')}
+                            type="password"
+                            placeholder="비밀번호를 입력해주세요."
+                            inputProps={TextFiledInputProps}
+                        />
+                    </LoginFormTextBox>
+
+                    <BoxSTLoginCommon>
+                        <StyledCheckureeLoginButton
+                            disabled={!(isValid && dirty)}
+                            backgroundColor={
+                                !(isValid && dirty) ? '#D9D9D9' : '#59996B'
+                            }
+                            type="submit"
+                        >
+                            체쿠리 로그인
+                        </StyledCheckureeLoginButton>
+                        <StyledKakaoLoginButton
+                            onClick={() =>
+                                router.push(
+                                    'https://checkuree.com/api/v1/auth/kakao'
+                                )
+                            }
+                            backgroundcolor=""
+                        >
+                            카카오 로그인
+                        </StyledKakaoLoginButton>
+                    </BoxSTLoginCommon>
+                </LoginFormBox>
             </StyledBoxST>
-            <BoxSTLoginCommon gap={'10px'}>
-                <StyledLoginButton
-                    onClick={() => {
-                        loginMutation(login);
-                    }}
-                    backgroundcolor="#59996B"
-                >
-                    체쿠리 로그인
-                </StyledLoginButton>
-                <StyledKakaoLoginButton
-                    onClick={() => {
-                        router.push('https://checkuree.com/api/v1/auth/kakao');
-                    }}
-                    backgroundcolor=""
-                >
-                    카카오 로그인
-                </StyledKakaoLoginButton>
-            </BoxSTLoginCommon>
 
             <Image
                 src={'/images/logos/checkuree_logo.svg'}
@@ -187,14 +187,19 @@ const LoginTypographyST = styled(Typography)(() => {
     };
 });
 
-// Checkbox에 대한 스타일
-const StyledCheckbox = styled(Checkbox)(() => {
+const LoginFormBox = styled(Box)(() => {
     return {
-        padding: 0,
-        border: 0,
-        width: '14px',
-        height: '14px',
-        color: '#D9D9D9',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '32px',
+        justifyContent: 'center',
+    };
+});
+const LoginFormTextBox = styled(Box)(() => {
+    return {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
     };
 });
 
@@ -202,6 +207,7 @@ const BoxSTLoginCommon = styled(Box)(() => {
     return {
         display: 'flex',
         flexDirection: 'column',
+        gap: '10px',
     };
 });
 
@@ -209,7 +215,7 @@ const BoxSTLoginCommon = styled(Box)(() => {
 const StyledLoginButton = styled(Box)(({
     backgroundcolor,
 }: {
-    backgroundcolor: string;
+    backgroundcolor: string | undefined;
 }) => {
     return {
         width: '313px',
@@ -225,6 +231,32 @@ const StyledLoginButton = styled(Box)(({
         cursor: 'pointer',
         justifyContent: 'center',
         background: backgroundcolor,
+    };
+});
+
+// 체쿠리 로그인 버튼의 색상
+const StyledCheckureeLoginButton = styled(Button)(({
+    backgroundColor,
+}: {
+    backgroundColor: string;
+}) => {
+    return {
+        width: '313px',
+        height: '39px',
+        borderRadius: '20px',
+        fontSize: '14px',
+        lineHeight: '19.07px',
+        fontWeight: 600,
+        textTransform: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        justifyContent: 'center',
+        color: 'white',
+        backgroundColor,
+        ':hover': {
+            backgroundColor,
+        },
     };
 });
 
