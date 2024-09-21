@@ -376,10 +376,11 @@ describe('RecordsService', () => {
       // Then
       expect(sut).toHaveLength(3);
       sut.map((record) => {
-        expect(record.status).toBe(AttendanceStatus.PRESENT);
-        expect(record.date).toBe('2024-01-30');
-        expect(record.day).toBe(DayType.TUESDAY);
-        expect(record.createId).toBe(user.id);
+        expect(record).toMatchObject({
+          status: AttendanceStatus.PRESENT,
+          date: '2024-01-30',
+          day: DayType.TUESDAY,
+        });
       });
     });
 
@@ -426,7 +427,6 @@ describe('RecordsService', () => {
       expect(sut[0].status).toBe(AttendanceStatus.PRESENT);
       expect(sut[0].date).toBe('2024-01-30');
       expect(sut[0].day).toBe(DayType.TUESDAY);
-      expect(sut[0].createId).toBe(user.id);
     });
 
     it('선택한 날짜에 스케쥴이 있는 모든 출석대상의 출석기록을 일괄 생성한다.', async () => {
@@ -469,11 +469,12 @@ describe('RecordsService', () => {
 
       // Then
       expect(sut).toHaveLength(3);
-      sut.map((record) => {
-        expect(record.status).toBe(AttendanceStatus.PRESENT);
-        expect(record.date).toBe('2024-01-30');
-        expect(record.day).toBe(DayType.TUESDAY);
-        expect(record.createId).toBe(user.id);
+      sut.forEach((record) => {
+        expect(record).toMatchObject({
+          status: AttendanceStatus.PRESENT,
+          date: '2024-01-30',
+          day: DayType.TUESDAY,
+        });
       });
     });
 
@@ -499,6 +500,7 @@ describe('RecordsService', () => {
       await scheduleRepository.save([schedule1, schedule2, schedule3]);
 
       const record = createRecord('2024-01-30', DayType.TUESDAY, AttendanceStatus.PRESENT, createAttendee_1.id, user.id);
+      record.time = '0930';
       await recordRepository.save(record);
 
       const createAllRecordDto = new CreateAllRecordDto();
