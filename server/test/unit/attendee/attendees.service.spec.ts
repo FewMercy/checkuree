@@ -150,7 +150,7 @@ describe('AttendeesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', 3, user_1.id);
+      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', user_1.id);
 
       const createdAttendee = await attendeeRepository.save(attendee);
 
@@ -177,7 +177,7 @@ describe('AttendeesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', 3, user_1.id);
+      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', user_1.id);
 
       const createdAttendee = await attendeeRepository.save(attendee);
 
@@ -208,7 +208,7 @@ describe('AttendeesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', 3, user_1.id);
+      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', user_1.id);
 
       const createdAttendee = await attendeeRepository.save(attendee);
 
@@ -243,7 +243,7 @@ describe('AttendeesService', () => {
 
       const now = new Date();
 
-      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', 3, user_1.id);
+      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', user_1.id);
       attendee.createdAt = now;
 
       const createdAttendee = await attendeeRepository.save(attendee);
@@ -266,7 +266,7 @@ describe('AttendeesService', () => {
 
       const now = new Date();
 
-      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', 3, user_1.id);
+      const attendee = createAttendee('가나다', 'testAttendanceId', '가나다 학생', user_1.id);
       attendee.createdAt = now;
 
       const createdAttendee = await attendeeRepository.save(attendee);
@@ -290,9 +290,9 @@ describe('AttendeesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const attendee_1 = createAttendee('가나다', 'testAttendanceId', '가나다 학생', 3, user_1.id);
+      const attendee_1 = createAttendee('가나다', 'testAttendanceId', '가나다 학생', user_1.id);
 
-      const attendee_2 = createAttendee('라마바', 'testAttendanceId', '라마바 학생', 5, user_1.id);
+      const attendee_2 = createAttendee('라마바', 'testAttendanceId', '라마바 학생', user_1.id);
 
       const createdAttendee_1 = await attendeeRepository.save(attendee_1);
       const createdAttendee_2 = await attendeeRepository.save(attendee_2);
@@ -322,11 +322,11 @@ describe('AttendeesService', () => {
 
       const now = new Date();
 
-      const attendee_1 = createAttendee('가나다', 'testAttendanceId', '가나다 학생', 3, user_1.id);
+      const attendee_1 = createAttendee('가나다', 'testAttendanceId', '가나다 학생', user_1.id);
 
-      const attendee_2 = createAttendee('라마바', 'testAttendanceId', '라마바 학생', 5, user_1.id);
+      const attendee_2 = createAttendee('라마바', 'testAttendanceId', '라마바 학생', user_1.id);
 
-      const attendee_3 = createAttendee('아자차', 'notTestAttendanceId', '아자차 학생', 7, user_1.id);
+      const attendee_3 = createAttendee('아자차', 'notTestAttendanceId', '아자차 학생', user_1.id);
 
       const createdAttendee_1 = await attendeeRepository.save(attendee_1);
       const createdAttendee_2 = await attendeeRepository.save(attendee_2);
