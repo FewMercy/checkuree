@@ -41,13 +41,4 @@ export class CreateAllRecordDto {
     example: DayType.MONDAY,
   })
   day: DayType;
-
-  toEntity(createId: string) {
-    const record = new Record();
-    record.status = this.status;
-    record.date = this.date;
-    record.day = this.day;
-    record.createId = createId;
-    return record;
-  }
 }
