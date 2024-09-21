@@ -17,6 +17,7 @@ import { Attendance } from '../../../src/attendances/entities/attendance.entity'
 import { UserAttendance } from '../../../src/attendances/entities/user-attendance.entity';
 import { AttendanceType } from '../../../src/attendances/const/attendance-type.enum';
 import { RoleType } from '../../../src/roles/const/role-type.enum';
+import { HhMm } from '../../../src/common/contracts';
 
 describe('UserAuthService Test', function () {
   let module: TestingModule;
@@ -346,8 +347,8 @@ describe('UserAuthService Test', function () {
 
       const refreshToken = 'refresh_token';
 
-      const attendance_1 = createAttendance('test_attendance_id_1', 'attendacne_title_1');
-      const attendance_2 = createAttendance('test_attendance_id_2', 'attendacne_title_2');
+      const attendance_1 = createAttendance('test_attendance_id_1', 'attendacne_title_1', '1200', '1800');
+      const attendance_2 = createAttendance('test_attendance_id_2', 'attendacne_title_2', '1200', '1800');
 
       const userAttendance_1 = createAttendanceWithUserIdAndAttendanceId('test', 'test_attendance_id_1');
       const userAttendance_2 = createAttendanceWithUserIdAndAttendanceId('test', 'test_attendance_id_2');
@@ -513,12 +514,13 @@ describe('UserAuthService Test', function () {
   }
 });
 
-function createAttendance(id: string, title: string) {
+function createAttendance(id: string, title: string, availableFrom: HhMm, availableTo: HhMm) {
   const attendance = new Attendance();
   attendance.id = id;
   attendance.createId = 'test';
-  attendance.type = AttendanceType.WEEKDAY;
   attendance.title = title;
+  attendance.availableFrom = availableFrom;
+  attendance.availableTo = availableTo;
   return attendance;
 }
 
