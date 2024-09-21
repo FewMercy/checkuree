@@ -69,6 +69,11 @@ export class SchedulesService {
     return new PageResponseDto(scheduleFilterDto.pageSize, count, items);
   }
 
+  /**
+   * 입력받은 날짜와 출석부 아이디로 해당 출석부의 스케쥴과 출석내역을 조회합니다.
+   *
+   * @returns {PageResponseDto<TimeGroupedScheduleResDto>} 시간대 별로 그룹화된 스케쥴과 출석내역
+   */
   async findScheduleByAttendanceIdAndDate(
     attendanceId: string,
     dateString: string,
