@@ -31,4 +31,12 @@ export class ScheduleFilterDto extends Pagination {
     nullable: true,
   })
   timeTo?: string;
+
+  // of 패턴으로 팩토리 메서드 구현
+  static of(pageNo: number = 1, pageSize: number = 10): ScheduleFilterDto {
+    const dto = new ScheduleFilterDto();
+    dto.pageNo = pageNo;
+    dto.pageSize = pageSize;
+    return dto;
+  }
 }
