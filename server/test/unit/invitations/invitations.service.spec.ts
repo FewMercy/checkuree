@@ -63,7 +63,8 @@ describe('InvitationsService', () => {
     attendance_1.id = 'testAttendanceId';
     attendance_1.title = 'testAttendanceTitle';
     attendance_1.description = 'description';
-    attendance_1.type = AttendanceType.WEEKDAY;
+    attendance_1.availableFrom = '1200';
+    attendance_1.availableTo = '1800';
     attendance_1.createId = 'user id 1';
     attendance_1.createdAt = new Date();
 
@@ -71,7 +72,8 @@ describe('InvitationsService', () => {
     attendance_2.id = 'notTestAttendanceId';
     attendance_2.title = 'testAttendanceTitle2';
     attendance_2.description = 'description';
-    attendance_2.type = AttendanceType.WEEKDAY;
+    attendance_2.availableFrom = '1200';
+    attendance_2.availableTo = '1800';
     attendance_2.createId = 'user id 1';
     attendance_2.createdAt = new Date();
 
