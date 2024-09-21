@@ -32,8 +32,8 @@ export class Record extends BaseTimeEntity {
   })
   status: AttendanceStatus;
 
-  @Column({ comment: '출석 날짜', type: 'varchar' })
-  @ApiProperty({ description: '출석 날짜', type: 'string' })
+  @Column({ comment: '출석 날짜 ex) 1993-11-17', type: 'varchar' })
+  @ApiProperty({ description: '출석 날짜 ex) 1993-11-17', type: 'string' })
   date: string;
 
   @Column({ comment: '출석 시간 HHMM 형식', type: 'varchar', length: 4 })
