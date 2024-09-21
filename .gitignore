@@ -3,5 +3,5 @@
 /server/.env.local
 ./node_modules
 /server/node_modules
-#/server/dist
+/server/dist
 
