@@ -50,7 +50,7 @@ export class Attendee extends BaseTimeEntity {
   school?: string;
 
   @Column({ comment: '출석 대상자 학년', type: 'varchar', nullable: true })
-  @ApiProperty({ description: '출석 대상자 학년', type: 'enum', enum: AttendeeGrade, example: AttendeeGrade.초등3학년 })
+  @ApiProperty({ description: '출석 대상자 학년', type: 'enum', enum: AttendeeGrade, example: AttendeeGrade.ELEMENTARY_3 })
   grade?: AttendeeGrade;
 
   @Column({ comment: '출석 대상자 설명', type: 'varchar', nullable: true })
