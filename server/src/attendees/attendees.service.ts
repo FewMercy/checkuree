@@ -69,13 +69,6 @@ export class AttendeesService {
   }
 
   async update(id: string, updateAttendeeDto: UpdateAttendeeDto): Promise<CommonResponseDto<any>> {
-    if (updateAttendeeDto.gender) {
-      this.validateGender(updateAttendeeDto.gender);
-    }
-
-    if (updateAttendeeDto.grade) {
-      this.validateGrade(updateAttendeeDto.grade);
-    }
     await this.attendeeRepository.update({ id, attendanceId: updateAttendeeDto.attendanceId }, updateAttendeeDto);
     return new CommonResponseDto('SUCCESS UPDATE ATTENDEE', { id: id });
   }
