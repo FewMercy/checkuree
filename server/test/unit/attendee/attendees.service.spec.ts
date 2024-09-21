@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AttendeesService } from '../../../src/attendees/attendees.service';
 import { TestModule } from '../../../src/test.module';
-import { getDataSourceToken, getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Attendee } from '../../../src/attendees/entities/attendee.entity';
 import { Attendance } from '../../../src/attendances/entities/attendance.entity';
 import { User } from '../../../src/users/entities/user.entity';
 import { CreateAttendeeDto } from '../../../src/attendees/dto/create-attendee.dto';
-import { AttendanceType } from '../../../src/attendances/const/attendance-type.enum';
-import { DataSource, In, Repository } from 'typeorm';
-import * as module from 'module';
+import { In, Repository } from 'typeorm';
 import { UpdateAttendeeDto } from '../../../src/attendees/dto/update-attendee.dto';
 import { DeleteAttendeeDto } from '../../../src/attendees/dto/delete-attendee.dto';
 import { createAttendee } from './createAttendee';
+import { Gender } from '../../../src/attendees/const/gender.enum';
 
 describe('AttendeesService', () => {
   let module: TestingModule;
@@ -52,7 +51,7 @@ describe('AttendeesService', () => {
   describe('createAttendee Test ', () => {
     it('Attendee를 생성 성공시에 success,message,id를 리턴한다.', async () => {
       // given
-      const attendeeDto = createAttendeeDto('test name', 'testAttendanceId', 'this is first attendee', 15);
+      const attendeeDto = createAttendeeDto('test name', 'testAttendanceId', 'this is first attendee');
 
       const user = new User();
       user.id = 'user id 1';
@@ -67,7 +66,7 @@ describe('AttendeesService', () => {
 
     it('Attendee 테이블에 Attendee를 생성한다.', async () => {
       // given
-      const attendeeDto = createAttendeeDto('test name', 'testAttendanceId', 'this is first attendee', 15);
+      const attendeeDto = createAttendeeDto('test name', 'testAttendanceId', 'this is first attendee');
 
       const user = new User();
       user.id = 'user id 1';
@@ -78,10 +77,11 @@ describe('AttendeesService', () => {
       const sut = await attendeeRepository.findOneBy({ id: createResponse.data.id });
 
       // then
-      expect(sut?.name).toBe('test name');
-      expect(sut?.description).toBe('this is first attendee');
-      expect(sut?.createId).toBe('user id 1');
-      expect(sut?.attendanceId).toBe('testAttendanceId');
+      expect(sut).toMatchObject({
+        name: 'test name',
+        description: 'this is first attendee',
+        attendanceId: 'testAttendanceId',
+      });
     });
 
     it('createAttendeeDto의 정보로 Attendee를 생성한다.', async () => {
@@ -90,8 +90,8 @@ describe('AttendeesService', () => {
       attendeeDto.name = 'test name';
       attendeeDto.attendanceId = 'testAttendanceId';
       attendeeDto.description = 'this is first attendee';
-      attendeeDto.age = 15;
       attendeeDto.mobileNumber = '01080981398';
+      attendeeDto.gender = Gender.FEMALE;
       attendeeDto.subMobileNumber = '01026478104';
 
       const user = new User();
@@ -103,12 +103,13 @@ describe('AttendeesService', () => {
       const sut = await attendeeRepository.findOneBy({ id: createResponse.data.id });
 
       // then
-      expect(sut?.name).toBe('test name');
-      expect(sut?.description).toBe('this is first attendee');
-      expect(sut?.createId).toBe('user id 1');
-      expect(sut?.attendanceId).toBe('testAttendanceId');
-      expect(sut?.mobileNumber).toBe('01080981398');
-      expect(sut?.subMobileNumber).toBe('01026478104');
+      expect(sut).toMatchObject({
+        name: 'test name',
+        description: 'this is first attendee',
+        attendanceId: 'testAttendanceId',
+        mobileNumber: '01080981398',
+        subMobileNumber: '01026478104',
+      });
     });
   });
 
@@ -121,9 +122,9 @@ describe('AttendeesService', () => {
       const user_1 = new User();
       user_1.id = 'user id 1';
 
-      const attendeeDto_1 = createAttendeeDto('가나다', 'testAttendanceId', '가나다 학생', 3);
-      const attendeeDto_2 = createAttendeeDto('라마바', 'testAttendanceId', '라마바 학생', 4);
-      const attendeeDto_3 = createAttendeeDto('아자차', 'notTestAttendanceId', '아자차 학생', 5);
+      const attendeeDto_1 = createAttendeeDto('가나다', 'testAttendanceId', '가나다 학생');
+      const attendeeDto_2 = createAttendeeDto('라마바', 'testAttendanceId', '라마바 학생');
+      const attendeeDto_3 = createAttendeeDto('아자차', 'notTestAttendanceId', '아자차 학생');
 
       await service.createAttendee(attendeeDto_1, user_1);
       await service.createAttendee(attendeeDto_2, user_1);
@@ -159,7 +160,6 @@ describe('AttendeesService', () => {
       const updateDto = new UpdateAttendeeDto();
       updateDto.name = '수정된';
       updateDto.description = '수정되었습니다';
-      updateDto.age = 99;
 
       const sut = await service.update(createdAttendee.id, updateDto);
 
@@ -186,7 +186,7 @@ describe('AttendeesService', () => {
       const updateDto = new UpdateAttendeeDto();
       updateDto.name = '수정된';
       updateDto.description = '수정되었습니다';
-      updateDto.age = 99;
+      updateDto.attendanceId = 'testAttendanceId';
 
       // When
       const updatedAttendee = await service.update(createdAttendee.id, updateDto);
@@ -194,9 +194,10 @@ describe('AttendeesService', () => {
       const sut = await attendeeRepository.findOneBy({ id: updatedAttendee.data.id });
 
       // Then
-      expect(sut.name).toBe('수정된');
-      expect(sut.description).toBe('수정되었습니다');
-      expect(sut.age).toBe(99);
+      expect(sut).toMatchObject({
+        name: '수정된',
+        description: '수정되었습니다',
+      });
     });
 
     it('수정한 회원의 Id 와 수정 시간이 기록된다.', async () => {
@@ -216,18 +217,18 @@ describe('AttendeesService', () => {
       const updateDto = new UpdateAttendeeDto();
       updateDto.updateId = user_1.id;
       updateDto.updatedAt = now;
+      updateDto.attendanceId = 'testAttendanceId';
 
       // When
       const updatedAttendee = await service.update(createdAttendee.id, updateDto);
 
-      const sut = await attendeeRepository.findOneBy({ id: updatedAttendee.data.id });
+      const sut = await attendeeRepository.query(`SELECT * FROM attendee WHERE id = '${updatedAttendee.data.id}'`);
 
       // Then
-      expect(sut.name).toBe('가나다');
-      expect(sut.description).toBe('가나다 학생');
-      expect(sut.age).toBe(3);
-      expect(sut.updateId).toBe('user id 1');
-      expect(sut.updatedAt).toStrictEqual(now);
+      expect(sut[0]).toMatchObject({
+        updateId: 'user id 1',
+        updatedAt: now,
+      });
     });
   });
 
@@ -277,9 +278,6 @@ describe('AttendeesService', () => {
       expect(sut.data.name).toBe('가나다');
       expect(sut.data.attendanceId).toBe('testAttendanceId');
       expect(sut.data.description).toBe('가나다 학생');
-      expect(sut.data.age).toBe(3);
-      expect(sut.data.createId).toBe(user_1.id);
-      expect(sut.data.createdAt).toStrictEqual(now);
     });
   });
 
@@ -363,7 +361,8 @@ describe('AttendeesService', () => {
     attendance_1.id = 'testAttendanceId';
     attendance_1.title = 'testAttendanceTitle';
     attendance_1.description = 'description';
-    attendance_1.type = AttendanceType.WEEKDAY;
+    attendance_1.availableFrom = '1200';
+    attendance_1.availableTo = '1800';
     attendance_1.createId = 'user id 1';
     attendance_1.createdAt = new Date();
 
@@ -371,7 +370,8 @@ describe('AttendeesService', () => {
     attendance_2.id = 'notTestAttendanceId';
     attendance_2.title = 'testAttendanceTitle2';
     attendance_2.description = 'description';
-    attendance_2.type = AttendanceType.WEEKDAY;
+    attendance_2.availableFrom = '1200';
+    attendance_2.availableTo = '1800';
     attendance_2.createId = 'user id 1';
     attendance_2.createdAt = new Date();
 
@@ -385,11 +385,15 @@ describe('AttendeesService', () => {
     await userRepository.query(`DELETE FROM user;`);
   }
 });
-function createAttendeeDto(name, attendanceId, description, age) {
+
+/**
+ * gender = MALE 인 attendee 생성
+ */
+function createAttendeeDto(name: string, attendanceId: string, description: string) {
   const createAttendeeDto = new CreateAttendeeDto();
   createAttendeeDto.name = name;
   createAttendeeDto.attendanceId = attendanceId;
   createAttendeeDto.description = description;
-  createAttendeeDto.age = age;
+  createAttendeeDto.gender = Gender.MALE;
   return createAttendeeDto;
 }
