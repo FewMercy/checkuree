@@ -500,7 +500,6 @@ describe('RecordsService', () => {
       await scheduleRepository.save([schedule1, schedule2, schedule3]);
 
       const record = createRecord('2024-01-30', DayType.TUESDAY, AttendanceStatus.PRESENT, createAttendee_1.id, user.id);
-      record.time = '0930';
       await recordRepository.save(record);
 
       const createAllRecordDto = new CreateAllRecordDto();
@@ -1174,8 +1173,19 @@ function createRecordDto(date: YyyyMmDd, day: DayType, status: AttendanceStatus,
   return recordDto;
 }
 
-function createRecord(date: YyyyMmDd, day: DayType, status: AttendanceStatus, attendeeId, userId) {
+/**
+ * time = '1200' 인 출석기록 생성
+ */
+function createRecord(
+  date: YyyyMmDd,
+  day: DayType,
+  status: AttendanceStatus,
+  attendeeId: string,
+  userId: string,
+  time: HhMm = '1200',
+) {
   const record = new Record();
+  record.time = time;
   record.date = date;
   record.day = day;
   record.status = status;
