@@ -62,8 +62,8 @@ export class RecordsService {
   async createAll(createAllRecordDto: CreateAllRecordDto, user: User): Promise<CommonResponseDto<any>> {
     const result = await this.recordRepository.query(
       `
-    INSERT INTO record (attendeeId,status,date,day,createId)
-    SELECT atd.id,?,?,?,?
+    INSERT INTO record (attendeeId, time, status, date, day, createId)
+    SELECT atd.id, s.time, ?, ?, ?, ?
     FROM attendee as atd
     LEFT JOIN record r ON r.attendeeId = atd.id AND r.date = ?
     LEFT JOIN schedule s ON s.attendeeId = atd.id AND s.day = ?
