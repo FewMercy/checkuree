@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Attendee } from '../entities/attendee.entity';
 import { INVALID_MOBILENUMBER_MESSAGE } from '../../auth/const/error-message';
@@ -25,7 +25,7 @@ export class CreateAttendeeDto {
   })
   name: string;
 
-  @IsString()
+  @IsEnum(Gender)
   @ApiProperty({
     description: '출석 대상 성별 ( MALE / FEMALE )',
     type: 'string',
@@ -78,13 +78,13 @@ export class CreateAttendeeDto {
   })
   course?: string;
 
-  @IsString()
+  @IsEnum(AttendeeGrade)
   @IsOptional()
   @ApiPropertyOptional({
     description: '출석 대상 학년',
     type: 'enum',
     enum: AttendeeGrade,
-    example: AttendeeGrade.초등3학년,
+    example: AttendeeGrade.ELEMENTARY_1,
   })
   grade?: AttendeeGrade;
 
