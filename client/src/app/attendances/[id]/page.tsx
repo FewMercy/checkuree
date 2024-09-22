@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 // Next
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 // Utils
 import _ from 'lodash';
@@ -57,6 +57,7 @@ export type ParsedAttendeeListType = Record<
 >;
 
 const Index = () => {
+    const router = useRouter();
     const attendanceId = usePathname().split('/')[2];
 
     const today = dateFormat(new Date(), 'dash');
@@ -300,6 +301,10 @@ const Index = () => {
                                 alt="attendance-img"
                                 width={32}
                                 height={32}
+                                style={{
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => router.push('/attendances')}
                             />
                         )}
                     </div>
