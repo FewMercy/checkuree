@@ -1,11 +1,12 @@
 import { BaseTimeEntity } from '../../common/BaseTimeEntity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { AttendanceStatus } from '../const/record-type.enum';
 import { DayType } from '../../schedules/const/day-type.enum';
 import { Attendee } from '../../attendees/entities/attendee.entity';
 import { LateTimeType } from '../const/late-time-type.enum';
 import { AbsenceType } from '../const/absence-type.enum';
+import { Schedule } from '../../schedules/entities/schedule.entity';
 
 // TODO : date 형식 통일 및 주석 추가
 /**
@@ -64,4 +65,9 @@ export class Record extends BaseTimeEntity {
   @JoinColumn({ name: 'attendeeId', referencedColumnName: 'id' })
   @ApiProperty({ type: () => Attendee })
   attendee: Attendee;
+
+  @OneToOne(() => Schedule, (schedule: Schedule) => schedule.record, { nullable: true })
+  @JoinColumn({ name: 'scheduleId', referencedColumnName: 'id' })
+  @ApiProperty({ type: () => Schedule })
+  schedule: Schedule;
 }

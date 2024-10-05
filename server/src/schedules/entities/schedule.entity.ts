@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { BaseTimeEntity } from '../../common/BaseTimeEntity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Attendee } from '../../attendees/entities/attendee.entity';
 import { DayType } from '../const/day-type.enum';
+import { Record } from '../../records/entities/record.entity';
 
 @Entity()
 export class Schedule extends BaseTimeEntity {
@@ -26,4 +27,7 @@ export class Schedule extends BaseTimeEntity {
   @JoinColumn({ name: 'attendeeId', referencedColumnName: 'id' })
   @ApiProperty({ type: () => Attendee })
   attendee: Attendee;
+
+  @OneToOne(() => Record, (record) => record.schedule)
+  record: Record;
 }
