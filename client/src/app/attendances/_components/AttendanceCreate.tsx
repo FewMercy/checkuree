@@ -19,6 +19,7 @@ import { useMutation } from '@tanstack/react-query';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import { CreateAttendance } from '@/api/attendances/schema';
 import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 
 interface IProps {
     setIsCreate: React.Dispatch<SetStateAction<boolean>>;
@@ -99,7 +100,7 @@ const AttendanceCreateForm = (props: IProps) => {
                 })
                 .then((res) => res.data),
         onSuccess: () => {
-            alert('출석부가 생성되었습니다.');
+            toast('출석부가 생성되었습니다.');
             attendancesRefetch();
             setIsCreate(false);
             RefreshApi();

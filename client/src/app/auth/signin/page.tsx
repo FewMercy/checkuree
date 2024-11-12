@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useFormik } from 'formik';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
+import toast from 'react-hot-toast';
 
 const LoginSchema = z.object({
     username: z.string(),
@@ -42,18 +43,17 @@ const Index = () => {
         mutationFn: async (params: LoginData) =>
             await AuthApiClient.getInstance().userLogin(params),
         onSuccess: (response) => {
-            console.log(response);
             const token = response.data.data!.accessToken;
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setTokens({
                 accessToken: response.data.data!.accessToken,
                 refreshToken: response.data.data!.refreshToken,
             });
-            alert('로그인 되었습니다.');
+            toast('로그인 되었습니다.');
             router.push('/attendances');
         },
         onError: () => {
-            alert('아이디 및 비밀번호가 일치하지 않습니다.');
+            toast.error('아이디 및 비밀번호가 일치하지 않습니다.');
         },
     });
 
@@ -120,7 +120,7 @@ const Index = () => {
                                     'https://checkuree.com/api/v1/auth/kakao'
                                 )
                             }
-                            backgroundcolor=""
+                            backgroundColor=""
                         >
                             카카오 로그인
                         </StyledKakaoLoginButton>
@@ -213,9 +213,9 @@ const BoxSTLoginCommon = styled(Box)(() => {
 
 // 카카오 및 네이버 로그인 버튼 스타일
 const StyledLoginButton = styled(Box)(({
-    backgroundcolor,
+    backgroundColor,
 }: {
-    backgroundcolor: string | undefined;
+    backgroundColor: string | undefined;
 }) => {
     return {
         width: '313px',
@@ -230,7 +230,7 @@ const StyledLoginButton = styled(Box)(({
         alignItems: 'center',
         cursor: 'pointer',
         justifyContent: 'center',
-        background: backgroundcolor,
+        background: backgroundColor,
     };
 });
 

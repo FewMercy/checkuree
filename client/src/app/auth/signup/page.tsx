@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { useMediaQuery } from 'react-responsive';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const Index = () => {
     const isSmall = useMediaQuery({
@@ -41,7 +42,7 @@ const Index = () => {
         mutationKey: [''],
         mutationFn: () => AuthApiClient.getInstance().userRegister(register!),
         onSuccess: () => {
-            alert('가입이 완료되었습니다.');
+            toast('가입이 완료되었습니다.');
             router.push('/auth/signin');
         },
     });
@@ -51,7 +52,7 @@ const Index = () => {
         mutationFn: () =>
             AuthApiClient.getInstance().userCheckEmail(register?.email!),
         onSuccess: () => {
-            alert('인증되었습니다!');
+            toast('인증되었습니다!');
             setEmailDisabled(true);
         },
     });
@@ -63,7 +64,7 @@ const Index = () => {
                 register?.mobileNumber!
             ),
         onSuccess: () => {
-            alert('인증되었습니다!');
+            toast('인증되었습니다!');
             setPhoneNumberDisabled(true);
         },
     });
@@ -73,7 +74,7 @@ const Index = () => {
         mutationFn: () =>
             AuthApiClient.getInstance().userCheckUsername(register?.username!),
         onSuccess: () => {
-            alert('인증되었습니다!');
+            toast('인증되었습니다!');
             setUsernameDisabled(true);
         },
     });

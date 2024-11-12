@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 // Components
 import { Box, styled, Typography } from '@mui/material';
 import { ParsedAttendeeListType } from '../[id]/page';
+import toast from 'react-hot-toast';
 
 interface Menu {
     name: string;
@@ -83,7 +84,7 @@ const Navigation = (props: Iprops) => {
     };
 
     return (
-        <>
+        <React.Fragment>
             {status ? (
                 <BoxSTNavigationActivate>
                     <BoxSTCancel onClick={() => resetAllStatus()}>
@@ -96,7 +97,12 @@ const Navigation = (props: Iprops) => {
                     {menuList(attendanceId).map((menu, index) => (
                         <BoxSTMenu
                             key={menu.name}
-                            onClick={() => handleMenuClick(menu)}
+                            onClick={() =>
+                                menu.name === 'statistics' ||
+                                menu.name === 'settings'
+                                    ? toast('준비중인 서비스입니다')
+                                    : handleMenuClick(menu)
+                            }
                         >
                             {activeMenu === menu.name ? (
                                 <Image
@@ -138,7 +144,7 @@ const Navigation = (props: Iprops) => {
                     ))}
                 </BoxSTNavigation>
             )}
-        </>
+        </React.Fragment>
     );
 };
 
