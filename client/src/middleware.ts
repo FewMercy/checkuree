@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { safeJwtDecode } from './libs/jwt';
 import { cookies } from 'next/headers';
-
-const ACCESS_TOKEN_KEY = 'ACCESS_TOKEN';
-const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
+import {
+    ACCESS_TOKEN_KEY,
+    NEXT_PUBLIC_API_ROOT,
+    REFRESH_TOKEN_KEY,
+} from './config/server';
 
 const PRIVATE_PATHS = ['/attendances'];
 
@@ -13,8 +15,8 @@ export default async function handler(req: NextRequest) {
 
     const cookieStore = cookies();
 
-    const accessToken = cookieStore.get(ACCESS_TOKEN_KEY);
-    const refreshToken = cookieStore.get(REFRESH_TOKEN_KEY);
+    const accessToken = cookieStore.get(ACCESS_TOKEN_KEY!);
+    const refreshToken = cookieStore.get(REFRESH_TOKEN_KEY!);
 
     req.headers.set('Authorization', 'Bearer ' + accessToken?.value);
 
@@ -44,7 +46,7 @@ export default async function handler(req: NextRequest) {
             try {
                 // edge runtime에서는 fetch만 사용 가능합니다.
                 const result = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_ROOT}/auth/refresh-token`, // Error: Unexpected string concatenation. prefer-template
+                    `${NEXT_PUBLIC_API_ROOT}/auth/refresh-token`, // Error: Unexpected string concatenation. prefer-template
                     {
                         method: 'POST',
                         headers: {
@@ -58,11 +60,11 @@ export default async function handler(req: NextRequest) {
 
                 // 새로운 토큰으로 request를 rewrite한다.
                 req.cookies.set(
-                    ACCESS_TOKEN_KEY,
+                    ACCESS_TOKEN_KEY!,
                     result.data.data!.accessToken
                 );
                 req.cookies.set(
-                    REFRESH_TOKEN_KEY,
+                    REFRESH_TOKEN_KEY!,
                     result.data.data!.refreshToken
                 );
                 const res = NextResponse.next({
@@ -71,11 +73,11 @@ export default async function handler(req: NextRequest) {
 
                 // 새로운 토큰들로 쿠키를 설정한다.
                 res.cookies.set(
-                    ACCESS_TOKEN_KEY,
+                    ACCESS_TOKEN_KEY!,
                     result.data.data!.accessToken
                 );
                 res.cookies.set(
-                    REFRESH_TOKEN_KEY,
+                    REFRESH_TOKEN_KEY!,
                     result.data.data!.refreshToken
                 );
                 return res;
@@ -86,8 +88,8 @@ export default async function handler(req: NextRequest) {
 
         // 토큰이 만료되었지만 refresh token이 없거나, refresh에 실패 등의 경우 모두 로그아웃 처리한다.
         // 쿠키가 삭제된 상태로 request를 rewrite 한다.
-        req.cookies.delete(ACCESS_TOKEN_KEY);
-        req.cookies.delete(REFRESH_TOKEN_KEY);
+        req.cookies.delete(ACCESS_TOKEN_KEY!);
+        req.cookies.delete(REFRESH_TOKEN_KEY!);
         const res = NextResponse.next({
             request: req,
         });

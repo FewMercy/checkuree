@@ -5,7 +5,6 @@ import 'dayjs/locale/ko'; // 한국어 locale 설정
 import { Box, Fab, Typography, styled } from '@mui/material';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // import 이동
-import Cookies from 'js-cookie';
 import AttendanceApiClient from '@/api/attendances/AttendanceApiClient';
 import AttendanceCreateForm from '@/app/attendances/_components/AttendanceCreate';
 import Image from 'next/image';

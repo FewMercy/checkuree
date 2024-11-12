@@ -17,15 +17,34 @@ export const AttendanceIdContainer = styled.section`
             box-sizing: border-box;
 
             & > .attendance-img {
-                width: 32px;
                 height: 32px;
                 border-radius: 8px;
-                background-color: ${Colors.Gray40};
+                // background-color: ${Colors.Gray40};
                 margin-bottom: 12px;
-                overflow: hidden;
+                // overflow: hidden;
+                display: flex;
+                align-items: center;
             }
 
             & > .attendance-info {
+                padding-left: 5px;
+                padding-right: 5px;
+                & > .attendance-status-container {
+                    display: flex;
+                    gap: 4px;
+
+                    & > .status {
+                        display: flex;
+                        gap: 2px;
+                        align-items: center;
+
+                        & > .count {
+                            font-size: 12px;
+                            font-weight: 500;
+                            color: ${Colors.Gray80};
+                        }
+                    }
+                }
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -39,6 +58,8 @@ export const AttendanceIdContainer = styled.section`
                 }
 
                 & > .date-box {
+                    display: flex;
+                    align-items: center;
                     & .date-container {
                         width: 71px;
                         height: 23px;
@@ -97,23 +118,6 @@ export const AttendanceIdContainer = styled.section`
                             fill: ${Colors.CheckureeGreen10} !important;
                             stroke: ${Colors.CheckureeGreen};
                         }
-                    }
-                }
-            }
-
-            & > .attendance-status-container {
-                display: flex;
-                gap: 4px;
-
-                & > .status {
-                    display: flex;
-                    gap: 2px;
-                    align-items: center;
-
-                    & > .count {
-                        font-size: 12px;
-                        font-weight: 500;
-                        color: ${Colors.Gray80};
                     }
                 }
             }

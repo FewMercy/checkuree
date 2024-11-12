@@ -1,16 +1,6 @@
 import AuthApiClient from '@/api/AuthApiClient';
 import { useQuery } from '@tanstack/react-query';
 
-// birthYear
-// birthday
-// createdAt
-// email
-// id
-// mobileNumber
-// name
-// type
-// username
-
 const useUser = () => {
     const { data: userInfo } = useQuery({
         queryKey: ['user'],
