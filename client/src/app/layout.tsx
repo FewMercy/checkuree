@@ -6,8 +6,9 @@ import { Noto_Sans } from 'next/font/google';
 // Provider
 import { CircularProgress, ThemeProvider } from '@mui/material';
 import theme from '@/styles/theme';
-import { NextAuthProvider } from './providers/NextAuthProvider';
-import QueryClientProviders from './providers/QueryClientProvider';
+
+import { RootToaster } from '@/providers/RootToaster';
+import QueryClientProviders from '@/providers/QueryClientProvider';
 
 const notoSans = Noto_Sans({ subsets: ['latin'] });
 
@@ -49,13 +50,12 @@ export default function RootLayout({
             </head>
             <body className={notoSans.className}>
                 <QueryClientProviders>
-                    <NextAuthProvider>
-                        <ThemeProvider theme={theme}>
-                            <Suspense fallback={<CircularProgress />}>
-                                {children}
-                            </Suspense>
-                        </ThemeProvider>
-                    </NextAuthProvider>
+                    <ThemeProvider theme={theme}>
+                        <RootToaster />
+                        <Suspense fallback={<CircularProgress />}>
+                            {children}
+                        </Suspense>
+                    </ThemeProvider>
                 </QueryClientProviders>
             </body>
         </html>
