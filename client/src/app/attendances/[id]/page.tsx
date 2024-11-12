@@ -63,10 +63,35 @@ const Index = () => {
     const today = dateFormat(new Date(), 'dash');
 
     const [totalCount, setTotalCount] = useState(0);
-    const [selectedDate, setSelectedDate] = useState(today);
+    const [selectedDate, setSelectedDate] = useState<string>(today);
     const [attendeeList, setAttendeeList] = useState<ParsedAttendeeListType>(
         {}
     );
+
+    const handlePrevDay = () => {
+        setSelectedDate(() =>
+            dateFormat(
+                new Date(
+                    new Date(selectedDate).setDate(
+                        new Date(selectedDate).getDate() - 1
+                    )
+                ),
+                'dash'
+            )
+        );
+    };
+    const handleNextDay = () => {
+        setSelectedDate(() =>
+            dateFormat(
+                new Date(
+                    new Date(selectedDate).setDate(
+                        new Date(selectedDate).getDate() + 1
+                    )
+                ),
+                'dash'
+            )
+        );
+    };
 
     const queryClient = useQueryClient();
 
@@ -307,14 +332,41 @@ const Index = () => {
                                 onClick={() => router.push('/attendances')}
                             />
                         )}
-                    </div>
-
-                    <section className="attendance-info">
                         <div className="name">
                             {/* @ts-ignore */}
                             {detailData?.title || '출석부 이름'}
                         </div>
+                    </div>
+
+                    <section className="attendance-info">
+                        <section className="attendance-status-container">
+                            {statusIcons.map((item) => (
+                                <div
+                                    className="status"
+                                    key={`attendance-status__${item.icon}`}
+                                >
+                                    <Icon
+                                        icon={Icons[item.icon]}
+                                        color={Colors.Gray80}
+                                        size={16}
+                                    />
+                                    <div className="count">
+                                        {item.count || 0}
+                                    </div>
+                                </div>
+                            ))}
+                        </section>
                         <div className="date-box">
+                            <Image
+                                src={'/images/icons/arrow-left-icon.svg'}
+                                alt=""
+                                width={24}
+                                height={24}
+                                style={{
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handlePrevDay()}
+                            />
                             <DatePicker
                                 locale={ko}
                                 selected={new Date(selectedDate)}
@@ -344,23 +396,17 @@ const Index = () => {
                                     </div>
                                 }
                             />
+                            <Image
+                                src={'/images/icons/arrow-right-icon.svg'}
+                                alt=""
+                                width={24}
+                                height={24}
+                                style={{
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleNextDay()}
+                            />
                         </div>
-                    </section>
-
-                    <section className="attendance-status-container">
-                        {statusIcons.map((item) => (
-                            <div
-                                className="status"
-                                key={`attendance-status__${item.icon}`}
-                            >
-                                <Icon
-                                    icon={Icons[item.icon]}
-                                    color={Colors.Gray80}
-                                    size={16}
-                                />
-                                <div className="count">{item.count || 0}</div>
-                            </div>
-                        ))}
                     </section>
                 </div>
             </section>
